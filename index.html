@@ -107,6 +107,29 @@ body {
             -webkit-backdrop-filter: blur(10px); /* 兼容Safari浏览器 */
             border: 1px solid rgba(255, 255, 255, 0.2); /* 加一个细微的边框 */
         }
+/* 图标的占位符样式 */
+.app-icon .icon-placeholder {
+    width: 60px;
+    height: 60px;
+    background-color: rgba(255, 255, 255, 0.7);
+    border-radius: 15px;
+    margin-bottom: 8px;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* 【新增】自定义图标的专属样式 */
+.app-icon .icon-placeholder.custom-icon {
+    background-size: cover !important;
+    background-position: center !important;
+    background-repeat: no-repeat !important;
+    overflow: hidden;
+}
+
+.app-icon .icon-placeholder.custom-icon svg {
+    display: none !important;
+}
 
         /* App名字的样式 */
         .app-icon span {
@@ -320,9 +343,9 @@ body {
 /* 【新添加】让设置页面的内容区可以滚动 */
 .theme-content {
     padding: 20px;
-    flex-grow: 1;           /* 【确认】占据剩余空间 */
-    overflow-y: auto;       /* 【确认】允许垂直滚动 */
-    overflow-x: hidden;     /* 【新增】隐藏横向滚动 */
+    flex-grow: 1;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
 }
         /* 1. 为两个新屏幕设置和 theme/settings 一样的全屏基础样式 */
         .dialogue-list-screen,
@@ -2350,6 +2373,7 @@ body {
 
 
 
+
     <script>
       // ======================================================
 // 【新增】移动端浏览器视口高度修复（兼容 iOS 和 Android）
@@ -2492,7 +2516,7 @@ db.version(5).stores({
     let defaultIconSvgData = {};
     let currentEditingWidgetId = null; 
       let currentEditingMessageId = null; // 当前正在编辑的消息ID
-let messageLongPressTimer = null;   // 长按计时器
+
 
     let currentOpenContactId = null; 
     let currentSelectedPresetId = null; 
@@ -2753,11 +2777,15 @@ iconKeys.forEach(async (key) => {
     const savedFile = await db.files.get(fileKey);
     if (savedFile) {
         const objectUrl = URL.createObjectURL(savedFile.file);
-      const svgElement = iconElements[key].querySelector('svg');
-if (svgElement) {
-    svgElement.innerHTML = `<image href="${objectUrl}" x="0" y="0" width="32" height="32" preserveAspectRatio="xMidYMid slice" />`;
-}
-
+        const svgElement = iconElements[key].querySelector('svg');
+        
+        if (svgElement) {
+            // 【关键】清空 SVG 内容，设置为背景图模式
+            svgElement.innerHTML = '';
+            svgElement.style.background = `url('${objectUrl}') center/cover no-repeat`;
+            svgElement.style.borderRadius = '15px';
+        }
+        
         // 显示预览
         if (previewImg) {
             previewImg.src = objectUrl;
@@ -2769,10 +2797,12 @@ if (svgElement) {
         if (savedIconUrl) {
             const svgElement = iconElements[key].querySelector('svg');
             if (svgElement) {
-              svgElement.innerHTML = `<image href="${savedIconUrl.value}" x="0" y="0" width="32" height="32" preserveAspectRatio="xMidYMid slice" />`;
-
+                svgElement.innerHTML = '';
+                svgElement.style.background = `url('${savedIconUrl.value}') center/cover no-repeat`;
+                svgElement.style.borderRadius = '15px';
             }
             iconUrlInputs[key].value = savedIconUrl.value;
+            
             // 显示预览
             if (previewImg) {
                 previewImg.src = savedIconUrl.value;
@@ -2781,6 +2811,7 @@ if (svgElement) {
         }
     }
 });
+
 
         const widgetBg = largeWidget.querySelector('.widget-bg');
         const widgetBottomText = largeWidget.querySelector('.widget-text');
@@ -2855,50 +2886,122 @@ async function addMessageToUI(sender, text, messageId = null) {
         messageEl.classList.add(sender === 'user' ? 'user-message' : 'bot-message');
         messageEl.textContent = text;
         
-        // 【新增】保存消息ID，用于编辑
-        if (messageId) {
-            messageEl.dataset.messageId = messageId;
+        // 【关键修复】长按编辑功能
+if (messageId) {
+    messageEl.dataset.messageId = messageId;
+    
+    let localLongPressTimer = null;
+    let longPressTriggered = false;
+    
+    const clearTimer = () => {
+        if (localLongPressTimer) {
+            clearTimeout(localLongPressTimer);
+            localLongPressTimer = null;
         }
+    };
+    
+    // 鼠标事件
+    messageEl.addEventListener('mousedown', (e) => {
+        if (e.button !== 0) return;
+        longPressTriggered = false;
         
-        // 【新增】添加长按事件（仅用户消息可编辑）
-  // 【新增】添加长按事件（所有消息都可编辑）
-// 鼠标/触摸按下
-messageEl.addEventListener('mousedown', (e) => {
-    messageLongPressTimer = setTimeout(() => {
-        openMessageEditPopup(messageId, text);
-    }, 800); // 长按800毫秒
-});
-
-messageEl.addEventListener('touchstart', (e) => {
-    messageLongPressTimer = setTimeout(() => {
-        openMessageEditPopup(messageId, text);
-    }, 800);
-});
-
-// 鼠标/触摸松开或移开
-messageEl.addEventListener('mouseup', () => {
-    clearTimeout(messageLongPressTimer);
-});
+        localLongPressTimer = setTimeout(() => {
+            longPressTriggered = true;
+            openMessageEditPopup(messageId, text);
+        }, 800);
+    });
+    
+    messageEl.addEventListener('mouseup', (e) => {
+        clearTimer();
+        if (longPressTriggered) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+    });
+    
+    messageEl.addEventListener('mouseleave', () => {
+        clearTimer();
+    });
+    
+    // 触摸事件（移动端）
+    messageEl.addEventListener('touchstart', (e) => {
+        longPressTriggered = false;
+        
+        localLongPressTimer = setTimeout(() => {
+            longPressTriggered = true;
+            if (navigator.vibrate) {
+                navigator.vibrate(50);
+            }
+            openMessageEditPopup(messageId, text);
+        }, 800);
+    }, { passive: true });
+    
+    messageEl.addEventListener('touchend', (e) => {
+        clearTimer();
+        if (longPressTriggered) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+    });
+    
+    messageEl.addEventListener('touchmove', () => {
+        clearTimer();
+    }, { passive: true });
+    
+    messageEl.addEventListener('touchcancel', () => {
+        clearTimer();
+    });
+}
         
         messageContainer.appendChild(messageEl);
         messageContainer.scrollTop = messageContainer.scrollHeight;
     }
 }
+
+// 打开消息编辑弹窗
 // 打开消息编辑弹窗
 function openMessageEditPopup(messageId, currentText) {
-    if (!messageId) return;
+    if (!messageId) {
+        console.error('messageId 为空！');
+        return;
+    }
+    
+    console.log('打开编辑弹窗，messageId:', messageId, 'text:', currentText); // 调试用
+    
+    // 【修复】过滤掉表情包消息
+    if (currentText && currentText.trim().startsWith('[STICKER]')) {
+        alert('表情包消息暂不支持编辑！');
+        return;
+    }
     
     currentEditingMessageId = messageId;
     
     const popup = document.querySelector('#message-edit-popup');
     const textarea = document.querySelector('#message-edit-textarea');
     
+    if (!popup) {
+        console.error('找不到编辑弹窗元素 #message-edit-popup');
+        alert('编辑功能初始化失败，请刷新页面！');
+        return;
+    }
+    
+    if (!textarea) {
+        console.error('找不到文本框元素 #message-edit-textarea');
+        alert('编辑功能初始化失败，请刷新页面！');
+        return;
+    }
+    // 【新增】确保弹窗在最顶层
+    document.body.appendChild(popup);
+    popup.style.position = 'fixed';
+    popup.style.zIndex = '99999';
+  
     textarea.value = currentText;
     popup.classList.remove('hidden');
     
     // 自动聚焦
     setTimeout(() => textarea.focus(), 100);
 }
+
 
 // 关闭消息编辑弹窗
 function closeMessageEditPopup() {
@@ -3685,17 +3788,19 @@ saveIconsBtn.addEventListener('click', async () => {
         const settingKey = `custom_icon_${key}`;
         const fileKey = `custom_icon_file_${key}`;
         
+        const svgElement = iconElements[key].querySelector('svg');
+        
         // 优先处理本地上传的文件
         if (uploadedFile) {
             // 1. 保存文件到数据库
             await db.files.put({ key: fileKey, file: uploadedFile });
             
-            // 2. 更新图标（使用本地文件）
+            // 2. 更新图标（使用 CSS 背景）
             const objectUrl = URL.createObjectURL(uploadedFile);
-            const svgElement = iconElements[key].querySelector('svg');
             if (svgElement) {
-            svgElement.innerHTML = `<image href="${objectUrl}" x="0" y="0" width="32" height="32" preserveAspectRatio="xMidYMid slice" />`;
-
+                svgElement.innerHTML = '';
+                svgElement.style.background = `url('${objectUrl}') center/cover no-repeat`;
+                svgElement.style.borderRadius = '15px';
             }
             
             // 3. 清除URL设置（因为用了本地文件）
@@ -3704,11 +3809,13 @@ saveIconsBtn.addEventListener('click', async () => {
         } else if (newUrl) {
             // 如果输入了URL
             await db.settings.put({ key: settingKey, value: newUrl });
-         const svgElement = iconElements[key].querySelector('svg');
-if (svgElement) {
-    svgElement.innerHTML = `<image href="${newUrl}" x="0" y="0" width="32" height="32" preserveAspectRatio="xMidYMid slice" />`;
-}
-
+            
+            if (svgElement) {
+                svgElement.innerHTML = '';
+                svgElement.style.background = `url('${newUrl}') center/cover no-repeat`;
+                svgElement.style.borderRadius = '15px';
+            }
+            
             // 清除本地文件（因为用了URL）
             await db.files.delete(fileKey);
             
@@ -3716,8 +3823,11 @@ if (svgElement) {
             // 两个都没有，恢复默认图标
             await db.settings.delete(settingKey);
             await db.files.delete(fileKey);
-            const svgElement = iconElements[key].querySelector('svg');
+            
             if (svgElement) {
+                // 恢复原始 SVG 内容
+                svgElement.style.background = '';
+                svgElement.style.borderRadius = '';
                 svgElement.innerHTML = defaultIconSvgData[key];
             }
         }
@@ -3729,8 +3839,8 @@ if (svgElement) {
 });
 
 
+
 clearIconsBtn.addEventListener('click', async () => {
-    // 确认对话框
     if (!confirm('确定要清除所有自定义图标吗？这将恢复默认图标。')) {
         return;
     }
@@ -3764,12 +3874,15 @@ clearIconsBtn.addEventListener('click', async () => {
         // 6. 恢复Dock上的默认图标
         const svgElement = iconElements[key].querySelector('svg');
         if (svgElement) {
+            svgElement.style.background = '';
+            svgElement.style.borderRadius = '';
             svgElement.innerHTML = defaultIconSvgData[key];
         }
     }
     
     alert('已清除所有自定义图标！');
 });
+
 
 
     saveTextBtn.addEventListener('click', async () => { 
@@ -5952,16 +6065,21 @@ chatInputBox.addEventListener('keypress', async (e) => {
         renderContactList();
     }
 });
+
 // 消息编辑弹窗 - 取消按钮
 const messageEditCancelBtn = document.querySelector('#message-edit-cancel-btn');
 if (messageEditCancelBtn) {
     messageEditCancelBtn.addEventListener('click', closeMessageEditPopup);
+} else {
+    console.error('找不到 #message-edit-cancel-btn');
 }
 
 // 消息编辑弹窗 - 关闭按钮
 const messageEditCloseBtn = document.querySelector('#message-edit-close-btn');
 if (messageEditCloseBtn) {
     messageEditCloseBtn.addEventListener('click', closeMessageEditPopup);
+} else {
+    console.error('找不到 #message-edit-close-btn');
 }
 
 // 消息编辑弹窗 - 点击背景关闭
@@ -5970,13 +6088,18 @@ if (messageEditPopup) {
     messageEditPopup.addEventListener('click', (e) => {
         if (e.target === messageEditPopup) closeMessageEditPopup();
     });
+} else {
+    console.error('找不到 #message-edit-popup');
 }
 
 // 消息编辑弹窗 - 保存按钮
 const messageEditSaveBtn = document.querySelector('#message-edit-save-btn');
 if (messageEditSaveBtn) {
     messageEditSaveBtn.addEventListener('click', async () => {
-        if (!currentEditingMessageId) return;
+        if (!currentEditingMessageId) {
+            alert('错误：没有正在编辑的消息！');
+            return;
+        }
         
         const newText = document.querySelector('#message-edit-textarea').value.trim();
         
@@ -6003,6 +6126,8 @@ if (messageEditSaveBtn) {
             alert('保存失败，请重试。');
         }
     });
+} else {
+    console.error('找不到 #message-edit-save-btn');
 }
 
 //这是事件监听的最底部//  
