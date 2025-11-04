@@ -7,32 +7,43 @@
     
     <style>
         /* 先做一些准备工作，让页面表现更统一 */
-        body {
-            margin: 0;
-            font-family: sans-serif; /* 使用一个通用的无衬线字体 */
-            display: flex; /* 使用flex布局，方便居中 */
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh; /* 让body至少和屏幕一样高 */
-            background-color: #f0f0f0; /* 给屏幕外的区域一个背景色 */
-        }
+     /* 准备工作 - 移除居中，改为全屏填充 */
+body {
+    margin: 0;
+    padding: 0; /* 【新增】确保没有内边距 */
+    font-family: sans-serif;
+    /* 【删除】不再需要 flex 居中 */
+    /* display: flex;
+    justify-content: center;
+    align-items: center; */
+    min-height: 100vh;
+    background-color: #000; /* 【修改】背景改为黑色，更像真手机 */
+    overflow: hidden; /* 【新增】防止页面滚动 */
+}
 
-        /* 手机屏幕的整体样式 */
-        .phone-screen {
-            width: 375px; /* 模拟手机宽度 */
-            height: 700px; /* 模拟手机高度 */
-            background-color: #ffffff; /* 屏幕背景色 */
-            border-radius: 0px; /* 直角边框 */
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2); /* 加一点阴影，让它看起来更真实 */
-            position: relative; /* 设置为相对定位，方便内部元素定位 */
-            overflow: hidden; /* 隐藏超出屏幕的内容 */
-            display: flex;
-            flex-direction: column; /* 让内部元素垂直排列 */
-            /* 在这里放一张你喜欢的背景图 */
-            background-image: url('https://i.pinimg.com/564x/8b/2c/3a/8b2c3ae5123519a797f66a1a1f3b39d1.jpg');
-            background-size: cover; /* 让背景图铺满整个屏幕 */
-            background-position: center;
-        }
+
+   /* 手机屏幕的整体样式 - 响应式全屏版本 */
+.phone-screen {
+    /* 【关键修改】使用视口单位实现全屏 */
+    width: 100vw;
+    height: 100vh;
+    /* 【兼容性修复】使用 CSS 变量应对移动端浏览器地址栏 */
+    height: calc(var(--vh, 1vh) * 100);
+    
+    background-color: #ffffff;
+    border-radius: 0px; /* 全屏不需要圆角 */
+    box-shadow: none; /* 全屏不需要阴影 */
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    
+    /* 保留原有的背景设置 */
+    background-image: url('https://i.pinimg.com/564x/8b/2c/3a/8b2c3ae5123519a797f66a1a1f3b39d1.jpg');
+    background-size: cover;
+    background-position: center;
+}
+
 
    /* 状态栏的样式 */
         .status-bar {
@@ -1366,6 +1377,17 @@
 .bot-message:has(.message-sticker) {
     align-self: flex-start; /* AI发的表情包靠左 */
 }
+/* 聊天输入框聚焦时的优化 */
+.dialogue-input-area input:focus {
+    /* iOS 自动滚动到输入框的视觉优化 */
+    scroll-margin-bottom: 20px;
+}
+
+/* 消息容器在键盘弹出时的调整 */
+.message-container {
+    /* 添加过渡动画，让高度变化更平滑 */
+    transition: max-height 0.3s ease;
+}
 
 
 
@@ -2260,6 +2282,117 @@
 
 
     <script>
+      // ======================================================
+// 【新增】移动端浏览器视口高度修复（兼容 iOS 和 Android）
+// ======================================================
+// ======================================================
+// 【改进版】移动端浏览器视口高度修复（兼容 iOS 键盘）
+// ======================================================
+
+// 1. 定义全局变量来存储原始高度
+let originalViewportHeight = window.innerHeight;
+let isKeyboardOpen = false;
+
+// 2. 修改后的视口高度计算函数
+function setRealViewportHeight() {
+    const currentHeight = window.innerHeight;
+    
+    // 【关键】检测键盘是否弹出（高度显著减少）
+    if (originalViewportHeight - currentHeight > 150) {
+        // 键盘弹出了，不更新 --vh 变量，保持原有高度
+        isKeyboardOpen = true;
+        return;
+    }
+    
+    // 【关键】检测键盘是否收起（高度恢复）
+    if (isKeyboardOpen && Math.abs(originalViewportHeight - currentHeight) < 50) {
+        isKeyboardOpen = false;
+        originalViewportHeight = currentHeight; // 更新基准高度
+    }
+    
+    // 正常情况下更新 CSS 变量
+    const vh = currentHeight * 0.01;
+    document.documentElement.style.setProperty('--vh', `${vh}px`);
+}
+
+// 3. 页面加载时执行
+setRealViewportHeight();
+
+// 4. 监听窗口大小变化
+window.addEventListener('resize', () => {
+    // 使用防抖，避免频繁触发
+    clearTimeout(window.resizeTimer);
+    window.resizeTimer = setTimeout(setRealViewportHeight, 100);
+});
+
+// 5. 监听屏幕方向变化
+window.addEventListener('orientationchange', () => {
+    // 方向改变时重置基准高度
+    setTimeout(() => {
+        originalViewportHeight = window.innerHeight;
+        isKeyboardOpen = false;
+        setRealViewportHeight();
+    }, 200);
+});
+
+// 6. 【删除】不再监听 scroll 事件（会导致键盘问题）
+
+// 7. visualViewport API（现代浏览器）
+if (window.visualViewport) {
+    window.visualViewport.addEventListener('resize', () => {
+        clearTimeout(window.viewportTimer);
+        window.viewportTimer = setTimeout(setRealViewportHeight, 100);
+    });
+}
+
+// 8. 【新增】监听输入框聚焦/失焦（更精确的键盘检测）
+document.addEventListener('focusin', (e) => {
+    if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
+        // 输入框获得焦点，延迟检测键盘
+        setTimeout(() => {
+            const currentHeight = window.innerHeight;
+            if (originalViewportHeight - currentHeight > 150) {
+                isKeyboardOpen = true;
+            }
+        }, 300);
+    }
+});
+
+document.addEventListener('focusout', (e) => {
+    if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
+        // 输入框失去焦点，延迟检测键盘收起
+        setTimeout(() => {
+            if (isKeyboardOpen) {
+                isKeyboardOpen = false;
+                setRealViewportHeight();
+            }
+        }, 300);
+    }
+});
+
+
+// 2. 页面加载时立即执行
+setRealViewportHeight();
+
+// 3. 监听窗口大小变化（例如横竖屏切换、键盘弹出）
+window.addEventListener('resize', setRealViewportHeight);
+
+// 4. 监听屏幕方向变化（移动端特有）
+window.addEventListener('orientationchange', setRealViewportHeight);
+
+// 5. 【iOS Safari 特殊处理】监听滚动事件
+// iOS 在滚动时地址栏会隐藏/显示，导致视口高度变化
+let scrollTimeout;
+window.addEventListener('scroll', () => {
+    clearTimeout(scrollTimeout);
+    scrollTimeout = setTimeout(setRealViewportHeight, 100);
+});
+
+// 6. 【Android Chrome 特殊处理】监听 visualViewport 变化
+if (window.visualViewport) {
+    window.visualViewport.addEventListener('resize', setRealViewportHeight);
+}
+
     // ======================================================
     // 数据库定义
     // ======================================================
@@ -2795,17 +2928,14 @@ function smartSplitMessage(text) {
 // 【优化版】获取AI回复 - 自然聊天风格 + 多条消息
 // ======================================================
 async function getAiReply(contactId) {
-    // --- 1. 获取 "聊天" API 预设 ---
     const preset = await getActiveChatApiPreset();
     if (preset.error) {
         return preset.error; 
     }
     const { apiKey, baseUrl, model } = preset;
 
-    // --- 2. 获取联系人（AI角色）信息 ---
     const contact = await db.contacts.get(contactId);
     
-    // --- 3. 获取"用户名" ---
     let userName = "用户";
     if (contact.myPersonaPresetId) {
         const myPreset = await db.my_persona_presets.get(contact.myPersonaPresetId);
@@ -2814,69 +2944,71 @@ async function getAiReply(contactId) {
         }
     }
 
-    // --- 4. 获取"用户人设"描述 ---
-// --- 4. 获取"用户人设"描述（合并预设和补充）---
-let userPersona = "";
-
-// 4.1 先获取预设人设
-if (contact.myPersonaPresetId) {
-    const myPreset = await db.my_persona_presets.get(contact.myPersonaPresetId);
-    if (myPreset && myPreset.description) {
-        userPersona = myPreset.description;
+    let userPersona = "";
+    if (contact.myPersonaPresetId) {
+        const myPreset = await db.my_persona_presets.get(contact.myPersonaPresetId);
+        if (myPreset && myPreset.description) {
+            userPersona = myPreset.description;
+        }
     }
-}
-
-// 4.2 如果有专属补充，追加到后面
-if (contact.myPersonaSupplement) {
-    if (userPersona) {
-        userPersona += "\n\n--- 补充说明 ---\n" + contact.myPersonaSupplement;
-    } else {
-        userPersona = contact.myPersonaSupplement;
+    if (contact.myPersonaSupplement) {
+        if (userPersona) {
+            userPersona += "\n\n--- 补充说明 ---\n" + contact.myPersonaSupplement;
+        } else {
+            userPersona = contact.myPersonaSupplement;
+        }
     }
-}
 
-
-    // --- 5. 获取"AI总结"（记忆） ---
     const summary = contact.aiSummaryText || "";
 
-   // --- 6. 获取"世界书"内容 ---
-let worldbookText = "";
-const links = await db.contact_worldbook_links.where('contactId').equals(contactId).toArray();
-const linkedEntryIds = links.map(l => l.worldbookEntryId);
-if (linkedEntryIds.length > 0) {
-    const entries = await db.worldbook_entries.bulkGet(linkedEntryIds);
-    let worldbookContext = "";
-    entries.forEach(entry => {
-        if(entry) { 
-            worldbookContext += `\n--- ${entry.name} ---\n${entry.content}\n`;
-        }
-    });
-    worldbookText = worldbookContext;
-}
-
-// 【新增】获取可用的表情包列表
-let stickerListText = "";
-// 不再读取 role_sticker_selection，直接获取所有表情包
-const allLibraries = await db.sticker_libraries.toArray();
-if (allLibraries.length > 0) {
-    let availableStickers = [];
-    for (const library of allLibraries) {
-        const stickers = await db.stickers.where('libraryId').equals(library.id).toArray();
-        availableStickers.push(...stickers);
-    }
-    
-    if (availableStickers.length > 0) {
-        stickerListText = "\n\n# 【重要！你可以发送表情包】\n✅ 你完全可以像真人一样发表情包！\n✅ 格式：<sticker>表情包文字</sticker>\n\n📦 你可以使用的表情包：\n";
-        availableStickers.forEach(s => {
-            stickerListText += `- ${s.text}\n`;
+    let worldbookText = "";
+    const links = await db.contact_worldbook_links.where('contactId').equals(contactId).toArray();
+    const linkedEntryIds = links.map(l => l.worldbookEntryId);
+    if (linkedEntryIds.length > 0) {
+        const entries = await db.worldbook_entries.bulkGet(linkedEntryIds);
+        let worldbookContext = "";
+        entries.forEach(entry => {
+            if(entry) { 
+                worldbookContext += `\n--- ${entry.name} ---\n${entry.content}\n`;
+            }
         });
-        stickerListText += "\n💡 发送示例：\n哈哈你太逗了|||<sticker>笑哭</sticker>|||我快笑死了\n\n";
+        worldbookText = worldbookContext;
     }
-}
 
+    let stickerListText = "";
+    const allLibraries = await db.sticker_libraries.toArray();
+    if (allLibraries.length > 0) {
+        let availableStickers = [];
+        for (const library of allLibraries) {
+            const stickers = await db.stickers.where('libraryId').equals(library.id).toArray();
+            availableStickers.push(...stickers);
+        }
+        
+        if (availableStickers.length > 0) {
+            stickerListText = `\n\n# 【重要！表情包使用规则】
 
-// --- 7. 构建系统提示词 ---
-let systemPrompt = `你正在扮演以下角色，请完全融入这个身份：
+**格式要求（严格遵守）：**
+✅ 正确：哈哈|||<sticker>笑哭</sticker>|||你太逗了
+✅ 正确：<sticker>赞</sticker>
+❌ 错误：哈哈<sticker>笑哭</sticker>（文本和表情包在同一条消息）
+❌ 错误：<sticker>笑哭</sticker>你太逗了（表情包和文本在同一条消息）
+
+**核心规则：**
+1. 每条消息**只能包含一种内容**：要么是纯文字，要么是纯表情包
+2. 如果想同时发文字和表情包，必须用 ||| 分成多条
+3. 表情包标签内只能有表情包文字，不能有其他内容
+
+**可用的表情包：**\n`;
+            availableStickers.forEach(s => {
+                stickerListText += `- ${s.text}\n`;
+            });
+            stickerListText += `\n**示例对话：**
+哈哈你太逗了|||<sticker>笑哭</sticker>|||我快笑死了
+（解释：第1条是文字，第2条是表情包，第3条是文字）\n\n`;
+        }
+    }
+
+    let systemPrompt = `你正在扮演以下角色，请完全融入这个身份：
 
 # 【角色人设】
 ${contact.persona || "一个真实、自然、有个性的普通人"}
@@ -2910,7 +3042,7 @@ ${stickerListText}
    ✅ 自然节奏：有时一句话，有时几个字
    ✅ 情绪真实：会停顿、会纠正、会打岔
    ✅ 符合人设：根据角色性格调整语气
-   ${stickerListText ? '✅ 适时发送表情包：在表达情绪时使用 <sticker>表情包文字</sticker>' : ''}
+   ${stickerListText ? '✅ 适时发送表情包：注意格式规则' : ''}
    
    ❌ 避免：
    - 过长的单条消息（超过50字）
@@ -2927,7 +3059,7 @@ ${stickerListText}
 **示例：**
 哈哈你也在啊|||刚才去吃饭了|||诶对了|||上次你说的那个事儿|||我想了想|||可能这样比较好|||要不明天试试？|||你觉得呢
 
-${stickerListText ? `\n**发送表情包示例：**\n哈哈|||<sticker>笑哭</sticker>|||你太逗了|||<sticker>赞</sticker>` : ''}
+${stickerListText ? `\n**发送表情包示例：**\n哈哈|||<sticker>笑哭</sticker>|||你太逗了|||不行了|||<sticker>赞</sticker>\n（注意：每个 <sticker> 标签必须独占一条消息）` : ''}
 
 ---
 
@@ -2938,20 +3070,16 @@ ${stickerListText ? `\n**发送表情包示例：**\n哈哈|||<sticker>笑哭</s
 - 回复 8-15 条消息
 - 用 ||| 分隔
 - 保持角色人设
-- 自然、真实、有趣${stickerListText ? '\n- 适时使用表情包增加趣味性' : ''}`;
+- 自然、真实、有趣${stickerListText ? '\n- 表情包必须独占一条消息' : ''}`;
 
-
-    // --- 8. 注入本地时间（如果开启） ---
     if (contact.aiCanReadTime) {
         systemPrompt += `\n\n[System Info: Current local time is ${new Date().toLocaleString('zh-CN')}]`;
     }
 
-  // --- 9. 获取历史记录（使用自定义的上下文轮数）---
-const contextRounds = contact.contextRounds || 10; // 默认10轮
-const history = await db.chatMessages.where('contactId').equals(contactId).reverse().limit(contextRounds * 2).toArray(); // 乘2是因为一轮包含用户和AI各一条
-history.reverse();
+    const contextRounds = contact.contextRounds || 10;
+    const history = await db.chatMessages.where('contactId').equals(contactId).reverse().limit(contextRounds * 2).toArray();
+    history.reverse();
 
-    // --- 10. 构建 messages 数组 ---
     let messages = [];
     messages.push({ role: "system", content: systemPrompt }); 
     history.forEach(msg => {
@@ -2960,7 +3088,6 @@ history.reverse();
         }
     });
 
-    // --- 11. 发起 API 请求 ---
     try {
         const response = await fetch(`${baseUrl}/chat/completions`, {
             method: 'POST',
@@ -2968,11 +3095,11 @@ history.reverse();
             body: JSON.stringify({
                 model: model, 
                 messages: messages,
-                temperature: 0.7,           // 温度
-                top_p: 0.95,               // 增加多样性
-                frequency_penalty: 0.4,    // 减少重复
-                presence_penalty: 0.4,     // 鼓励新话题
-                max_tokens: 100000,          // 允许更多token
+                temperature: 0.7,
+                top_p: 0.95,
+                frequency_penalty: 0.4,
+                presence_penalty: 0.4,
+                max_tokens: 100000,
                 stream: false 
             })
         });
@@ -2983,9 +3110,11 @@ history.reverse();
         
         const data = await response.json();
         if (data.choices && data.choices[0] && data.choices[0].message) {
-            const fullReply = data.choices[0].message.content;
+            let fullReply = data.choices[0].message.content;
             
-            // --- 12. 拆分多条消息 ---
+            // 【新增】格式修复逻辑
+            fullReply = fixStickerFormat(fullReply);
+            
             if (fullReply.includes('|||')) {
                 return fullReply;
             } else {
@@ -2998,6 +3127,27 @@ history.reverse();
         return `（网络请求失败: ${error.message}）`;
     }
 }
+
+// 【新增】表情包格式修复函数
+function fixStickerFormat(text) {
+    // 1. 移除所有换行符（避免干扰）
+    text = text.replace(/\n+/g, '|||');
+    
+    // 2. 修复 "文字<sticker>xxx</sticker>" 这种错误格式
+    //    将其拆分成: "文字|||<sticker>xxx</sticker>"
+    text = text.replace(/([^|])(<sticker>.*?<\/sticker>)/g, '$1|||$2');
+    
+    // 3. 修复 "<sticker>xxx</sticker>文字" 这种错误格式
+    //    将其拆分成: "<sticker>xxx</sticker>|||文字"
+    text = text.replace(/(<sticker>.*?<\/sticker>)([^|])/g, '$1|||$2');
+    
+    // 4. 清理多余的分隔符
+    text = text.replace(/\|\|\|+/g, '|||');
+    text = text.replace(/^\|\|\||\|\|\|$/g, '');
+    
+    return text;
+}
+
 
     
     // 【新功能】关闭时清空预览
@@ -4160,6 +4310,8 @@ const history = await db.chatMessages.where('contactId').equals(currentOpenConta
 // 【改】用 for...of 循环 + await 确保按顺序添加
 for (const msg of history) {
     await addMessageToUI(msg.sender, msg.text);
+  // 【新增】滚动到最新消息
+messageContainer.scrollTop = messageContainer.scrollHeight;
 }
         dialogueListScreen.classList.add('hidden');
         chatWindowScreen.classList.remove('hidden');
@@ -5568,11 +5720,13 @@ async function loadStickerPanelContent(libraryId, searchQuery = '') {
 // 3. 发送表情包消息
 async function sendStickerMessage(sticker) {
     if (!currentOpenContactId) return;
-     // 【立即】关闭表情面板
+    
+    // 【立即】关闭表情面板
     const panel = document.querySelector('#sticker-panel');
     if (panel) {
         panel.classList.add('hidden');
     }
+    
     // 保存到数据库（使用特殊格式标记为表情包）
     const message = {
         contactId: currentOpenContactId,
@@ -5589,43 +5743,10 @@ async function sendStickerMessage(sticker) {
     // 刷新联系人列表
     renderContactList();
     
-    // 【关键】关闭表情面板
-    document.querySelector('#sticker-panel').classList.add('hidden');
-    
-    // 获取AI回复
-    addMessageToUI('bot', '...');
-    const aiResponseText = await getAiReply(currentOpenContactId);
-    const messages = aiResponseText.split('|||').map(m => m.trim()).filter(m => m);
-    
-    const typingBubble = messageContainer.querySelector('.message-bubble:last-child');
-    if (typingBubble && typingBubble.textContent === '...') {
-        typingBubble.remove();
-    }
-    
-    for (let i = 0; i < messages.length; i++) {
-        const msg = messages[i];
-        const botMessage = { 
-            contactId: currentOpenContactId, 
-            sender: 'bot', 
-            text: msg, 
-            timestamp: new Date() 
-        };
-        await db.chatMessages.add(botMessage);
-        
-        const bubble = document.createElement('div');
-        bubble.classList.add('message-bubble', 'bot-message');
-        bubble.textContent = msg;
-        messageContainer.appendChild(bubble);
-        messageContainer.scrollTop = messageContainer.scrollHeight;
-        
-        if (i < messages.length - 1) {
-            await new Promise(resolve => setTimeout(resolve, 300 + Math.random() * 500));
-        }
-    }
-    
-    renderContactList();
-    await checkAndRunAutoSummary(currentOpenContactId);
+    // 【删除】不再自动调用 AI 回复
+    // 用户需要点击"接收"按钮才会触发回复
 }
+
 
 
 // 4. 在UI中显示表情包
