@@ -2,10 +2,17 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
     <title>AI小手机</title>
     
     <style>
+      /* 防止 iOS 输入时自动缩放 */
+input, textarea, select {
+    font-size: 16px !important;
+    -webkit-text-size-adjust: 100%;
+}
+
         /* 先做一些准备工作，让页面表现更统一 */
      /* 准备工作 - 移除居中，改为全屏填充 */
 body {
