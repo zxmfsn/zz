@@ -2,17 +2,10 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI小手机</title>
     
     <style>
-      /* 防止 iOS 输入时自动缩放 */
-input, textarea, select {
-    font-size: 16px !important;
-    -webkit-text-size-adjust: 100%;
-}
-
         /* 先做一些准备工作，让页面表现更统一 */
      /* 准备工作 - 移除居中，改为全屏填充 */
 body {
@@ -325,9 +318,11 @@ body {
         /* --- 添加结束 --- */
        /* --- 为“对话”功能添加全新的CSS样式 --- */
 /* 【新添加】让设置页面的内容区可以滚动 */
-.settings-screen .theme-content {
-    flex-grow: 1;      /* 1. 让它自动填满导航栏下方的所有剩余空间 */
-    overflow-y: auto; /* 2. 如果内容太多, 则允许垂直滚动 */
+.theme-content {
+    padding: 20px;
+    flex-grow: 1;           /* 【确认】占据剩余空间 */
+    overflow-y: auto;       /* 【确认】允许垂直滚动 */
+    overflow-x: hidden;     /* 【新增】隐藏横向滚动 */
 }
         /* 1. 为两个新屏幕设置和 theme/settings 一样的全屏基础样式 */
         .dialogue-list-screen,
@@ -1396,6 +1391,58 @@ body {
     transition: max-height 0.3s ease;
 }
 
+/* 确保角色设置页面的内容区可以滚动 */
+#contact-settings-screen .theme-content {
+    flex-grow: 1;
+    overflow-y: auto !important;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+    height: auto;
+    max-height: calc(100vh - 60px); /* 留出顶部导航栏的高度 */
+}
+
+/* 确保记忆设置页面的内容区也可以滚动 */
+#memory-screen .theme-content {
+    flex-grow: 1;
+    overflow-y: auto !important;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+    padding: 15px;
+    max-height: calc(100vh - 60px);
+}
+/* 消息编辑弹窗 */
+#message-edit-popup {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 300;
+}
+
+#message-edit-popup .popup-content {
+    background-color: #ffffff;
+    padding: 20px 25px;
+    border-radius: 25px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    width: 300px;
+    max-height: 400px;
+    position: relative;
+}
+
+#message-edit-popup textarea {
+    width: calc(100% - 20px);
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    resize: vertical;
+    font-size: 14px;
+    min-height: 100px;
+}
 
 
         /*这里是CSSstyle的末尾，最底下*/ 
@@ -2285,6 +2332,21 @@ body {
         <button id="view-sticker-close-btn" class="close-btn">×</button>
     </div>
 </div>
+<!-- 消息编辑弹窗 -->
+<div id="message-edit-popup" class="popup hidden">
+    <div class="popup-content">
+        <h3>编辑消息</h3>
+        <div class="setting-item">
+            <label for="message-edit-textarea">修改内容</label>
+            <textarea id="message-edit-textarea" rows="5" placeholder="编辑消息内容..."></textarea>
+        </div>
+        <div class="button-group" style="margin-top: 15px;">
+            <button class="btn-clear" id="message-edit-cancel-btn">取消</button>
+            <button class="btn-save" id="message-edit-save-btn">保存</button>
+        </div>
+        <button id="message-edit-close-btn" class="close-btn">×</button>
+    </div>
+</div>
 
 
 
@@ -2429,6 +2491,9 @@ db.version(5).stores({
     // ======================================================
     let defaultIconSvgData = {};
     let currentEditingWidgetId = null; 
+      let currentEditingMessageId = null; // 当前正在编辑的消息ID
+let messageLongPressTimer = null;   // 长按计时器
+
     let currentOpenContactId = null; 
     let currentSelectedPresetId = null; 
 let currentSummaryContactId = null; // 跟踪当前正在编辑总结的角色
@@ -2688,10 +2753,11 @@ iconKeys.forEach(async (key) => {
     const savedFile = await db.files.get(fileKey);
     if (savedFile) {
         const objectUrl = URL.createObjectURL(savedFile.file);
-        const svgElement = iconElements[key].querySelector('svg');
-        if (svgElement) {
-            svgElement.innerHTML = `<image href="${objectUrl}" width="32" height="32" />`;
-        }
+      const svgElement = iconElements[key].querySelector('svg');
+if (svgElement) {
+    svgElement.innerHTML = `<image href="${objectUrl}" x="0" y="0" width="32" height="32" preserveAspectRatio="xMidYMid slice" />`;
+}
+
         // 显示预览
         if (previewImg) {
             previewImg.src = objectUrl;
@@ -2703,7 +2769,8 @@ iconKeys.forEach(async (key) => {
         if (savedIconUrl) {
             const svgElement = iconElements[key].querySelector('svg');
             if (svgElement) {
-                svgElement.innerHTML = `<image href="${savedIconUrl.value}" width="32" height="32" />`;
+              svgElement.innerHTML = `<image href="${savedIconUrl.value}" x="0" y="0" width="32" height="32" preserveAspectRatio="xMidYMid slice" />`;
+
             }
             iconUrlInputs[key].value = savedIconUrl.value;
             // 显示预览
@@ -2743,52 +2810,42 @@ iconKeys.forEach(async (key) => {
         });
     }
 
-async function addMessageToUI(sender, text) {
- // 【新增】处理AI发送的表情包标签
-// 【新增】处理AI发送的表情包标签
-if (text && text.includes('<sticker>')) {
-    const stickerMatch = text.match(/<sticker>(.*?)<\/sticker>/);
-    if (stickerMatch) {
-        const stickerText = stickerMatch[1];
-        
-        // 从所有表情包库中查找
-        const allLibraries = await db.sticker_libraries.toArray();
-        let matchedSticker = null;
-        
-        for (const library of allLibraries) {
-            const stickers = await db.stickers.where('libraryId').equals(library.id).toArray();
-            matchedSticker = stickers.find(s => s.text === stickerText);
-            if (matchedSticker) break;
-        }
-        
-        if (matchedSticker) {
-            // 找到了，转换成标准格式
-            text = text.replace(/<sticker>.*?<\/sticker>/, `[STICKER]${matchedSticker.url}|||${matchedSticker.text}`);
-        } else {
-            // 【改】找不到就直接删除这个标签（不显示任何内容）
-            text = text.replace(/<sticker>.*?<\/sticker>/g, '').trim();
-            // 如果删完后整条消息为空，就不显示这条消息
-            if (!text) return;
+async function addMessageToUI(sender, text, messageId = null) {
+    // 处理表情包标签
+    if (text && text.includes('<sticker>')) {
+        const stickerMatch = text.match(/<sticker>(.*?)<\/sticker>/);
+        if (stickerMatch) {
+            const stickerText = stickerMatch[1];
+            const allLibraries = await db.sticker_libraries.toArray();
+            let matchedSticker = null;
+            
+            for (const library of allLibraries) {
+                const stickers = await db.stickers.where('libraryId').equals(library.id).toArray();
+                matchedSticker = stickers.find(s => s.text === stickerText);
+                if (matchedSticker) break;
+            }
+            
+            if (matchedSticker) {
+                text = text.replace(/<sticker>.*?<\/sticker>/, `[STICKER]${matchedSticker.url}|||${matchedSticker.text}`);
+            } else {
+                text = text.replace(/<sticker>.*?<\/sticker>/g, '').trim();
+                if (!text) return;
+            }
         }
     }
-}
-
-
     
     // 检查是否是表情包消息
-  if (text && text.trim().startsWith('[STICKER]')) {
-        // 解析表情包数据
-       const stickerData = text.trim().substring(9);
- // 去掉 "[STICKER]" 前缀
+    if (text && text.trim().startsWith('[STICKER]')) {
+        const stickerData = text.trim().substring(9);
         const parts = stickerData.split('|||');
         const url = parts[0];
         const stickerText = parts[1] || '';
         
-        // 创建表情包气泡
         const messageEl = document.createElement('div');
         messageEl.classList.add('message-bubble');
         messageEl.classList.add(sender === 'user' ? 'user-message' : 'bot-message');
         messageEl.innerHTML = `<img src="${url}" alt="${stickerText}" class="message-sticker" onerror="this.style.display='none'; this.parentElement.textContent='[图片加载失败]';">`;
+        if (messageId) messageEl.dataset.messageId = messageId;
         messageContainer.appendChild(messageEl);
         messageContainer.scrollTop = messageContainer.scrollHeight;
     } else {
@@ -2797,10 +2854,59 @@ if (text && text.includes('<sticker>')) {
         messageEl.classList.add('message-bubble');
         messageEl.classList.add(sender === 'user' ? 'user-message' : 'bot-message');
         messageEl.textContent = text;
+        
+        // 【新增】保存消息ID，用于编辑
+        if (messageId) {
+            messageEl.dataset.messageId = messageId;
+        }
+        
+        // 【新增】添加长按事件（仅用户消息可编辑）
+  // 【新增】添加长按事件（所有消息都可编辑）
+// 鼠标/触摸按下
+messageEl.addEventListener('mousedown', (e) => {
+    messageLongPressTimer = setTimeout(() => {
+        openMessageEditPopup(messageId, text);
+    }, 800); // 长按800毫秒
+});
+
+messageEl.addEventListener('touchstart', (e) => {
+    messageLongPressTimer = setTimeout(() => {
+        openMessageEditPopup(messageId, text);
+    }, 800);
+});
+
+// 鼠标/触摸松开或移开
+messageEl.addEventListener('mouseup', () => {
+    clearTimeout(messageLongPressTimer);
+});
+        
         messageContainer.appendChild(messageEl);
         messageContainer.scrollTop = messageContainer.scrollHeight;
     }
 }
+// 打开消息编辑弹窗
+function openMessageEditPopup(messageId, currentText) {
+    if (!messageId) return;
+    
+    currentEditingMessageId = messageId;
+    
+    const popup = document.querySelector('#message-edit-popup');
+    const textarea = document.querySelector('#message-edit-textarea');
+    
+    textarea.value = currentText;
+    popup.classList.remove('hidden');
+    
+    // 自动聚焦
+    setTimeout(() => textarea.focus(), 100);
+}
+
+// 关闭消息编辑弹窗
+function closeMessageEditPopup() {
+    const popup = document.querySelector('#message-edit-popup');
+    popup.classList.add('hidden');
+    currentEditingMessageId = null;
+}
+
 
 
 // ======================================================
@@ -3588,7 +3694,8 @@ saveIconsBtn.addEventListener('click', async () => {
             const objectUrl = URL.createObjectURL(uploadedFile);
             const svgElement = iconElements[key].querySelector('svg');
             if (svgElement) {
-                svgElement.innerHTML = `<image href="${objectUrl}" width="32" height="32" />`;
+            svgElement.innerHTML = `<image href="${objectUrl}" x="0" y="0" width="32" height="32" preserveAspectRatio="xMidYMid slice" />`;
+
             }
             
             // 3. 清除URL设置（因为用了本地文件）
@@ -3597,11 +3704,11 @@ saveIconsBtn.addEventListener('click', async () => {
         } else if (newUrl) {
             // 如果输入了URL
             await db.settings.put({ key: settingKey, value: newUrl });
-            const svgElement = iconElements[key].querySelector('svg');
-            if (svgElement) {
-                svgElement.innerHTML = `<image href="${newUrl}" width="32" height="32" />`;
-            }
-            
+         const svgElement = iconElements[key].querySelector('svg');
+if (svgElement) {
+    svgElement.innerHTML = `<image href="${newUrl}" x="0" y="0" width="32" height="32" preserveAspectRatio="xMidYMid slice" />`;
+}
+
             // 清除本地文件（因为用了URL）
             await db.files.delete(fileKey);
             
@@ -3716,42 +3823,62 @@ clearIconsBtn.addEventListener('click', async () => {
         }
     });
     
-   sendMessageBtn.addEventListener('click', async () => {
+sendMessageBtn.addEventListener('click', async () => {
     if (!currentOpenContactId) return;
     
     // 显示"正在思考"
     addMessageToUI('bot', '...');
     
-    // 调用AI回复
-    const aiResponseText = await getAiReply(currentOpenContactId);
-    const messages = aiResponseText.split('|||').map(m => m.trim()).filter(m => m);
+    // 【新增】设置一个标记，表示正在处理回复
+    const processingId = Date.now(); // 用时间戳作为唯一标识
     
-    // 移除"正在思考"
-    const typingBubble = messageContainer.querySelector('.message-bubble:last-child');
-    if (typingBubble && typingBubble.textContent === '...') {
-        typingBubble.remove();
-    }
-    
-    // 逐条显示AI消息
-    for (let i = 0; i < messages.length; i++) {
-        const msg = messages[i];
-        const botMessage = { 
-            contactId: currentOpenContactId, 
-            sender: 'bot', 
-            text: msg, 
-            timestamp: new Date() 
-        };
-        await db.chatMessages.add(botMessage);
-        await addMessageToUI('bot', msg);
-        
-        if (i < messages.length - 1) {
-            await new Promise(resolve => setTimeout(resolve, 300 + Math.random() * 500));
-        }
-    }
-    
-    renderContactList();
-    await checkAndRunAutoSummary(currentOpenContactId);
+    // 调用AI回复（使用独立的异步函数，不阻塞）
+    processAiReply(currentOpenContactId, processingId);
 });
+
+// 【新增】独立的AI回复处理函数
+async function processAiReply(contactId, processingId) {
+    try {
+        const aiResponseText = await getAiReply(contactId);
+        const messages = aiResponseText.split('|||').map(m => m.trim()).filter(m => m);
+        
+        // 移除"正在思考"
+        const typingBubble = messageContainer.querySelector('.message-bubble:last-child');
+        if (typingBubble && typingBubble.textContent === '...') {
+            typingBubble.remove();
+        }
+        
+        // 逐条显示AI消息
+        for (let i = 0; i < messages.length; i++) {
+            const msg = messages[i];
+            const botMessage = { 
+                contactId: contactId, 
+                sender: 'bot', 
+                text: msg, 
+                timestamp: new Date() 
+            };
+            await db.chatMessages.add(botMessage);
+            await addMessageToUI('bot', msg);
+            
+            if (i < messages.length - 1) {
+                await new Promise(resolve => setTimeout(resolve, 300 + Math.random() * 500));
+            }
+        }
+        
+        renderContactList();
+        await checkAndRunAutoSummary(contactId);
+        
+    } catch (error) {
+        console.error('AI回复失败:', error);
+        // 移除"正在思考"
+        const typingBubble = messageContainer.querySelector('.message-bubble:last-child');
+        if (typingBubble && typingBubble.textContent === '...') {
+            typingBubble.remove();
+        }
+        addMessageToUI('bot', '（回复失败，请重试）');
+    }
+}
+
 
 
   // ======================================================
@@ -4316,7 +4443,7 @@ const history = await db.chatMessages.where('contactId').equals(currentOpenConta
 
 // 【改】用 for...of 循环 + await 确保按顺序添加
 for (const msg of history) {
-    await addMessageToUI(msg.sender, msg.text);
+   await addMessageToUI(msg.sender, msg.text, msg.id);
   // 【新增】滚动到最新消息
 messageContainer.scrollTop = messageContainer.scrollHeight;
 }
@@ -5825,6 +5952,58 @@ chatInputBox.addEventListener('keypress', async (e) => {
         renderContactList();
     }
 });
+// 消息编辑弹窗 - 取消按钮
+const messageEditCancelBtn = document.querySelector('#message-edit-cancel-btn');
+if (messageEditCancelBtn) {
+    messageEditCancelBtn.addEventListener('click', closeMessageEditPopup);
+}
+
+// 消息编辑弹窗 - 关闭按钮
+const messageEditCloseBtn = document.querySelector('#message-edit-close-btn');
+if (messageEditCloseBtn) {
+    messageEditCloseBtn.addEventListener('click', closeMessageEditPopup);
+}
+
+// 消息编辑弹窗 - 点击背景关闭
+const messageEditPopup = document.querySelector('#message-edit-popup');
+if (messageEditPopup) {
+    messageEditPopup.addEventListener('click', (e) => {
+        if (e.target === messageEditPopup) closeMessageEditPopup();
+    });
+}
+
+// 消息编辑弹窗 - 保存按钮
+const messageEditSaveBtn = document.querySelector('#message-edit-save-btn');
+if (messageEditSaveBtn) {
+    messageEditSaveBtn.addEventListener('click', async () => {
+        if (!currentEditingMessageId) return;
+        
+        const newText = document.querySelector('#message-edit-textarea').value.trim();
+        
+        if (!newText) {
+            alert('消息内容不能为空！');
+            return;
+        }
+        
+        try {
+            // 更新数据库
+            await db.chatMessages.update(currentEditingMessageId, { text: newText });
+            
+            // 更新UI
+            const messageEl = messageContainer.querySelector(`[data-message-id="${currentEditingMessageId}"]`);
+            if (messageEl) {
+                messageEl.textContent = newText;
+            }
+            
+            alert('修改成功！');
+            closeMessageEditPopup();
+            
+        } catch (error) {
+            console.error('保存失败:', error);
+            alert('保存失败，请重试。');
+        }
+    });
+}
 
 //这是事件监听的最底部//  
   </script>
