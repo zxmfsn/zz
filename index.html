@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI小手机</title>
+    <title>昭昭小手机</title>
     
     <style>
         /* 先做一些准备工作，让页面表现更统一 */
      /* 准备工作 - 移除居中，改为全屏填充 */
 body {
     margin: 0;
-    padding: 0; /* 【新增】确保没有内边距 */
+    padding: 0; /*  确保没有内边距 */
     font-family: sans-serif;
     /* 【删除】不再需要 flex 居中 */
     /* display: flex;
@@ -18,7 +18,7 @@ body {
     align-items: center; */
     min-height: 100vh;
     background-color: #000; /* 【修改】背景改为黑色，更像真手机 */
-    overflow: hidden; /* 【新增】防止页面滚动 */
+    overflow: hidden; /*  防止页面滚动 */
 }
 
 
@@ -119,7 +119,7 @@ body {
     border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
-/* 【新增】自定义图标的专属样式 */
+/*  自定义图标的专属样式 */
 .app-icon .icon-placeholder.custom-icon {
     background-size: cover !important;
     background-position: center !important;
@@ -271,7 +271,7 @@ body {
     display: flex;
     justify-content: flex-end;
     gap: 10px;
-    /* 【新增】确保它不影响父容器 */
+    /*  确保它不影响父容器 */
     width: 100%;
     box-sizing: border-box;
 }
@@ -463,9 +463,9 @@ body {
     gap: 12px;
     background-color: #f9f9f9; /* 默认背景色 */
     position: relative;
-    background-size: cover; /* 【新增】 */
-    background-position: center; /* 【新增】 */
-    background-attachment: fixed; /* 【新增】关键：背景固定不滚动 */
+    background-size: cover; /*   */
+    background-position: center; /*   */
+    background-attachment: fixed; /*  关键：背景固定不滚动 */
 }
 
         /* 6. 底部输入框的容器 */
@@ -507,8 +507,8 @@ body {
     border-radius: 18px;
     word-wrap: break-word;
     box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-    position: relative; /* 【新增】确保在背景层上方 */
-    z-index: 1; /* 【新增】确保在背景层上方 */
+    position: relative; /*  确保在背景层上方 */
+    z-index: 1; /*  确保在背景层上方 */
 }
 
         /* 10. 用户发出的消息 (右边, 蓝色) */
@@ -528,20 +528,22 @@ body {
         }
 
         /* --- “对话”功能CSS样式添加结束 --- */
-        /* 顶部导航栏 */
-        .theme-nav {
-            display: flex;
-            align-items: center;
-            padding: 15px;
-            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-            position: relative; 
-        }
-        .theme-nav h2 {
-            margin: 0;
-            flex-grow: 1;
-            text-align: center;
-            color: #333;
-        }
+      /* 顶部导航栏 */
+.theme-nav {
+    display: flex;
+    align-items: center;
+    padding: 15px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    position: relative; 
+}
+.theme-nav h2 {
+    margin: 0;
+    flex-grow: 1;
+    text-align: center;
+    color: #333;
+    font-size: 16px;  /* 【新增】统一字体大小 */
+    font-weight: 600; /* 【新增】统一字体粗细 */
+}
         .back-btn {
             background: none;
             border: none;
@@ -589,7 +591,7 @@ body {
 .accordion-content.expanded {
     max-height: 500px;
     overflow: visible;
-    padding: 15px; /* 【新增】只有展开时才有内边距 */
+    padding: 15px; /*  只有展开时才有内边距 */
 }
 
 
@@ -608,7 +610,7 @@ body {
      padding: 15px;
 }
 
-/* 【新增】确保折叠时高度为0 */
+/*  确保折叠时高度为0 */
 #accordion-content-3 {
     max-height: 0;
     overflow: hidden;
@@ -1192,7 +1194,7 @@ body {
     background-color: white;
     border: 1px solid #e0e0e0;
     transition: all 0.2s;
-    position: relative;  /* 【新增】为删除按钮定位 */
+    position: relative;  /*  为删除按钮定位 */
 }
 
 .sticker-grid-item:hover {
@@ -1201,7 +1203,7 @@ body {
     box-shadow: 0 2px 8px rgba(0,0,0,0.1);
 }
 
-/* 【新增】单个表情包的删除按钮 */
+/*  单个表情包的删除按钮 */
 .sticker-item-delete {
     position: absolute;
     top: 2px;
@@ -1262,14 +1264,14 @@ body {
     z-index: 100;
     display: flex;
     flex-direction: column;
-    overflow: hidden;  /* 【新增】防止内容溢出 */
+    overflow: hidden;  /*  防止内容溢出 */
 }
 
 .sticker-panel-header {
     padding: 10px 15px;
     border-bottom: 1px solid #e0e0e0;
-    flex-shrink: 0;  /* 【新增】防止被压缩 */
-    box-sizing: border-box;  /* 【新增】 */
+    flex-shrink: 0;  /*  防止被压缩 */
+    box-sizing: border-box;  /*   */
 }
 
 .sticker-panel-search {
@@ -1290,10 +1292,10 @@ body {
     overflow-x: auto;
     border-bottom: 1px solid #e0e0e0;
     white-space: nowrap;
-    flex-shrink: 0;  /* 【新增】防止被压缩 */
-    min-height: 45px;  /* 【新增】确保有足够高度 */
-    align-items: center;  /* 【新增】垂直居中 */
-    box-sizing: border-box;  /* 【新增】 */
+    flex-shrink: 0;  /*  防止被压缩 */
+    min-height: 45px;  /*  确保有足够高度 */
+    align-items: center;  /*  垂直居中 */
+    box-sizing: border-box;  /*   */
 }
 
 .sticker-tab {
@@ -1305,7 +1307,7 @@ body {
     cursor: pointer;
     white-space: nowrap;
     transition: all 0.2s;
-    flex-shrink: 0;  /* 【新增】防止标签被压缩 */
+    flex-shrink: 0;  /*  防止标签被压缩 */
 }
 
 
@@ -1390,7 +1392,7 @@ body {
     height: 120px;
     object-fit: cover;
     border-radius: 10px;
-    display: block;  /* 【新增】确保图片正常显示 */
+    display: block;  /*  确保图片正常显示 */
 }
 
 /* 【修复】调整包含表情包的气泡样式 */
@@ -1400,7 +1402,7 @@ body {
     box-shadow: none;
 }
 
-/* 【新增】确保表情包气泡保持原有的左右位置 */
+/*  确保表情包气泡保持原有的左右位置 */
 .user-message:has(.message-sticker) {
     align-self: flex-end; /* 用户发的表情包靠右 */
 }
@@ -1497,6 +1499,38 @@ body {
     color: #333;
 }
 
+/* 历史消息隐藏样式 */
+.history-message {
+    display: none !important;
+}
+
+/* 显示最新30条消息 */
+.message-container .message-bubble:nth-last-child(-n+30),
+.message-container > div:nth-last-child(-n+30) {
+    display: flex !important;
+}
+
+/* 历史记录展开按钮 */
+.show-history-btn {
+    width: 100%;
+    padding: 10px;
+    background-color: #f0f0f0;
+    border: none;
+    border-radius: 8px;
+    color: #555;
+    font-size: 14px;
+    cursor: pointer;
+    margin-bottom: 10px;
+    transition: background-color 0.2s;
+}
+
+.show-history-btn:hover {
+    background-color: #e0e0e0;
+}
+
+.show-history-btn:active {
+    background-color: #d0d0d0;
+}
 
         /*这里是CSSstyle的末尾，最底下*/ 
 
@@ -1659,7 +1693,7 @@ body {
                     </div>
                 </div>
 
-<!-- 【新增】聊天界面美化手风琴 -->
+<!--  聊天界面美化手风琴 -->
 <div class="accordion-item">
     <div class="accordion-header" id="accordion-header-4">
         <span>聊天界面美化</span>
@@ -1967,12 +2001,12 @@ body {
             <div class="message-container" id="message-container">
                 </div>
         
-   <!-- 【新增】表情按钮区域（在输入框上方） -->
+   <!--  表情按钮区域（在输入框上方） -->
 <div style="padding: 5px 15px; border-top: 1px solid #e0e0e0; background-color: #ffffff; display: flex; justify-content: flex-start;">
     <button id="sticker-toggle-btn" style="background-color: #f0f0f0; border: 1px solid #ccc; border-radius: 6px; font-size: 14px; cursor: pointer; padding: 4px 10px; color: #555;">😊 表情</button>
 </div>
 
-    <!-- 【新增】表情面板 -->
+    <!--  表情面板 -->
     <div id="sticker-panel" class="sticker-panel hidden">
         <div class="sticker-panel-header">
             <input type="text" id="sticker-search-input" class="sticker-panel-search" placeholder="搜索表情包...">
@@ -2295,7 +2329,7 @@ body {
 </div>
             </div>
         </div>
-        
+     
         <div class="accordion-item">
             <div class="accordion-content expanded" style="padding-top: 15px;">
                 <div class="setting-item">
@@ -2306,6 +2340,15 @@ body {
                         <div class="toggle-label">是</div>
                     </div>
                 </div>
+              <div class="setting-item">
+    <label>是否显示头像?</label>
+    <div class="toggle-switch" id="contact-settings-avatar-toggle">
+        <div class="toggle-label">否</div>
+        <div class="toggle-handle"></div>
+        <div class="toggle-label">是</div>
+    </div>
+</div>
+
 <!-- 【新添加】上下文参考轮数 -->
 <div class="setting-item">
     <label for="contact-settings-context-slider">上下文参考</label>
@@ -2531,7 +2574,7 @@ body {
             <p style="font-size: 11px; color: #666; margin: 0;">• 文本,URL</p>
         </div>
         
-        <!-- 【新增】预览区域 -->
+        <!--  预览区域 -->
         <div class="setting-item" style="margin-top: 15px;">
             <label>预览 (<span id="preview-count">0</span> 个表情包)</label>
             <div id="sticker-preview-grid" style="max-height: 200px; overflow-y: auto; border: 1px solid #e0e0e0; border-radius: 8px; padding: 10px; background-color: #fafafa;">
@@ -2612,7 +2655,7 @@ body {
 
     <script>
       // ======================================================
-// 【新增】移动端浏览器视口高度修复（兼容 iOS 和 Android）
+//  移动端浏览器视口高度修复（兼容 iOS 和 Android）
 // ======================================================
 // ======================================================
 // 【改进版】移动端浏览器视口高度修复（兼容 iOS 键盘）
@@ -2805,7 +2848,9 @@ let summarySearchTimeout = null; // 用于搜索防抖
     const darkModeToggle = document.querySelector('#dark-mode-toggle');
     const accordionHeader3 = document.querySelector('#accordion-header-3');
     const accordionContent3 = document.querySelector('#accordion-content-3');
-      // 【新增】聊天界面美化的元素抓取
+      const contactSettingsAvatarToggle = document.querySelector('#contact-settings-avatar-toggle');
+
+      //  聊天界面美化的元素抓取
 const accordionHeader4 = document.querySelector('#accordion-header-4');
 const accordionContent4 = document.querySelector('#accordion-content-4');
 const chatNavBgColor = document.querySelector('#chat-nav-bg-color');
@@ -2820,7 +2865,7 @@ const chatWallpaperBlur = document.querySelector('#chat-wallpaper-blur');
 const chatWallpaperBlurValue = document.querySelector('#chat-wallpaper-blur-value');
 const chatWallpaperOpacity = document.querySelector('#chat-wallpaper-opacity');
 const chatWallpaperOpacityValue = document.querySelector('#chat-wallpaper-opacity-value');
-      // 【新增】底部导航栏的元素
+      //  底部导航栏的元素
 const chatBottomBgColor = document.querySelector('#chat-bottom-bg-color');
 const chatBottomBgUrl = document.querySelector('#chat-bottom-bg-url');
 const chatBottomBgFile = document.querySelector('#chat-bottom-bg-file');
@@ -3125,6 +3170,38 @@ iconKeys.forEach(async (key) => {
     }
 
 async function addMessageToUI(sender, text, messageId = null) {
+    // 【新增】检查当前消息数量
+    const currentMessageCount = messageContainer.querySelectorAll('.message-bubble, .message-container > div[style*="display: flex"]').length;
+    
+    // 【新增】如果超过30条，添加"查看历史"按钮（只添加一次）
+    if (currentMessageCount === 30 && !messageContainer.querySelector('.show-history-btn')) {
+        const historyBtn = document.createElement('button');
+        historyBtn.className = 'show-history-btn';
+        historyBtn.textContent = '📜 查看更早的消息';
+        historyBtn.addEventListener('click', () => {
+            // 移除所有 history-message 类
+            messageContainer.querySelectorAll('.history-message').forEach(el => {
+                el.classList.remove('history-message');
+            });
+            // 移除按钮本身
+            historyBtn.remove();
+            // 滚动到顶部
+            messageContainer.scrollTop = 0;
+        });
+        messageContainer.insertBefore(historyBtn, messageContainer.firstChild);
+    }
+    
+    // 【新增】如果当前消息数 >= 30，给新消息添加 history-message 类
+    const shouldHide = currentMessageCount >= 30;
+  // 【新增】获取当前联系人的头像显示设置
+    let showAvatar = true;
+    if (currentOpenContactId) {
+        const contact = await db.contacts.get(currentOpenContactId);
+        if (contact && contact.showAvatar === false) {
+            showAvatar = false;
+        }
+    }
+    
     // 处理表情包标签
     if (text && text.includes('<sticker>')) {
         const stickerMatch = text.match(/<sticker>(.*?)<\/sticker>/);
@@ -3158,8 +3235,16 @@ async function addMessageToUI(sender, text, messageId = null) {
         const messageEl = document.createElement('div');
         messageEl.classList.add('message-bubble');
         messageEl.classList.add(sender === 'user' ? 'user-message' : 'bot-message');
+      // 【修改】根据条件添加隐藏类
+    if (shouldHide) {
+        messageEl.classList.add('history-message');
+    }
         messageEl.innerHTML = `<img src="${url}" alt="${stickerText}" class="message-sticker" onerror="this.style.display='none'; this.parentElement.textContent='[图片加载失败]';">`;
         if (messageId) messageEl.dataset.messageId = messageId;
+        
+        // 【修复】添加隐藏类
+        messageEl.classList.add('history-message');
+        
         messageContainer.appendChild(messageEl);
         messageContainer.scrollTop = messageContainer.scrollHeight;
     } else {
@@ -3167,79 +3252,204 @@ async function addMessageToUI(sender, text, messageId = null) {
         const messageEl = document.createElement('div');
         messageEl.classList.add('message-bubble');
         messageEl.classList.add(sender === 'user' ? 'user-message' : 'bot-message');
+        // 【修改】根据条件添加隐藏类
+    if (shouldHide) {
+        messageEl.classList.add('history-message');
+    }
         messageEl.textContent = text;
         
-        // 【关键修复】长按编辑功能
-if (messageId) {
-    messageEl.dataset.messageId = messageId;
-    
-    let localLongPressTimer = null;
-    let longPressTriggered = false;
-    
-    const clearTimer = () => {
-        if (localLongPressTimer) {
-            clearTimeout(localLongPressTimer);
-            localLongPressTimer = null;
-        }
-    };
-    
-    // 鼠标事件
-    messageEl.addEventListener('mousedown', (e) => {
-        if (e.button !== 0) return;
-        longPressTriggered = false;
+   
         
-        localLongPressTimer = setTimeout(() => {
-            longPressTriggered = true;
-            openMessageEditPopup(messageId, text);
-        }, 800);
-    });
-    
-    messageEl.addEventListener('mouseup', (e) => {
-        clearTimer();
-        if (longPressTriggered) {
-            e.preventDefault();
-            e.stopPropagation();
-        }
-    });
-    
-    messageEl.addEventListener('mouseleave', () => {
-        clearTimer();
-    });
-    
-    // 触摸事件（移动端）
-    messageEl.addEventListener('touchstart', (e) => {
-        longPressTriggered = false;
-        
-        localLongPressTimer = setTimeout(() => {
-            longPressTriggered = true;
-            if (navigator.vibrate) {
-                navigator.vibrate(50);
+        // 【新增】如果需要显示头像
+        if (showAvatar) {
+            const avatarEl = document.createElement('img');
+            avatarEl.className = 'message-avatar';
+            avatarEl.style.width = '32px';
+            avatarEl.style.height = '32px';
+            avatarEl.style.borderRadius = '50%';
+            avatarEl.style.objectFit = 'cover';
+            avatarEl.style.flexShrink = '0';
+            
+            // 获取头像
+            if (sender === 'user') {
+                avatarEl.src = './assets/default-avatar.png';
+            } else {
+                const contact = await db.contacts.get(currentOpenContactId);
+                if (contact && contact.avatarFileKey) {
+                    const avatarFile = await db.files.get(contact.avatarFileKey);
+                    if (avatarFile) {
+                        avatarEl.src = URL.createObjectURL(avatarFile.file);
+                    } else {
+                        avatarEl.src = './assets/default-avatar.png';
+                    }
+                } else {
+                    avatarEl.src = './assets/default-avatar.png';
+                }
             }
-            openMessageEditPopup(messageId, text);
-        }, 800);
-    }, { passive: true });
-    
-    messageEl.addEventListener('touchend', (e) => {
-        clearTimer();
-        if (longPressTriggered) {
-            e.preventDefault();
-            e.stopPropagation();
-        }
-    });
-    
-    messageEl.addEventListener('touchmove', () => {
-        clearTimer();
-    }, { passive: true });
-    
-    messageEl.addEventListener('touchcancel', () => {
-        clearTimer();
-    });
+            
+            // 创建包含头像和消息的容器
+            const messageWrapper = document.createElement('div');
+            messageWrapper.style.display = 'flex';
+            messageWrapper.style.alignItems = 'flex-end';
+            messageWrapper.style.gap = '8px';
+            messageWrapper.style.marginBottom = '12px';
+            
+            // 【修复】给容器也添加隐藏类
+          if (shouldHide) {
+    messageWrapper.classList.add('history-message');
 }
+            
+            if (sender === 'user') {
+                messageWrapper.style.justifyContent = 'flex-end';
+                messageWrapper.appendChild(messageEl);
+                messageWrapper.appendChild(avatarEl);
+            } else {
+                messageWrapper.style.justifyContent = 'flex-start';
+                messageWrapper.appendChild(avatarEl);
+                messageWrapper.appendChild(messageEl);
+            }
+            
+            // 长按编辑功能
+            if (messageId) {
+                messageEl.dataset.messageId = messageId;
+                
+                let localLongPressTimer = null;
+                let longPressTriggered = false;
+                
+                const clearTimer = () => {
+                    if (localLongPressTimer) {
+                        clearTimeout(localLongPressTimer);
+                        localLongPressTimer = null;
+                    }
+                };
+                
+                messageEl.addEventListener('mousedown', (e) => {
+                    if (e.button !== 0) return;
+                    longPressTriggered = false;
+                    
+                    localLongPressTimer = setTimeout(() => {
+                        longPressTriggered = true;
+                        openMessageEditPopup(messageId, text);
+                    }, 800);
+                });
+                
+                messageEl.addEventListener('mouseup', (e) => {
+                    clearTimer();
+                    if (longPressTriggered) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                    }
+                });
+                
+                messageEl.addEventListener('mouseleave', () => {
+                    clearTimer();
+                });
+                
+                messageEl.addEventListener('touchstart', (e) => {
+                    longPressTriggered = false;
+                    
+                    localLongPressTimer = setTimeout(() => {
+                        longPressTriggered = true;
+                        if (navigator.vibrate) {
+                            navigator.vibrate(50);
+                        }
+                        openMessageEditPopup(messageId, text);
+                    }, 800);
+                }, { passive: true });
+                
+                messageEl.addEventListener('touchend', (e) => {
+                    clearTimer();
+                    if (longPressTriggered) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                    }
+                });
+                
+                messageEl.addEventListener('touchmove', () => {
+                    clearTimer();
+                }, { passive: true });
+                
+                messageEl.addEventListener('touchcancel', () => {
+                    clearTimer();
+                });
+            }
+            
+            messageContainer.appendChild(messageWrapper);
+        } else {
+            // 不显示头像
+            if (messageId) {
+                messageEl.dataset.messageId = messageId;
+                
+                let localLongPressTimer = null;
+                let longPressTriggered = false;
+                
+                const clearTimer = () => {
+                    if (localLongPressTimer) {
+                        clearTimeout(localLongPressTimer);
+                        localLongPressTimer = null;
+                    }
+                };
+                
+                messageEl.addEventListener('mousedown', (e) => {
+                    if (e.button !== 0) return;
+                    longPressTriggered = false;
+                    
+                    localLongPressTimer = setTimeout(() => {
+                        longPressTriggered = true;
+                        openMessageEditPopup(messageId, text);
+                    }, 800);
+                });
+                
+                messageEl.addEventListener('mouseup', (e) => {
+                    clearTimer();
+                    if (longPressTriggered) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                    }
+                });
+                
+                messageEl.addEventListener('mouseleave', () => {
+                    clearTimer();
+                });
+                
+                messageEl.addEventListener('touchstart', (e) => {
+                    longPressTriggered = false;
+                    
+                    localLongPressTimer = setTimeout(() => {
+                        longPressTriggered = true;
+                        if (navigator.vibrate) {
+                            navigator.vibrate(50);
+                        }
+                        openMessageEditPopup(messageId, text);
+                    }, 800);
+                }, { passive: true });
+                
+                messageEl.addEventListener('touchend', (e) => {
+                    clearTimer();
+                    if (longPressTriggered) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                    }
+                });
+                
+                messageEl.addEventListener('touchmove', () => {
+                    clearTimer();
+                }, { passive: true });
+                
+                messageEl.addEventListener('touchcancel', () => {
+                    clearTimer();
+                });
+            }
+            
+            messageContainer.appendChild(messageEl);
+        }
         
-        messageContainer.appendChild(messageEl);
+        // 【修复】确保滚动到底部
         messageContainer.scrollTop = messageContainer.scrollHeight;
     }
 }
+
+
 
 // 打开消息编辑弹窗
 // 打开消息编辑弹窗
@@ -3273,7 +3483,7 @@ function openMessageEditPopup(messageId, currentText) {
         alert('编辑功能初始化失败，请刷新页面！');
         return;
     }
-    // 【新增】确保弹窗在最顶层
+    //  确保弹窗在最顶层
     document.body.appendChild(popup);
     popup.style.position = 'fixed';
     popup.style.zIndex = '99999';
@@ -3611,7 +3821,7 @@ ${stickerListText ? `\n**发送表情包示例：**\n哈哈|||<sticker>笑哭</s
         if (data.choices && data.choices[0] && data.choices[0].message) {
             let fullReply = data.choices[0].message.content;
             
-            // 【新增】格式修复逻辑
+            //  格式修复逻辑
             fullReply = fixStickerFormat(fullReply);
             
             if (fullReply.includes('|||')) {
@@ -3627,7 +3837,7 @@ ${stickerListText ? `\n**发送表情包示例：**\n哈哈|||<sticker>笑哭</s
     }
 }
 
-// 【新增】表情包格式修复函数
+//  表情包格式修复函数
 function fixStickerFormat(text) {
     // 1. 移除所有换行符（避免干扰）
     text = text.replace(/\n+/g, '|||');
@@ -4006,9 +4216,10 @@ saveContactBtn.addEventListener('click', async () => {
         avatarFileKey: fileKey, 
         myPersonaPresetId: selectedMyPersonaPresetId, // 【改】允许为 null
         myPersonaSupplement: '',
-       contextRounds: 10,  // ← 新增（默认10轮）
+       contextRounds: 10,  // ← （默认10轮）
         remark: '',
         aiCanReadTime: false,
+       showAvatar: true, // 默认显示头像
         chatBackgroundFileKey: null,
         history: [], 
         isBlockedByUser: false, 
@@ -4029,13 +4240,13 @@ saveContactBtn.addEventListener('click', async () => {
     accordionHeader1.addEventListener('click', () => { accordionHeader1.classList.toggle('expanded'); accordionContent1.classList.toggle('expanded'); });
     accordionHeader2.addEventListener('click', () => { accordionHeader2.classList.toggle('expanded'); accordionContent2.classList.toggle('expanded'); });
     accordionHeader3.addEventListener('click', () => { accordionHeader3.classList.toggle('expanded'); accordionContent3.classList.toggle('expanded'); });
-// 【新增】聊天界面美化手风琴的展开/折叠
+// 聊天界面美化手风琴的展开/折叠
 accordionHeader4.addEventListener('click', () => { 
     accordionHeader4.classList.toggle('expanded'); 
     accordionContent4.classList.toggle('expanded'); 
 });
 
-// 【新增】滑块实时更新
+// 【 】滑块实时更新
 chatWallpaperBlur.addEventListener('input', () => {
     chatWallpaperBlurValue.textContent = chatWallpaperBlur.value + 'px';
 });
@@ -4048,7 +4259,7 @@ chatInputRadius.addEventListener('input', () => {
     chatInputRadiusValue.textContent = chatInputRadius.value + 'px';
 });
 
-// 【新增】导航栏背景图片预览
+// 【 】导航栏背景图片预览
 chatNavBgFile.addEventListener('change', (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -4062,7 +4273,7 @@ chatNavBgFile.addEventListener('change', (e) => {
     }
 });
 
-// 【新增】聊天壁纸预览
+// 【 】聊天壁纸预览
 chatWallpaperFile.addEventListener('change', (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -4075,7 +4286,7 @@ chatWallpaperFile.addEventListener('change', (e) => {
         reader.readAsDataURL(file);
     }
 });
-// 【新增】底部导航栏背景图片预览
+//  底部导航栏背景图片预览
 chatBottomBgFile.addEventListener('change', (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -4089,7 +4300,7 @@ chatBottomBgFile.addEventListener('change', (e) => {
     }
 });
 
-// 【新增】保存聊天样式
+//  保存聊天样式
 saveChatStyleBtn.addEventListener('click', async () => {
     try {
         // 保存导航栏样式
@@ -4144,7 +4355,7 @@ saveChatStyleBtn.addEventListener('click', async () => {
     }
 });
 
-// 【新增】清除聊天样式
+//  清除聊天样式
 clearChatStyleBtn.addEventListener('click', async () => {
     if (!confirm('确定要清除所有聊天样式吗？')) return;
     
@@ -4227,7 +4438,7 @@ bgLayer.style.height = messageContainer.offsetHeight + 'px'; // 【修改】使�
 bgLayer.style.zIndex = '0';
 bgLayer.style.backgroundSize = 'cover';
 bgLayer.style.backgroundPosition = 'center';
-bgLayer.style.backgroundAttachment = 'fixed'; // 【新增】背景固定
+bgLayer.style.backgroundAttachment = 'fixed'; //  背景固定
 bgLayer.style.pointerEvents = 'none';
                     
                     messageContainer.style.position = 'relative';
@@ -4258,7 +4469,7 @@ bgLayer.style.pointerEvents = 'none';
     
     alert('已清除所有聊天样式！');
     
-    // 【新增】延迟应用默认样式（确保角色专属背景不被覆盖）
+    //  延迟应用默认样式（确保角色专属背景不被覆盖）
     setTimeout(() => {
         applyChatStyles();
     }, 100);
@@ -4277,7 +4488,7 @@ async function applyChatStyles() {
         return;
     }
     
-    // 【新增】清除可能残留在整个窗口上的背景
+    //  清除可能残留在整个窗口上的背景
     if (chatWindowScreen) {
         chatWindowScreen.style.backgroundImage = '';
         chatWindowScreen.style.backgroundColor = '#ffffff';
@@ -4288,7 +4499,7 @@ async function applyChatStyles() {
     if (navBgColor) {
         chatNav.style.backgroundColor = navBgColor.value;
     } else {
-        chatNav.style.backgroundColor = ''; // 【新增】清除时恢复默认
+        chatNav.style.backgroundColor = ''; //  清除时恢复默认
     }
     
     const navTextColor = await db.settings.get('chatNavTextColor');
@@ -4301,7 +4512,7 @@ async function applyChatStyles() {
         if (backBtn) backBtn.style.color = navTextColor.value;
         if (settingsBtn) settingsBtn.style.color = navTextColor.value;
     } else {
-        // 【新增】清除时恢复默认
+        //  清除时恢复默认
         chatNav.style.color = '';
         const navTitle = chatNav.querySelector('h2');
         const backBtn = chatNav.querySelector('.back-btn');
@@ -4323,7 +4534,7 @@ async function applyChatStyles() {
         chatNav.style.backgroundSize = 'cover';
         chatNav.style.backgroundPosition = 'center';
     } else {
-        // 【新增】清除时移除背景图
+        //  清除时移除背景图
         chatNav.style.backgroundImage = '';
     }
     
@@ -4385,28 +4596,28 @@ async function applyChatStyles() {
     if (inputBgColor) {
         chatInput.style.backgroundColor = inputBgColor.value;
     } else {
-        chatInput.style.backgroundColor = ''; // 【新增】清除时恢复默认
+        chatInput.style.backgroundColor = ''; //  清除时恢复默认
     }
     
     const inputTextColor = await db.settings.get('chatInputTextColor');
     if (inputTextColor) {
         chatInput.style.color = inputTextColor.value;
     } else {
-        chatInput.style.color = ''; // 【新增】清除时恢复默认
+        chatInput.style.color = ''; //  清除时恢复默认
     }
     
     const inputBorderColor = await db.settings.get('chatInputBorderColor');
     if (inputBorderColor) {
         chatInput.style.borderColor = inputBorderColor.value;
     } else {
-        chatInput.style.borderColor = ''; // 【新增】清除时恢复默认
+        chatInput.style.borderColor = ''; //  清除时恢复默认
     }
     
     const inputRadius = await db.settings.get('chatInputRadius');
     if (inputRadius) {
         chatInput.style.borderRadius = inputRadius.value + 'px';
     } else {
-        chatInput.style.borderRadius = ''; // 【新增】清除时恢复默认
+        chatInput.style.borderRadius = ''; //  清除时恢复默认
     }
     
     console.log('✅ 聊天样式已应用');
@@ -4414,8 +4625,8 @@ async function applyChatStyles() {
 
 
 
-// 【新增】页面加载时应用保存的样式
-// 【新增】页面加载时应用保存的样式
+//  页面加载时应用保存的样式
+//  页面加载时应用保存的样式
 async function loadChatStyles() {
     const navBgColor = await db.settings.get('chatNavBgColor');
     if (navBgColor) chatNavBgColor.value = navBgColor.value;
@@ -4676,14 +4887,14 @@ sendMessageBtn.addEventListener('click', async () => {
     // 显示"正在思考"
     addMessageToUI('bot', '...');
     
-    // 【新增】设置一个标记，表示正在处理回复
+    //  设置一个标记，表示正在处理回复
     const processingId = Date.now(); // 用时间戳作为唯一标识
     
     // 调用AI回复（使用独立的异步函数，不阻塞）
     processAiReply(currentOpenContactId, processingId);
 });
 
-// 【新增】独立的AI回复处理函数
+//  独立的AI回复处理函数
 async function processAiReply(contactId, processingId) {
     try {
         const aiResponseText = await getAiReply(contactId);
@@ -4969,7 +5180,7 @@ apiSummaryPresetSelector.addEventListener('change', async () => {
             await db.worldbook_entries.delete(entryId);
             await renderWorldbookEntries();
             await loadChatStyles();
-              await loadChatStyles(); // 【新增】加载聊天样式
+              await loadChatStyles(); //  加载聊天样式
 
         }
     }
@@ -5055,7 +5266,7 @@ apiSummaryPresetSelector.addEventListener('change', async () => {
             await db.worldbook_entries.add(entryData);
         }
         alert("保存成功！");
-                  // 【新增】保存后重新应用样式
+                  //  保存后重新应用样式
             setTimeout(() => {
                 applyChatStyles();
             }, 100);
@@ -5090,12 +5301,18 @@ apiSummaryPresetSelector.addEventListener('change', async () => {
         } else {
             contactSettingsTimeToggle.classList.remove('active');
         }
+       //  加载"是否显示头像"设置
+    if (contact.showAvatar !== false) { // 默认显示
+        contactSettingsAvatarToggle.classList.add('active');
+    } else {
+        contactSettingsAvatarToggle.classList.remove('active');
+    }
         contactSettingsAvatarInput.value = '';
         contactSettingsBgInput.value = '';
         chatWindowScreen.classList.add('hidden');
       await populateMyPersonaSelects(contact.myPersonaPresetId);
        contactSettingsMyPersonaSupplementInput.value = contact.myPersonaSupplement || '';
-       // 【新增】加载"上下文参考"
+       //  加载"上下文参考"
     const contextRounds = contact.contextRounds || 10; // 默认10轮
     contactSettingsContextSlider.value = contextRounds;
     contactSettingsContextValue.value = contextRounds;
@@ -5205,7 +5422,8 @@ apiSummaryPresetSelector.addEventListener('change', async () => {
                 aiCanReadTime: contactSettingsTimeToggle.classList.contains('active'),
          myPersonaPresetId: parseInt(contactSettingsMyPersonaPresetSelect.value) || null,
  myPersonaSupplement: contactSettingsMyPersonaSupplementInput.value,
-              contextRounds: parseInt(contactSettingsContextValue.value) || 10
+              contextRounds: parseInt(contactSettingsContextValue.value) || 10,
+               showAvatar: contactSettingsAvatarToggle.classList.contains('active')
             
             };
             const avatarFile = contactSettingsAvatarInput.files[0];
@@ -5221,7 +5439,7 @@ apiSummaryPresetSelector.addEventListener('change', async () => {
                 await db.files.put({ key: fileKey, file: bgFile });
                 dataToUpdate.chatBackgroundFileKey = fileKey; 
             }
-                      // 【新增】如果上传了新背景，立即应用
+                      //  如果上传了新背景，立即应用
             if (bgFile) {
                 setTimeout(() => {
                     applyChatStyles();
@@ -5295,35 +5513,58 @@ document.querySelector('.dialogue-list-content').addEventListener('click', async
     if (oldBgLayer) oldBgLayer.remove();
     
     // 【修复】如果有角色专属背景，创建新的背景层
-  if (contact.chatBackgroundFileKey) {
-    const bgFile = await db.files.get(contact.chatBackgroundFileKey);
-    if (bgFile) {
-        const bgImageUrl = URL.createObjectURL(bgFile.file);
-        
-        // 【简化】直接设置容器背景
-        messageContainer.style.backgroundImage = `url('${bgImageUrl}')`;
-        messageContainer.style.backgroundSize = 'cover';
-        messageContainer.style.backgroundPosition = 'center';
-        messageContainer.style.backgroundAttachment = 'fixed'; // 关键：固定背景
-        
-        console.log('✅ 已应用角色专属背景');
+    if (contact.chatBackgroundFileKey) {
+        const bgFile = await db.files.get(contact.chatBackgroundFileKey);
+        if (bgFile) {
+            const bgImageUrl = URL.createObjectURL(bgFile.file);
+            
+            messageContainer.style.backgroundImage = `url('${bgImageUrl}')`;
+            messageContainer.style.backgroundSize = 'cover';
+            messageContainer.style.backgroundPosition = 'center';
+            messageContainer.style.backgroundAttachment = 'fixed';
+            
+            console.log('✅ 已应用角色专属背景');
+        }
+    } else {
+        messageContainer.style.backgroundImage = '';
+        messageContainer.style.backgroundColor = '#f9f9f9';
     }
-} else {
-    // 清除背景
-    messageContainer.style.backgroundImage = '';
-    messageContainer.style.backgroundColor = '#f9f9f9';
-}
  
-    // 【修复】加载历史消息（按顺序等待）
+    // 【修复】清空消息容器
     messageContainer.innerHTML = ''; 
     const history = await db.chatMessages.where('contactId').equals(currentOpenContactId).toArray();
 
-    // 【改】用 for...of 循环 + await 确保按顺序添加
+    // 【关键修复】用 for...of 循环 + await 确保按顺序添加
     for (const msg of history) {
        await addMessageToUI(msg.sender, msg.text, msg.id);
-       // 【新增】滚动到最新消息
-       messageContainer.scrollTop = messageContainer.scrollHeight;
     }
+    
+    // 【新增】等待所有消息渲染完成后再滚动
+    // 使用 requestAnimationFrame 确保 DOM 更新完成
+    requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+            // 【关键】移除所有隐藏类，确保能正确计算高度
+            const allMessages = messageContainer.querySelectorAll('.history-message');
+            const shouldShowHistory = allMessages.length > 0;
+            
+            if (shouldShowHistory) {
+                // 临时显示所有消息以计算正确的滚动高度
+                allMessages.forEach(el => el.style.display = 'flex');
+            }
+            
+            // 滚动到底部
+            messageContainer.scrollTop = messageContainer.scrollHeight;
+            
+            if (shouldShowHistory) {
+                // 滚动完成后再隐藏历史消息
+                setTimeout(() => {
+                    allMessages.forEach(el => el.style.display = '');
+                }, 50);
+            }
+            
+            console.log('✅ 已滚动到最新消息');
+        });
+    });
     
     // 【修复】最后才应用全局样式（但会跳过角色专属背景）
     setTimeout(() => {
@@ -5333,6 +5574,7 @@ document.querySelector('.dialogue-list-content').addEventListener('click', async
     dialogueListScreen.classList.add('hidden');
     chatWindowScreen.classList.remove('hidden');
 });
+
 
 
     // 【修复】这个函数是干净、正确的版本
@@ -5406,7 +5648,7 @@ function parseStickerBatchInput(text) {
     
     return results;
 }
-// 【新增】实时预览表情包
+//  实时预览表情包
 function updateStickerPreview() {
     const batchText = document.querySelector('#sticker-batch-input').value.trim();
     const previewGrid = document.querySelector('#sticker-preview-grid');
@@ -5477,7 +5719,7 @@ async function renderStickerLibraries() {
 }
 
 
-// 【新增】查看表情包库
+//  查看表情包库
 async function viewStickerLibrary(libraryId) {
     const library = await db.sticker_libraries.get(libraryId);
     if (!library) {
@@ -5529,7 +5771,7 @@ async function viewStickerLibrary(libraryId) {
     stickers.forEach(sticker => {
         const item = document.createElement('div');
         item.className = 'sticker-grid-item';
-        item.dataset.stickerId = sticker.id;  // 【新增】保存表情包ID
+        item.dataset.stickerId = sticker.id;  //  保存表情包ID
         item.innerHTML = `
             <button class="sticker-item-delete" data-sticker-id="${sticker.id}">×</button>
             <img src="${sticker.url}" alt="${sticker.text}" class="sticker-grid-img" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'70\' height=\'70\'%3E%3Crect fill=\'%23f0f0f0\' width=\'70\' height=\'70\'/%3E%3Ctext x=\'50%25\' y=\'50%25\' font-size=\'10\' text-anchor=\'middle\' dy=\'.3em\' fill=\'%23999\'%3E加载失败%3C/text%3E%3C/svg%3E'">
@@ -5538,7 +5780,7 @@ async function viewStickerLibrary(libraryId) {
         grid.appendChild(item);
     });
     
-    // 【新增】为删除按钮添加事件监听
+    //  为删除按钮添加事件监听
     grid.querySelectorAll('.sticker-item-delete').forEach(btn => {
         btn.addEventListener('click', async (e) => {
             e.stopPropagation();  // 阻止事件冒泡
@@ -5636,7 +5878,7 @@ personaAccordionHeader.addEventListener('click', async () => { // 【改】加�
     personaAccordionHeader.classList.toggle('expanded');
     personaAccordionContent.classList.toggle('expanded');
     
-    // 【新增】展开时自动加载列表
+    //  展开时自动加载列表
     if (personaAccordionContent.classList.contains('expanded')) {
         await loadMyPersonaPresets();
     }
@@ -5768,7 +6010,7 @@ async function loadMyPersonaPresets() {
     updateManageMode();
 }
 
-// 【新增】"管理"按钮事件
+//  "管理"按钮事件
 const personaManageBtn = document.querySelector('#persona-manage-btn');
 
 if (personaManageBtn) {
@@ -5819,12 +6061,12 @@ function updateManageMode() {
             personaManageBtn.style.color = '';
         }
     }
-}// 【新增】滑块变化时更新输入框
+}//  滑块变化时更新输入框
 contactSettingsContextSlider.addEventListener('input', () => {
     contactSettingsContextValue.value = contactSettingsContextSlider.value;
 });
 
-// 【新增】输入框变化时更新滑块
+//  输入框变化时更新滑块
 contactSettingsContextValue.addEventListener('input', () => {
     let newValue = parseInt(contactSettingsContextValue.value);
     
@@ -6517,7 +6759,7 @@ if (importStickerBtn) {
         
         document.querySelector('#sticker-library-name-input').value = '';
         document.querySelector('#sticker-batch-input').value = '';
-         // 【新增】监听输入框的变化
+         //  监听输入框的变化
         const batchInput = document.querySelector('#sticker-batch-input');
         if (batchInput) {
             // 移除旧的监听器（如果有）
@@ -6628,7 +6870,7 @@ if (stickerLibrariesContainer) {
     });
 }
 
-      // 【新增】查看弹窗 - 关闭
+      //  查看弹窗 - 关闭
 const viewStickerCloseBtn = document.querySelector('#view-sticker-close-btn');
 if (viewStickerCloseBtn) {
     viewStickerCloseBtn.addEventListener('click', () => {
@@ -6780,7 +7022,7 @@ function addStickerToUI(sender, url, text) {
 
 
 // ======================================================
-// 【新增】表情面板相关事件
+//  表情面板相关事件
 // ======================================================
 
 // 1. 表情按钮 - 切换面板显示/隐藏
@@ -7158,6 +7400,10 @@ function applyFontsToPage() {
     }
 })();
 
+// "是否显示头像"开关
+contactSettingsAvatarToggle.addEventListener('click', () => {
+    contactSettingsAvatarToggle.classList.toggle('active');
+});
 
 
 //这是事件监听的最底部//  
