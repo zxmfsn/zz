@@ -454,15 +454,19 @@ body {
         }
 
         /* 5. 聊天消息容器 (最关键的区域) */
-        .message-container {
-            flex-grow: 1; /* 占据导航栏和输入框之间的所有空间 */
-            overflow-y: auto; /* 消息多了自动滚动 */
-            padding: 15px;
-            display: flex;
-            flex-direction: column; /* 消息垂直排列 */
-            gap: 12px; /* 消息之间的间距 */
-            background-color: #f9f9f9; /* 聊天背景色 */
-        }
+.message-container {
+    flex-grow: 1;
+    overflow-y: auto;
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    background-color: #f9f9f9; /* 默认背景色 */
+    position: relative;
+    background-size: cover; /* 【新增】 */
+    background-position: center; /* 【新增】 */
+    background-attachment: fixed; /* 【新增】关键：背景固定不滚动 */
+}
 
         /* 6. 底部输入框的容器 */
         .dialogue-input-area {
@@ -497,13 +501,15 @@ body {
         }
 
         /* 9. 聊天气泡的基础样式 */
-        .message-bubble {
-            max-width: 80%; /* 气泡最宽占80% */
-            padding: 10px 15px;
-            border-radius: 18px;
-            word-wrap: break-word; /* 自动换行 */
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-        }
+      .message-bubble {
+    max-width: 80%;
+    padding: 10px 15px;
+    border-radius: 18px;
+    word-wrap: break-word;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    position: relative; /* 【新增】确保在背景层上方 */
+    z-index: 1; /* 【新增】确保在背景层上方 */
+}
 
         /* 10. 用户发出的消息 (右边, 蓝色) */
         .user-message {
@@ -1466,6 +1472,30 @@ body {
     font-size: 14px;
     min-height: 100px;
 }
+/* ============================================= */
+/* 【新添加】字体设置的样式 */
+/* ============================================= */
+
+/* 字体预览区域 */
+.font-preview-box {
+    background-color: #f9f9f9;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 15px;
+    margin-top: 10px;
+    min-height: 60px;
+}
+
+.font-preview-label {
+    font-size: 12px;
+    color: #888;
+    margin-bottom: 8px;
+}
+
+.font-preview-text {
+    font-size: 16px;
+    color: #333;
+}
 
 
         /*这里是CSSstyle的末尾，最底下*/ 
@@ -1629,6 +1659,127 @@ body {
                     </div>
                 </div>
 
+<!-- 【新增】聊天界面美化手风琴 -->
+<div class="accordion-item">
+    <div class="accordion-header" id="accordion-header-4">
+        <span>聊天界面美化</span>
+        <span class="arrow">&gt;</span>
+    </div>
+    <div class="accordion-content" id="accordion-content-4">
+        
+        <!-- 4.1 导航栏样式 -->
+        <div class="editor-section">
+           <h4>顶部导航栏（标题栏）</h4>
+            
+            <div class="setting-item">
+                <label>背景颜色</label>
+                <input type="color" id="chat-nav-bg-color" value="#ffffff">
+            </div>
+            
+            <div class="setting-item">
+                <label>文字颜色</label>
+                <input type="color" id="chat-nav-text-color" value="#333333">
+            </div>
+            
+            <div class="setting-item">
+                <label>背景图片（URL）</label>
+                <div style="display: flex; gap: 10px; align-items: center;">
+                    <input type="url" id="chat-nav-bg-url" placeholder="粘贴图片URL" style="flex-grow: 1;">
+                    <label for="chat-nav-bg-file" style="background-color: #007aff; color: white; padding: 8px 12px; border-radius: 5px; cursor: pointer; font-size: 12px; white-space: nowrap;">📁 本地</label>
+                    <input type="file" id="chat-nav-bg-file" accept="image/*" style="display: none;">
+                    <img id="chat-nav-bg-preview" src="" alt="" style="width: 40px; height: 40px; object-fit: cover; border-radius: 5px; border: 1px solid #ccc; display: none;">
+                </div>
+            </div>
+        </div>
+        
+        <!-- 4.2 聊天壁纸 -->
+        <div class="editor-section">
+            <h4>聊天壁纸</h4>
+            
+            <div class="setting-item">
+                <label>壁纸图片（URL）</label>
+                <div style="display: flex; gap: 10px; align-items: center;">
+                    <input type="url" id="chat-wallpaper-url" placeholder="粘贴图片URL" style="flex-grow: 1;">
+                    <label for="chat-wallpaper-file" style="background-color: #007aff; color: white; padding: 8px 12px; border-radius: 5px; cursor: pointer; font-size: 12px; white-space: nowrap;">📁 本地</label>
+                    <input type="file" id="chat-wallpaper-file" accept="image/*" style="display: none;">
+                    <img id="chat-wallpaper-preview" src="" alt="" style="width: 40px; height: 40px; object-fit: cover; border-radius: 5px; border: 1px solid #ccc; display: none;">
+                </div>
+            </div>
+            
+            <div class="setting-item">
+                <label for="chat-wallpaper-blur">模糊程度</label>
+                <div class="slider-group">
+                    <input type="range" id="chat-wallpaper-blur" min="0" max="20" value="0">
+                    <span id="chat-wallpaper-blur-value">0px</span>
+                </div>
+            </div>
+            
+            <div class="setting-item">
+                <label for="chat-wallpaper-opacity">透明度</label>
+                <div class="slider-group">
+                    <input type="range" id="chat-wallpaper-opacity" min="0" max="100" value="100">
+                    <span id="chat-wallpaper-opacity-value">100%</span>
+                </div>
+            </div>
+        </div>
+        
+  <!-- 4.3 底部导航栏样式 -->
+<div class="editor-section">
+    <h4>底部导航栏（输入区域）</h4>
+    
+    <div class="setting-item">
+        <label>背景颜色</label>
+        <input type="color" id="chat-bottom-bg-color" value="#ffffff">
+    </div>
+    
+    <div class="setting-item">
+        <label>背景图片（URL）</label>
+        <div style="display: flex; gap: 10px; align-items: center;">
+            <input type="url" id="chat-bottom-bg-url" placeholder="粘贴图片URL" style="flex-grow: 1;">
+            <label for="chat-bottom-bg-file" style="background-color: #007aff; color: white; padding: 8px 12px; border-radius: 5px; cursor: pointer; font-size: 12px; white-space: nowrap;">📁 本地</label>
+            <input type="file" id="chat-bottom-bg-file" accept="image/*" style="display: none;">
+            <img id="chat-bottom-bg-preview" src="" alt="" style="width: 40px; height: 40px; object-fit: cover; border-radius: 5px; border: 1px solid #ccc; display: none;">
+        </div>
+    </div>
+</div>
+
+<!-- 4.4 输入框样式 -->
+<div class="editor-section">
+    <h4>输入框本身</h4>
+
+            
+            <div class="setting-item">
+                <label>背景颜色</label>
+                <input type="color" id="chat-input-bg-color" value="#ffffff">
+            </div>
+            
+            <div class="setting-item">
+                <label>文字颜色</label>
+                <input type="color" id="chat-input-text-color" value="#333333">
+            </div>
+            
+            <div class="setting-item">
+                <label>边框颜色</label>
+                <input type="color" id="chat-input-border-color" value="#cccccc">
+            </div>
+            
+            <div class="setting-item">
+                <label for="chat-input-radius">圆角大小</label>
+                <div class="slider-group">
+                    <input type="range" id="chat-input-radius" min="0" max="30" value="18">
+                    <span id="chat-input-radius-value">18px</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 按钮组 -->
+        <div class="button-group">
+            <button class="btn-clear" id="clear-chat-style-btn">清除</button>
+            <button class="btn-save" id="save-chat-style-btn">保存</button>
+        </div>
+        
+    </div>
+</div>
 
               <!---在这里添加主题里面的内容--->
                     </div>
@@ -1707,7 +1858,92 @@ body {
 
                     </div>
                 </div>  
-                
+             <!-- 【新添加】字体设置手风琴 -->
+<div class="accordion-item">
+    <div class="accordion-header" id="font-accordion-header">
+        <span>字体设置</span>
+        <span class="arrow">&gt;</span>
+    </div>
+    <div class="accordion-content" id="font-accordion-content">
+        
+        <!-- 1. 字体预设 -->
+        <div class="editor-section">
+            <h4>字体预设</h4>
+            <select id="font-preset-select" style="width: 100%; padding: 8px; border-radius: 8px; border: 1px solid #ccc;">
+                <option value="default">默认</option>
+                <option value="serif">衬线</option>
+                <option value="monospace">等宽</option>
+                <option value="custom">自定义</option>
+            </select>
+        </div>
+        
+        <!-- 2. 全局字体 -->
+        <div class="editor-section">
+            <h4>全局字体</h4>
+            
+            <div class="setting-item">
+                <label>字体链接 (URL)</label>
+                <input type="url" id="global-font-url" placeholder="例如：https://fonts.googleapis.com/...">
+            </div>
+            
+            <div class="setting-item">
+                <label>字体名称</label>
+                <input type="text" id="global-font-name" placeholder="例如：Noto Sans SC">
+            </div>
+            
+            <div class="setting-item">
+                <label>字体大小</label>
+                <div class="slider-group">
+                    <input type="range" id="global-font-size" min="12" max="24" value="16">
+                    <span id="global-font-size-value">16px</span>
+                </div>
+            </div>
+            
+            <!-- 全局字体预览 -->
+            <div class="font-preview-box">
+                <p class="font-preview-label">全局字体预览：</p>
+                <p class="font-preview-text" id="global-font-preview">这是全局字体的效果</p>
+            </div>
+        </div>
+        
+        <!-- 3. 聊天字体 -->
+        <div class="editor-section">
+            <h4>聊天字体（覆盖全局）</h4>
+            
+            <div class="setting-item">
+                <label>字体链接 (URL)</label>
+                <input type="url" id="chat-font-url" placeholder="留空则使用全局字体">
+            </div>
+            
+            <div class="setting-item">
+                <label>字体名称</label>
+                <input type="text" id="chat-font-name" placeholder="留空则使用全局字体">
+            </div>
+            
+            <div class="setting-item">
+                <label>字体大小</label>
+                <div class="slider-group">
+                    <input type="range" id="chat-font-size" min="12" max="24" value="16">
+                    <span id="chat-font-size-value">16px</span>
+                </div>
+            </div>
+            
+            <!-- 聊天字体预览 -->
+            <div class="font-preview-box">
+                <p class="font-preview-label">聊天字体预览：</p>
+                <p class="font-preview-text" id="chat-font-preview">这是聊天字体的效果</p>
+            </div>
+        </div>
+        
+        <!-- 5. 按钮组 -->
+        <div class="button-group" style="margin-top: 20px;">
+            <button class="btn-clear" id="font-reset-btn">恢复默认</button>
+            <button class="btn-save" id="font-save-btn">保存字体设置</button>
+        </div>
+        
+    </div>
+</div>
+   
                 </div>
         </div>
         <div class="dialogue-list-screen hidden">
@@ -2382,7 +2618,11 @@ body {
 // 【改进版】移动端浏览器视口高度修复（兼容 iOS 键盘）
 // ======================================================
 
-// 1. 定义全局变量来存储原始高度
+// ======================================================
+// 【改进版】移动端浏览器视口高度修复（兼容所有输入框）
+// ======================================================
+
+// 1. 定义全局变量
 let originalViewportHeight = window.innerHeight;
 let isKeyboardOpen = false;
 
@@ -2392,15 +2632,14 @@ function setRealViewportHeight() {
     
     // 【关键】检测键盘是否弹出（高度显著减少）
     if (originalViewportHeight - currentHeight > 150) {
-        // 键盘弹出了，不更新 --vh 变量，保持原有高度
         isKeyboardOpen = true;
-        return;
+        return; // 键盘弹出时，不更新 --vh 变量
     }
     
     // 【关键】检测键盘是否收起（高度恢复）
     if (isKeyboardOpen && Math.abs(originalViewportHeight - currentHeight) < 50) {
         isKeyboardOpen = false;
-        originalViewportHeight = currentHeight; // 更新基准高度
+        originalViewportHeight = currentHeight;
     }
     
     // 正常情况下更新 CSS 变量
@@ -2411,16 +2650,14 @@ function setRealViewportHeight() {
 // 3. 页面加载时执行
 setRealViewportHeight();
 
-// 4. 监听窗口大小变化
+// 4. 监听窗口大小变化（使用防抖）
 window.addEventListener('resize', () => {
-    // 使用防抖，避免频繁触发
     clearTimeout(window.resizeTimer);
     window.resizeTimer = setTimeout(setRealViewportHeight, 100);
 });
 
 // 5. 监听屏幕方向变化
 window.addEventListener('orientationchange', () => {
-    // 方向改变时重置基准高度
     setTimeout(() => {
         originalViewportHeight = window.innerHeight;
         isKeyboardOpen = false;
@@ -2428,9 +2665,7 @@ window.addEventListener('orientationchange', () => {
     }, 200);
 });
 
-// 6. 【删除】不再监听 scroll 事件（会导致键盘问题）
-
-// 7. visualViewport API（现代浏览器）
+// 6. visualViewport API（现代浏览器）
 if (window.visualViewport) {
     window.visualViewport.addEventListener('resize', () => {
         clearTimeout(window.viewportTimer);
@@ -2438,30 +2673,49 @@ if (window.visualViewport) {
     });
 }
 
-// 8. 【新增】监听输入框聚焦/失焦（更精确的键盘检测）
+// 7. 【核心修复】监听所有输入框的聚焦/失焦
 document.addEventListener('focusin', (e) => {
-    if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
-        // 输入框获得焦点，延迟检测键盘
+    const target = e.target;
+    
+    // 检查是否是输入元素
+    if (target.tagName === 'INPUT' || 
+        target.tagName === 'TEXTAREA' || 
+        target.isContentEditable) {
+        
+        console.log('输入框获得焦点:', target.id || target.className);
+        
+        // 延迟检测键盘
         setTimeout(() => {
             const currentHeight = window.innerHeight;
             if (originalViewportHeight - currentHeight > 150) {
                 isKeyboardOpen = true;
+                console.log('键盘已弹出');
             }
         }, 300);
     }
 });
 
 document.addEventListener('focusout', (e) => {
-    if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
-        // 输入框失去焦点，延迟检测键盘收起
+    const target = e.target;
+    
+    // 检查是否是输入元素
+    if (target.tagName === 'INPUT' || 
+        target.tagName === 'TEXTAREA' || 
+        target.isContentEditable) {
+        
+        console.log('输入框失去焦点:', target.id || target.className);
+        
+        // 延迟检测键盘收起
         setTimeout(() => {
             if (isKeyboardOpen) {
                 isKeyboardOpen = false;
                 setRealViewportHeight();
+                console.log('键盘已收起');
             }
         }, 300);
     }
 });
+
 
 
 // 2. 页面加载时立即执行
@@ -2551,6 +2805,35 @@ let summarySearchTimeout = null; // 用于搜索防抖
     const darkModeToggle = document.querySelector('#dark-mode-toggle');
     const accordionHeader3 = document.querySelector('#accordion-header-3');
     const accordionContent3 = document.querySelector('#accordion-content-3');
+      // 【新增】聊天界面美化的元素抓取
+const accordionHeader4 = document.querySelector('#accordion-header-4');
+const accordionContent4 = document.querySelector('#accordion-content-4');
+const chatNavBgColor = document.querySelector('#chat-nav-bg-color');
+const chatNavTextColor = document.querySelector('#chat-nav-text-color');
+const chatNavBgUrl = document.querySelector('#chat-nav-bg-url');
+const chatNavBgFile = document.querySelector('#chat-nav-bg-file');
+const chatNavBgPreview = document.querySelector('#chat-nav-bg-preview');
+const chatWallpaperUrl = document.querySelector('#chat-wallpaper-url');
+const chatWallpaperFile = document.querySelector('#chat-wallpaper-file');
+const chatWallpaperPreview = document.querySelector('#chat-wallpaper-preview');
+const chatWallpaperBlur = document.querySelector('#chat-wallpaper-blur');
+const chatWallpaperBlurValue = document.querySelector('#chat-wallpaper-blur-value');
+const chatWallpaperOpacity = document.querySelector('#chat-wallpaper-opacity');
+const chatWallpaperOpacityValue = document.querySelector('#chat-wallpaper-opacity-value');
+      // 【新增】底部导航栏的元素
+const chatBottomBgColor = document.querySelector('#chat-bottom-bg-color');
+const chatBottomBgUrl = document.querySelector('#chat-bottom-bg-url');
+const chatBottomBgFile = document.querySelector('#chat-bottom-bg-file');
+const chatBottomBgPreview = document.querySelector('#chat-bottom-bg-preview');
+
+const chatInputBgColor = document.querySelector('#chat-input-bg-color');
+const chatInputTextColor = document.querySelector('#chat-input-text-color');
+const chatInputBorderColor = document.querySelector('#chat-input-border-color');
+const chatInputRadius = document.querySelector('#chat-input-radius');
+const chatInputRadiusValue = document.querySelector('#chat-input-radius-value');
+const saveChatStyleBtn = document.querySelector('#save-chat-style-btn');
+const clearChatStyleBtn = document.querySelector('#clear-chat-style-btn');
+
     const iconUrlInputs = {
         dialogue: document.querySelector('#icon-url-dialogue'),
         worldbook: document.querySelector('#icon-url-worldbook'),
@@ -3746,6 +4029,457 @@ saveContactBtn.addEventListener('click', async () => {
     accordionHeader1.addEventListener('click', () => { accordionHeader1.classList.toggle('expanded'); accordionContent1.classList.toggle('expanded'); });
     accordionHeader2.addEventListener('click', () => { accordionHeader2.classList.toggle('expanded'); accordionContent2.classList.toggle('expanded'); });
     accordionHeader3.addEventListener('click', () => { accordionHeader3.classList.toggle('expanded'); accordionContent3.classList.toggle('expanded'); });
+// 【新增】聊天界面美化手风琴的展开/折叠
+accordionHeader4.addEventListener('click', () => { 
+    accordionHeader4.classList.toggle('expanded'); 
+    accordionContent4.classList.toggle('expanded'); 
+});
+
+// 【新增】滑块实时更新
+chatWallpaperBlur.addEventListener('input', () => {
+    chatWallpaperBlurValue.textContent = chatWallpaperBlur.value + 'px';
+});
+
+chatWallpaperOpacity.addEventListener('input', () => {
+    chatWallpaperOpacityValue.textContent = chatWallpaperOpacity.value + '%';
+});
+
+chatInputRadius.addEventListener('input', () => {
+    chatInputRadiusValue.textContent = chatInputRadius.value + 'px';
+});
+
+// 【新增】导航栏背景图片预览
+chatNavBgFile.addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+            chatNavBgPreview.src = ev.target.result;
+            chatNavBgPreview.style.display = 'block';
+            chatNavBgUrl.value = '';
+        };
+        reader.readAsDataURL(file);
+    }
+});
+
+// 【新增】聊天壁纸预览
+chatWallpaperFile.addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+            chatWallpaperPreview.src = ev.target.result;
+            chatWallpaperPreview.style.display = 'block';
+            chatWallpaperUrl.value = '';
+        };
+        reader.readAsDataURL(file);
+    }
+});
+// 【新增】底部导航栏背景图片预览
+chatBottomBgFile.addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+            chatBottomBgPreview.src = ev.target.result;
+            chatBottomBgPreview.style.display = 'block';
+            chatBottomBgUrl.value = '';
+        };
+        reader.readAsDataURL(file);
+    }
+});
+
+// 【新增】保存聊天样式
+saveChatStyleBtn.addEventListener('click', async () => {
+    try {
+        // 保存导航栏样式
+        await db.settings.put({ key: 'chatNavBgColor', value: chatNavBgColor.value });
+        await db.settings.put({ key: 'chatNavTextColor', value: chatNavTextColor.value });
+        
+        // 保存导航栏背景图
+        const navBgFile = chatNavBgFile.files[0];
+        if (navBgFile) {
+            await db.files.put({ key: 'chatNavBgImage', file: navBgFile });
+        } else if (chatNavBgUrl.value) {
+            await db.settings.put({ key: 'chatNavBgUrl', value: chatNavBgUrl.value });
+        }
+        
+        // 保存聊天壁纸
+        const wallpaperFile = chatWallpaperFile.files[0];
+        if (wallpaperFile) {
+            await db.files.put({ key: 'chatWallpaperImage', file: wallpaperFile });
+        } else if (chatWallpaperUrl.value) {
+            await db.settings.put({ key: 'chatWallpaperUrl', value: chatWallpaperUrl.value });
+        }
+        
+        await db.settings.put({ key: 'chatWallpaperBlur', value: chatWallpaperBlur.value });
+        await db.settings.put({ key: 'chatWallpaperOpacity', value: chatWallpaperOpacity.value });
+                // 保存底部导航栏样式
+        await db.settings.put({ key: 'chatBottomBgColor', value: chatBottomBgColor.value });
+        
+        const bottomBgFile = chatBottomBgFile.files[0];
+        if (bottomBgFile) {
+            await db.files.put({ key: 'chatBottomBgImage', file: bottomBgFile });
+        } else if (chatBottomBgUrl.value) {
+            await db.settings.put({ key: 'chatBottomBgUrl', value: chatBottomBgUrl.value });
+        }
+        
+
+        // 保存输入框样式
+        await db.settings.put({ key: 'chatInputBgColor', value: chatInputBgColor.value });
+        await db.settings.put({ key: 'chatInputTextColor', value: chatInputTextColor.value });
+        await db.settings.put({ key: 'chatInputBorderColor', value: chatInputBorderColor.value });
+        await db.settings.put({ key: 'chatInputRadius', value: chatInputRadius.value });
+        
+        // 应用样式
+        applyChatStyles();
+        
+        alert('聊天样式已保存！');
+        accordionHeader4.classList.remove('expanded');
+        accordionContent4.classList.remove('expanded');
+        
+    } catch (error) {
+        console.error('保存失败:', error);
+        alert('保存失败，请重试！');
+    }
+});
+
+// 【新增】清除聊天样式
+clearChatStyleBtn.addEventListener('click', async () => {
+    if (!confirm('确定要清除所有聊天样式吗？')) return;
+    
+    // 清除数据库
+    await db.settings.delete('chatNavBgColor');
+    await db.settings.delete('chatNavTextColor');
+    await db.settings.delete('chatNavBgUrl');
+    await db.files.delete('chatNavBgImage');
+    await db.settings.delete('chatWallpaperUrl');
+    await db.files.delete('chatWallpaperImage');
+    await db.settings.delete('chatWallpaperBlur');
+    await db.settings.delete('chatWallpaperOpacity');
+    await db.settings.delete('chatBottomBgColor');
+    await db.settings.delete('chatBottomBgUrl');
+    await db.files.delete('chatBottomBgImage');
+    await db.settings.delete('chatInputBgColor');
+    await db.settings.delete('chatInputTextColor');
+    await db.settings.delete('chatInputBorderColor');
+    await db.settings.delete('chatInputRadius');
+    
+    // 重置表单
+    chatNavBgColor.value = '#ffffff';
+    chatNavTextColor.value = '#333333';
+    chatNavBgUrl.value = '';
+    chatNavBgFile.value = '';
+    chatNavBgPreview.style.display = 'none';
+    chatWallpaperUrl.value = '';
+    chatWallpaperFile.value = '';
+    chatWallpaperPreview.style.display = 'none';
+    chatWallpaperBlur.value = 0;
+    chatWallpaperBlurValue.textContent = '0px';
+    chatWallpaperOpacity.value = 100;
+    chatWallpaperOpacityValue.textContent = '100%';
+    chatBottomBgColor.value = '#ffffff';
+    chatBottomBgUrl.value = '';
+    chatBottomBgFile.value = '';
+    chatBottomBgPreview.style.display = 'none';
+    chatInputBgColor.value = '#ffffff';
+    chatInputTextColor.value = '#333333';
+    chatInputBorderColor.value = '#cccccc';
+    chatInputRadius.value = 18;
+    chatInputRadiusValue.textContent = '18px';
+    
+    // 【关键修复】立即清除页面上的样式
+    const chatNav = document.querySelector('.chat-window-screen .theme-nav');
+    const messageContainer = document.querySelector('.message-container');
+    const chatInput = document.querySelector('#chat-input-box');
+    const chatInputArea = document.querySelector('.dialogue-input-area');
+    
+    if (chatNav) {
+        chatNav.style.backgroundColor = '';
+        chatNav.style.color = '';
+        chatNav.style.backgroundImage = '';
+        const navTitle = chatNav.querySelector('h2');
+        const backBtn = chatNav.querySelector('.back-btn');
+        const settingsBtn = chatNav.querySelector('.nav-action-btn');
+        if (navTitle) navTitle.style.color = '';
+        if (backBtn) backBtn.style.color = '';
+        if (settingsBtn) settingsBtn.style.color = '';
+    }
+    
+    if (messageContainer) {
+        // 移除全局壁纸背景层
+        const oldBgLayer = messageContainer.querySelector('.chat-bg-layer');
+        if (oldBgLayer) oldBgLayer.remove();
+        
+        // 【关键】如果当前有打开的联系人，重新加载角色专属背景
+        if (currentOpenContactId) {
+            const contact = await db.contacts.get(currentOpenContactId);
+            if (contact && contact.chatBackgroundFileKey) {
+                const bgFile = await db.files.get(contact.chatBackgroundFileKey);
+                if (bgFile) {
+                   const bgLayer = document.createElement('div');
+bgLayer.className = 'chat-bg-layer';
+bgLayer.style.position = 'fixed'; // 【修改】改为 fixed，固定在视口
+bgLayer.style.top = messageContainer.getBoundingClientRect().top + 'px'; // 【修改】动态计算位置
+bgLayer.style.left = messageContainer.getBoundingClientRect().left + 'px';
+bgLayer.style.width = messageContainer.offsetWidth + 'px'; // 【修改】使用实际宽度
+bgLayer.style.height = messageContainer.offsetHeight + 'px'; // 【修改】使用实际高度
+bgLayer.style.zIndex = '0';
+bgLayer.style.backgroundSize = 'cover';
+bgLayer.style.backgroundPosition = 'center';
+bgLayer.style.backgroundAttachment = 'fixed'; // 【新增】背景固定
+bgLayer.style.pointerEvents = 'none';
+                    
+                    messageContainer.style.position = 'relative';
+                    messageContainer.insertBefore(bgLayer, messageContainer.firstChild);
+                    console.log('✅ 清除后重新应用角色专属背景');
+                }
+            }
+        }
+    }
+    
+    if (chatInputArea) {
+        chatInputArea.style.backgroundColor = '';
+        chatInputArea.style.backgroundImage = '';
+    }
+    
+    if (chatInput) {
+        chatInput.style.backgroundColor = '';
+        chatInput.style.color = '';
+        chatInput.style.borderColor = '';
+        chatInput.style.borderRadius = '';
+    }
+    
+    // 清除整个窗口的背景
+    if (chatWindowScreen) {
+        chatWindowScreen.style.backgroundImage = '';
+        chatWindowScreen.style.backgroundColor = '#ffffff';
+    }
+    
+    alert('已清除所有聊天样式！');
+    
+    // 【新增】延迟应用默认样式（确保角色专属背景不被覆盖）
+    setTimeout(() => {
+        applyChatStyles();
+    }, 100);
+});
+
+
+// 【修复】应用聊天样式的函数
+async function applyChatStyles() {
+    // 获取聊天窗口的元素
+    const chatNav = document.querySelector('.chat-window-screen .theme-nav');
+    const messageContainer = document.querySelector('.message-container');
+    const chatInput = document.querySelector('#chat-input-box');
+    
+    if (!chatNav || !messageContainer || !chatInput) {
+        console.log('聊天界面元素未找到，跳过样式应用');
+        return;
+    }
+    
+    // 【新增】清除可能残留在整个窗口上的背景
+    if (chatWindowScreen) {
+        chatWindowScreen.style.backgroundImage = '';
+        chatWindowScreen.style.backgroundColor = '#ffffff';
+    }
+    
+    // 1. 应用导航栏样式
+    const navBgColor = await db.settings.get('chatNavBgColor');
+    if (navBgColor) {
+        chatNav.style.backgroundColor = navBgColor.value;
+    } else {
+        chatNav.style.backgroundColor = ''; // 【新增】清除时恢复默认
+    }
+    
+    const navTextColor = await db.settings.get('chatNavTextColor');
+    if (navTextColor) {
+        chatNav.style.color = navTextColor.value;
+        const navTitle = chatNav.querySelector('h2');
+        const backBtn = chatNav.querySelector('.back-btn');
+        const settingsBtn = chatNav.querySelector('.nav-action-btn');
+        if (navTitle) navTitle.style.color = navTextColor.value;
+        if (backBtn) backBtn.style.color = navTextColor.value;
+        if (settingsBtn) settingsBtn.style.color = navTextColor.value;
+    } else {
+        // 【新增】清除时恢复默认
+        chatNav.style.color = '';
+        const navTitle = chatNav.querySelector('h2');
+        const backBtn = chatNav.querySelector('.back-btn');
+        const settingsBtn = chatNav.querySelector('.nav-action-btn');
+        if (navTitle) navTitle.style.color = '';
+        if (backBtn) backBtn.style.color = '';
+        if (settingsBtn) settingsBtn.style.color = '';
+    }
+    
+    // 导航栏背景图
+    const navBgFile = await db.files.get('chatNavBgImage');
+    const navBgUrl = await db.settings.get('chatNavBgUrl');
+    if (navBgFile) {
+        chatNav.style.backgroundImage = `url('${URL.createObjectURL(navBgFile.file)}')`;
+        chatNav.style.backgroundSize = 'cover';
+        chatNav.style.backgroundPosition = 'center';
+    } else if (navBgUrl) {
+        chatNav.style.backgroundImage = `url('${navBgUrl.value}')`;
+        chatNav.style.backgroundSize = 'cover';
+        chatNav.style.backgroundPosition = 'center';
+    } else {
+        // 【新增】清除时移除背景图
+        chatNav.style.backgroundImage = '';
+    }
+    
+    // 2. 【关键修复】应用聊天壁纸（只在没有角色专属背景时应用）
+    // 先检查当前角色是否有专属背景
+    let hasContactBackground = false;
+    if (currentOpenContactId) {
+        const contact = await db.contacts.get(currentOpenContactId);
+        if (contact && contact.chatBackgroundFileKey) {
+            const bgFile = await db.files.get(contact.chatBackgroundFileKey);
+            if (bgFile) {
+                hasContactBackground = true;
+                console.log('✅ 检测到角色专属背景，跳过全局壁纸');
+            }
+        }
+    }
+    
+    // 只有在没有角色专属背景时，才应用全局壁纸
+   if (!hasContactBackground) {
+    const wallpaperFile = await db.files.get('chatWallpaperImage');
+    const wallpaperUrl = await db.settings.get('chatWallpaperUrl');
+    const blur = await db.settings.get('chatWallpaperBlur');
+    const opacity = await db.settings.get('chatWallpaperOpacity');
+    
+    if (wallpaperFile || wallpaperUrl) {
+        let bgImageUrl = '';
+        if (wallpaperFile) {
+            bgImageUrl = URL.createObjectURL(wallpaperFile.file);
+        } else if (wallpaperUrl) {
+            bgImageUrl = wallpaperUrl.value;
+        }
+        
+        // 【简化】直接设置容器背景
+        messageContainer.style.backgroundImage = `url('${bgImageUrl}')`;
+        messageContainer.style.backgroundSize = 'cover';
+        messageContainer.style.backgroundPosition = 'center';
+        messageContainer.style.backgroundAttachment = 'fixed'; // 关键：固定背景
+        
+        if (blur && blur.value > 0) {
+            // 注意：blur 不能直接应用到容器，需要用伪元素
+            console.warn('模糊效果需要使用方案A');
+        }
+        
+        if (opacity && opacity.value < 100) {
+            // 注意：opacity 会影响所有子元素
+            console.warn('透明度效果需要使用方案A');
+        }
+        
+        console.log('✅ 已应用全局聊天壁纸');
+    } else {
+        // 清除背景
+        messageContainer.style.backgroundImage = '';
+        messageContainer.style.backgroundColor = '#f9f9f9';
+    }
+}
+    
+    // 4. 应用输入框样式
+    const inputBgColor = await db.settings.get('chatInputBgColor');
+    if (inputBgColor) {
+        chatInput.style.backgroundColor = inputBgColor.value;
+    } else {
+        chatInput.style.backgroundColor = ''; // 【新增】清除时恢复默认
+    }
+    
+    const inputTextColor = await db.settings.get('chatInputTextColor');
+    if (inputTextColor) {
+        chatInput.style.color = inputTextColor.value;
+    } else {
+        chatInput.style.color = ''; // 【新增】清除时恢复默认
+    }
+    
+    const inputBorderColor = await db.settings.get('chatInputBorderColor');
+    if (inputBorderColor) {
+        chatInput.style.borderColor = inputBorderColor.value;
+    } else {
+        chatInput.style.borderColor = ''; // 【新增】清除时恢复默认
+    }
+    
+    const inputRadius = await db.settings.get('chatInputRadius');
+    if (inputRadius) {
+        chatInput.style.borderRadius = inputRadius.value + 'px';
+    } else {
+        chatInput.style.borderRadius = ''; // 【新增】清除时恢复默认
+    }
+    
+    console.log('✅ 聊天样式已应用');
+}
+
+
+
+// 【新增】页面加载时应用保存的样式
+// 【新增】页面加载时应用保存的样式
+async function loadChatStyles() {
+    const navBgColor = await db.settings.get('chatNavBgColor');
+    if (navBgColor) chatNavBgColor.value = navBgColor.value;
+    
+    const navTextColor = await db.settings.get('chatNavTextColor');
+    if (navTextColor) chatNavTextColor.value = navTextColor.value;
+    
+    const navBgUrl = await db.settings.get('chatNavBgUrl');
+    if (navBgUrl) {
+        chatNavBgUrl.value = navBgUrl.value;
+        chatNavBgPreview.src = navBgUrl.value;
+        chatNavBgPreview.style.display = 'block';
+    }
+    
+    const wallpaperUrl = await db.settings.get('chatWallpaperUrl');
+    if (wallpaperUrl) {
+        chatWallpaperUrl.value = wallpaperUrl.value;
+        chatWallpaperPreview.src = wallpaperUrl.value;
+        chatWallpaperPreview.style.display = 'block';
+    }
+    
+    const blur = await db.settings.get('chatWallpaperBlur');
+    if (blur) {
+        chatWallpaperBlur.value = blur.value;
+        chatWallpaperBlurValue.textContent = blur.value + 'px';
+    }
+    
+    const opacity = await db.settings.get('chatWallpaperOpacity');
+    if (opacity) {
+        chatWallpaperOpacity.value = opacity.value;
+        chatWallpaperOpacityValue.textContent = opacity.value + '%';
+    }
+    
+    const bottomBgColor = await db.settings.get('chatBottomBgColor');
+    if (bottomBgColor) chatBottomBgColor.value = bottomBgColor.value;
+    
+    const bottomBgUrl = await db.settings.get('chatBottomBgUrl');
+    if (bottomBgUrl) {
+        chatBottomBgUrl.value = bottomBgUrl.value;
+        chatBottomBgPreview.src = bottomBgUrl.value;
+        chatBottomBgPreview.style.display = 'block';
+    }
+    
+    const inputBgColor = await db.settings.get('chatInputBgColor');
+    if (inputBgColor) chatInputBgColor.value = inputBgColor.value;
+    
+    const inputTextColor = await db.settings.get('chatInputTextColor');
+    if (inputTextColor) chatInputTextColor.value = inputTextColor.value;
+    
+    const inputBorderColor = await db.settings.get('chatInputBorderColor');
+    if (inputBorderColor) chatInputBorderColor.value = inputBorderColor.value;
+    
+    const inputRadius = await db.settings.get('chatInputRadius');
+    if (inputRadius) {
+        chatInputRadius.value = inputRadius.value;
+        chatInputRadiusValue.textContent = inputRadius.value + 'px';
+    }
+    
+    // 【删除】不在这里应用样式，等打开聊天窗口时再应用
+    // await applyChatStyles();
+}
+
+
+
 
     darkModeToggle.addEventListener('click', async () => { 
         darkModeToggle.classList.toggle('active'); 
@@ -4234,6 +4968,9 @@ apiSummaryPresetSelector.addEventListener('change', async () => {
         if (confirm(`确定要删除条目 "${entryName}" 吗？`)) {
             await db.worldbook_entries.delete(entryId);
             await renderWorldbookEntries();
+            await loadChatStyles();
+              await loadChatStyles(); // 【新增】加载聊天样式
+
         }
     }
 
@@ -4318,6 +5055,11 @@ apiSummaryPresetSelector.addEventListener('change', async () => {
             await db.worldbook_entries.add(entryData);
         }
         alert("保存成功！");
+                  // 【新增】保存后重新应用样式
+            setTimeout(() => {
+                applyChatStyles();
+            }, 100);
+
         entryEditorScreen.classList.add('hidden');
         worldbookListScreen.classList.remove('hidden');
         await renderWorldbookEntries();
@@ -4479,6 +5221,13 @@ apiSummaryPresetSelector.addEventListener('change', async () => {
                 await db.files.put({ key: fileKey, file: bgFile });
                 dataToUpdate.chatBackgroundFileKey = fileKey; 
             }
+                      // 【新增】如果上传了新背景，立即应用
+            if (bgFile) {
+                setTimeout(() => {
+                    applyChatStyles();
+                }, 100);
+            }
+
             await db.contacts.update(contactId, dataToUpdate);
             renderContactList();
             document.querySelector('#chat-window-title').textContent = dataToUpdate.name;
@@ -4529,40 +5278,62 @@ apiSummaryPresetSelector.addEventListener('change', async () => {
         }
     }
 
-    // 【修复】这个函数是干净、正确的版本
-    document.querySelector('.dialogue-list-content').addEventListener('click', async (event) => {
-        const clickedItem = event.target.closest('.contact-list-item');
-        if (!clickedItem) return; 
-        currentOpenContactId = parseInt(clickedItem.dataset.contactId); 
-        const contact = await db.contacts.get(currentOpenContactId);
-        if (!contact) return; 
-        document.querySelector('#chat-window-title').textContent = contact.name;
-        if (contact.chatBackgroundFileKey) {
-            const bgFile = await db.files.get(contact.chatBackgroundFileKey);
-            if (bgFile) {
-                chatWindowScreen.style.backgroundImage = `url('${URL.createObjectURL(bgFile.file)}')`;
-                chatWindowScreen.style.backgroundSize = 'cover'; 
-                chatWindowScreen.style.backgroundPosition = 'center';
-            } else {
-                chatWindowScreen.style.backgroundImage = ''; 
-            }
-        } else {
-            chatWindowScreen.style.backgroundImage = ''; 
-        }
- 
-// 【修复】加载历史消息（按顺序等待）
-messageContainer.innerHTML = ''; 
-const history = await db.chatMessages.where('contactId').equals(currentOpenContactId).toArray();
-
-// 【改】用 for...of 循环 + await 确保按顺序添加
-for (const msg of history) {
-   await addMessageToUI(msg.sender, msg.text, msg.id);
-  // 【新增】滚动到最新消息
-messageContainer.scrollTop = messageContainer.scrollHeight;
+document.querySelector('.dialogue-list-content').addEventListener('click', async (event) => {
+    const clickedItem = event.target.closest('.contact-list-item');
+    if (!clickedItem) return; 
+    currentOpenContactId = parseInt(clickedItem.dataset.contactId); 
+    const contact = await db.contacts.get(currentOpenContactId);
+    if (!contact) return; 
+    document.querySelector('#chat-window-title').textContent = contact.name;
+    
+    // 【修复】先清除整个窗口的背景
+    chatWindowScreen.style.backgroundImage = '';
+    chatWindowScreen.style.backgroundColor = '#ffffff';
+    
+    // 【修复】移除消息容器中旧的背景层
+    const oldBgLayer = messageContainer.querySelector('.chat-bg-layer');
+    if (oldBgLayer) oldBgLayer.remove();
+    
+    // 【修复】如果有角色专属背景，创建新的背景层
+  if (contact.chatBackgroundFileKey) {
+    const bgFile = await db.files.get(contact.chatBackgroundFileKey);
+    if (bgFile) {
+        const bgImageUrl = URL.createObjectURL(bgFile.file);
+        
+        // 【简化】直接设置容器背景
+        messageContainer.style.backgroundImage = `url('${bgImageUrl}')`;
+        messageContainer.style.backgroundSize = 'cover';
+        messageContainer.style.backgroundPosition = 'center';
+        messageContainer.style.backgroundAttachment = 'fixed'; // 关键：固定背景
+        
+        console.log('✅ 已应用角色专属背景');
+    }
+} else {
+    // 清除背景
+    messageContainer.style.backgroundImage = '';
+    messageContainer.style.backgroundColor = '#f9f9f9';
 }
-        dialogueListScreen.classList.add('hidden');
-        chatWindowScreen.classList.remove('hidden');
-    });
+ 
+    // 【修复】加载历史消息（按顺序等待）
+    messageContainer.innerHTML = ''; 
+    const history = await db.chatMessages.where('contactId').equals(currentOpenContactId).toArray();
+
+    // 【改】用 for...of 循环 + await 确保按顺序添加
+    for (const msg of history) {
+       await addMessageToUI(msg.sender, msg.text, msg.id);
+       // 【新增】滚动到最新消息
+       messageContainer.scrollTop = messageContainer.scrollHeight;
+    }
+    
+    // 【修复】最后才应用全局样式（但会跳过角色专属背景）
+    setTimeout(() => {
+        applyChatStyles();
+    }, 100);
+
+    dialogueListScreen.classList.add('hidden');
+    chatWindowScreen.classList.remove('hidden');
+});
+
 
     // 【修复】这个函数是干净、正确的版本
     chatWindowBackBtn.addEventListener('click', () => {
@@ -6129,6 +6900,265 @@ if (messageEditSaveBtn) {
 } else {
     console.error('找不到 #message-edit-save-btn');
 }
+// ======================================================
+// 【新功能】字体设置 - 只保留默认和自定义
+// ======================================================
+
+// 1. 手风琴展开/折叠
+const fontAccordionHeader = document.querySelector('#font-accordion-header');
+const fontAccordionContent = document.querySelector('#font-accordion-content');
+
+fontAccordionHeader.addEventListener('click', async () => {
+    fontAccordionHeader.classList.toggle('expanded');
+    fontAccordionContent.classList.toggle('expanded');
+    
+    // 展开时加载预设列表
+    if (fontAccordionContent.classList.contains('expanded')) {
+        await loadFontPresets();
+    }
+});
+
+// 2. 滑块实时更新
+document.querySelector('#global-font-size').addEventListener('input', (e) => {
+    const value = e.target.value;
+    document.querySelector('#global-font-size-value').textContent = value + 'px';
+    document.querySelector('#global-font-preview').style.fontSize = value + 'px';
+});
+
+document.querySelector('#chat-font-size').addEventListener('input', (e) => {
+    const value = e.target.value;
+    document.querySelector('#chat-font-size-value').textContent = value + 'px';
+    document.querySelector('#chat-font-preview').style.fontSize = value + 'px';
+});
+
+// 3. 加载字体预设列表
+async function loadFontPresets() {
+    const select = document.querySelector('#font-preset-select');
+    select.innerHTML = `
+        <option value="default">默认</option>
+        <option value="custom">--- 新建自定义预设 ---</option>
+    `;
+    
+    // 从数据库加载用户保存的预设
+    const savedPresets = await db.settings.get('fontPresets');
+    if (savedPresets && savedPresets.value && savedPresets.value.length > 0) {
+        savedPresets.value.forEach(preset => {
+            const option = document.createElement('option');
+            option.value = 'saved_' + preset.id;
+            option.textContent = preset.name + ' ⭐';
+            select.appendChild(option);
+        });
+    }
+    
+    // 恢复上次选择的预设
+    const lastPreset = await db.settings.get('activeFontPreset');
+    if (lastPreset) {
+        select.value = lastPreset.value;
+        // 触发一次change事件来应用字体
+        await applyFontPreset(lastPreset.value);
+    }
+}
+
+// 4. 应用字体预设
+async function applyFontPreset(presetValue) {
+    const globalUrl = document.querySelector('#global-font-url');
+    const globalName = document.querySelector('#global-font-name');
+    const globalSize = document.querySelector('#global-font-size');
+    const chatUrl = document.querySelector('#chat-font-url');
+    const chatName = document.querySelector('#chat-font-name');
+    const chatSize = document.querySelector('#chat-font-size');
+    
+    if (presetValue === 'default') {
+        // 默认字体
+        globalUrl.value = '';
+        globalName.value = 'sans-serif';
+        globalSize.value = 16;
+        chatUrl.value = '';
+        chatName.value = '';
+        chatSize.value = 16;
+        
+    } else if (presetValue.startsWith('saved_')) {
+        // 用户保存的自定义预设
+        const presetId = presetValue.replace('saved_', '');
+        const savedPresets = await db.settings.get('fontPresets');
+        const preset = savedPresets.value.find(p => p.id === presetId);
+        
+        if (preset) {
+            globalUrl.value = preset.globalUrl || '';
+            globalName.value = preset.globalName || 'sans-serif';
+            globalSize.value = preset.globalSize || 16;
+            chatUrl.value = preset.chatUrl || '';
+            chatName.value = preset.chatName || '';
+            chatSize.value = preset.chatSize || 16;
+        }
+    } else if (presetValue === 'custom') {
+        // 新建自定义（清空表单）
+        globalUrl.value = '';
+        globalName.value = '';
+        globalSize.value = 16;
+        chatUrl.value = '';
+        chatName.value = '';
+        chatSize.value = 16;
+    }
+    
+    // 更新滑块显示和预览
+    document.querySelector('#global-font-size-value').textContent = globalSize.value + 'px';
+    document.querySelector('#chat-font-size-value').textContent = chatSize.value + 'px';
+    document.querySelector('#global-font-preview').style.fontSize = globalSize.value + 'px';
+    document.querySelector('#chat-font-preview').style.fontSize = chatSize.value + 'px';
+    
+    // 应用字体
+    applyFontsToPage();
+}
+
+// 5. 字体预设切换
+document.querySelector('#font-preset-select').addEventListener('change', async (e) => {
+    await applyFontPreset(e.target.value);
+});
+
+// 6. 保存字体设置按钮
+document.querySelector('#font-save-btn').addEventListener('click', async () => {
+    const presetSelect = document.querySelector('#font-preset-select');
+    const currentPreset = presetSelect.value;
+    
+    const fontData = {
+        globalUrl: document.querySelector('#global-font-url').value,
+        globalName: document.querySelector('#global-font-name').value,
+        globalSize: document.querySelector('#global-font-size').value,
+        chatUrl: document.querySelector('#chat-font-url').value,
+        chatName: document.querySelector('#chat-font-name').value,
+        chatSize: document.querySelector('#chat-font-size').value
+    };
+    
+    // 如果是"新建自定义"，需要保存为新预设
+    if (currentPreset === 'custom') {
+        const presetName = prompt('请为这个字体方案起个名字：', '我的字体方案');
+        if (!presetName) return;
+        
+        // 生成唯一ID
+        const presetId = 'preset_' + Date.now();
+        
+        // 获取现有预设
+        const savedPresets = await db.settings.get('fontPresets');
+        const presets = savedPresets ? savedPresets.value : [];
+        
+        // 添加新预设
+        presets.push({
+            id: presetId,
+            name: presetName,
+            ...fontData
+        });
+        
+        // 保存到数据库
+        await db.settings.put({ key: 'fontPresets', value: presets });
+        await db.settings.put({ key: 'activeFontPreset', value: 'saved_' + presetId });
+        
+        alert('字体方案已保存！');
+        await loadFontPresets();
+        
+    } else if (currentPreset.startsWith('saved_')) {
+        // 更新已有的自定义预设
+        const presetId = currentPreset.replace('saved_', '');
+        const savedPresets = await db.settings.get('fontPresets');
+        const presets = savedPresets.value;
+        
+        const index = presets.findIndex(p => p.id === presetId);
+        if (index !== -1) {
+            presets[index] = {
+                ...presets[index],
+                ...fontData
+            };
+            
+            await db.settings.put({ key: 'fontPresets', value: presets });
+            await db.settings.put({ key: 'activeFontPreset', value: currentPreset });
+            alert('字体方案已更新！');
+        }
+        
+    } else {
+        // 默认预设，直接保存为激活状态
+        await db.settings.put({ key: 'activeFontPreset', value: currentPreset });
+        alert('字体设置已保存！');
+    }
+    
+    // 应用字体
+    applyFontsToPage();
+});
+
+// 7. 恢复默认按钮
+document.querySelector('#font-reset-btn').addEventListener('click', async () => {
+    const presetSelect = document.querySelector('#font-preset-select');
+    const currentPreset = presetSelect.value;
+    
+    // 如果是自定义预设，提供删除选项
+    if (currentPreset.startsWith('saved_')) {
+        const choice = confirm('要删除这个自定义方案吗？\n点"确定"删除，点"取消"只重置当前设置');
+        
+        if (choice) {
+            // 删除这个预设
+            const presetId = currentPreset.replace('saved_', '');
+            const savedPresets = await db.settings.get('fontPresets');
+            const presets = savedPresets.value.filter(p => p.id !== presetId);
+            
+            await db.settings.put({ key: 'fontPresets', value: presets });
+            await db.settings.put({ key: 'activeFontPreset', value: 'default' });
+            
+            alert('已删除该方案！');
+            await loadFontPresets();
+            await applyFontPreset('default');
+            return;
+        }
+    }
+    
+    // 恢复默认
+    await db.settings.put({ key: 'activeFontPreset', value: 'default' });
+    await applyFontPreset('default');
+    applyFontsToPage();
+    
+    alert('已恢复默认字体！');
+});
+
+// 8. 应用字体到页面
+function applyFontsToPage() {
+    const globalName = document.querySelector('#global-font-name').value || 'sans-serif';
+    const globalSize = document.querySelector('#global-font-size').value || '16';
+    const chatName = document.querySelector('#chat-font-name').value || globalName;
+    const chatSize = document.querySelector('#chat-font-size').value || globalSize;
+    
+    // 应用全局字体
+    document.body.style.fontFamily = globalName;
+    document.body.style.fontSize = globalSize + 'px';
+    
+    // 应用聊天字体
+    const messageContainer = document.querySelector('.message-container');
+    if (messageContainer) {
+        messageContainer.style.fontFamily = chatName;
+        messageContainer.style.fontSize = chatSize + 'px';
+    }
+    
+    // 更新预览
+    const globalPreview = document.querySelector('#global-font-preview');
+    const chatPreview = document.querySelector('#chat-font-preview');
+    
+    if (globalPreview) {
+        globalPreview.style.fontFamily = globalName;
+        globalPreview.style.fontSize = globalSize + 'px';
+    }
+    
+    if (chatPreview) {
+        chatPreview.style.fontFamily = chatName || globalName;
+        chatPreview.style.fontSize = chatSize + 'px';
+    }
+}
+
+// 9. 页面加载时应用保存的字体
+(async () => {
+    const lastPreset = await db.settings.get('activeFontPreset');
+    if (lastPreset) {
+        await applyFontPreset(lastPreset.value);
+    }
+})();
+
+
 
 //这是事件监听的最底部//  
   </script>
