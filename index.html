@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>昭昭小手机</title>
+    <title>AI小手机</title>
     
     <style>
         /* 先做一些准备工作，让页面表现更统一 */
@@ -528,22 +528,20 @@ body {
         }
 
         /* --- “对话”功能CSS样式添加结束 --- */
-      /* 顶部导航栏 */
-.theme-nav {
-    display: flex;
-    align-items: center;
-    padding: 15px;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-    position: relative; 
-}
-.theme-nav h2 {
-    margin: 0;
-    flex-grow: 1;
-    text-align: center;
-    color: #333;
-    font-size: 16px;  /* 【新增】统一字体大小 */
-    font-weight: 600; /* 【新增】统一字体粗细 */
-}
+        /* 顶部导航栏 */
+        .theme-nav {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+            position: relative; 
+        }
+        .theme-nav h2 {
+            margin: 0;
+            flex-grow: 1;
+            text-align: center;
+            color: #333;
+        }
         .back-btn {
             background: none;
             border: none;
@@ -1254,10 +1252,10 @@ body {
 /* 聊天页面的表情面板 */
 .sticker-panel {
     position: absolute;
-    bottom: 110px;
+    bottom: 95px;
     left: 0;
     width: 100%;
-    height: 250px;  /* 【改】固定高度，不用max-height */
+    height: 300px;  /* 【改】固定高度，不用max-height */
     background-color: white;
     border-top: 1px solid #e0e0e0;
     box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
@@ -1452,7 +1450,7 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    z-index: 300;
+    z-index: 1000000; /* 比表情包弹窗还要高 */
 }
 
 #message-edit-popup .popup-content {
@@ -1499,38 +1497,6 @@ body {
     color: #333;
 }
 
-/* 历史消息隐藏样式 */
-.history-message {
-    display: none !important;
-}
-
-/* 显示最新30条消息 */
-.message-container .message-bubble:nth-last-child(-n+30),
-.message-container > div:nth-last-child(-n+30) {
-    display: flex !important;
-}
-
-/* 历史记录展开按钮 */
-.show-history-btn {
-    width: 100%;
-    padding: 10px;
-    background-color: #f0f0f0;
-    border: none;
-    border-radius: 8px;
-    color: #555;
-    font-size: 14px;
-    cursor: pointer;
-    margin-bottom: 10px;
-    transition: background-color 0.2s;
-}
-
-.show-history-btn:hover {
-    background-color: #e0e0e0;
-}
-
-.show-history-btn:active {
-    background-color: #d0d0d0;
-}
 
         /*这里是CSSstyle的末尾，最底下*/ 
 
@@ -2001,9 +1967,11 @@ body {
             <div class="message-container" id="message-container">
                 </div>
         
-   <!--  表情按钮区域（在输入框上方） -->
-<div style="padding: 5px 15px; border-top: 1px solid #e0e0e0; background-color: #ffffff; display: flex; justify-content: flex-start;">
+
+<!--  表情按钮区域（在输入框上方） -->
+<div style="padding: 5px 15px; border-top: 1px solid #e0e0e0; background-color: #ffffff; display: flex; justify-content: flex-start; gap: 10px;">
     <button id="sticker-toggle-btn" style="background-color: #f0f0f0; border: 1px solid #ccc; border-radius: 6px; font-size: 14px; cursor: pointer; padding: 4px 10px; color: #555;">😊 表情</button>
+    <button id="retract-btn" style="background-color: #f0f0f0; border: 1px solid #ccc; border-radius: 6px; font-size: 14px; cursor: pointer; padding: 4px 10px; color: #555; ">🔄 撤回</button>
 </div>
 
     <!--  表情面板 -->
@@ -3170,30 +3138,7 @@ iconKeys.forEach(async (key) => {
     }
 
 async function addMessageToUI(sender, text, messageId = null) {
-    // 【新增】检查当前消息数量
-    const currentMessageCount = messageContainer.querySelectorAll('.message-bubble, .message-container > div[style*="display: flex"]').length;
-    
-    // 【新增】如果超过30条，添加"查看历史"按钮（只添加一次）
-    if (currentMessageCount === 30 && !messageContainer.querySelector('.show-history-btn')) {
-        const historyBtn = document.createElement('button');
-        historyBtn.className = 'show-history-btn';
-        historyBtn.textContent = '📜 查看更早的消息';
-        historyBtn.addEventListener('click', () => {
-            // 移除所有 history-message 类
-            messageContainer.querySelectorAll('.history-message').forEach(el => {
-                el.classList.remove('history-message');
-            });
-            // 移除按钮本身
-            historyBtn.remove();
-            // 滚动到顶部
-            messageContainer.scrollTop = 0;
-        });
-        messageContainer.insertBefore(historyBtn, messageContainer.firstChild);
-    }
-    
-    // 【新增】如果当前消息数 >= 30，给新消息添加 history-message 类
-    const shouldHide = currentMessageCount >= 30;
-  // 【新增】获取当前联系人的头像显示设置
+    //  获取当前联系人的头像显示设置
     let showAvatar = true;
     if (currentOpenContactId) {
         const contact = await db.contacts.get(currentOpenContactId);
@@ -3235,16 +3180,8 @@ async function addMessageToUI(sender, text, messageId = null) {
         const messageEl = document.createElement('div');
         messageEl.classList.add('message-bubble');
         messageEl.classList.add(sender === 'user' ? 'user-message' : 'bot-message');
-      // 【修改】根据条件添加隐藏类
-    if (shouldHide) {
-        messageEl.classList.add('history-message');
-    }
         messageEl.innerHTML = `<img src="${url}" alt="${stickerText}" class="message-sticker" onerror="this.style.display='none'; this.parentElement.textContent='[图片加载失败]';">`;
         if (messageId) messageEl.dataset.messageId = messageId;
-        
-        // 【修复】添加隐藏类
-        messageEl.classList.add('history-message');
-        
         messageContainer.appendChild(messageEl);
         messageContainer.scrollTop = messageContainer.scrollHeight;
     } else {
@@ -3252,15 +3189,9 @@ async function addMessageToUI(sender, text, messageId = null) {
         const messageEl = document.createElement('div');
         messageEl.classList.add('message-bubble');
         messageEl.classList.add(sender === 'user' ? 'user-message' : 'bot-message');
-        // 【修改】根据条件添加隐藏类
-    if (shouldHide) {
-        messageEl.classList.add('history-message');
-    }
         messageEl.textContent = text;
         
-   
-        
-        // 【新增】如果需要显示头像
+        //  如果需要显示头像
         if (showAvatar) {
             const avatarEl = document.createElement('img');
             avatarEl.className = 'message-avatar';
@@ -3271,9 +3202,34 @@ async function addMessageToUI(sender, text, messageId = null) {
             avatarEl.style.flexShrink = '0';
             
             // 获取头像
-            if (sender === 'user') {
-                avatarEl.src = './assets/default-avatar.png';
+          // 获取头像
+if (sender === 'user') {
+    // 【修复】从联系人的"我的人设"中读取用户头像
+    const contact = await db.contacts.get(currentOpenContactId);
+    
+    if (contact && contact.myPersonaPresetId) {
+        // 如果联系人关联了人设预设，就用人设的头像
+        const myPreset = await db.my_persona_presets.get(contact.myPersonaPresetId);
+        
+        if (myPreset && myPreset.avatarFileKey) {
+            // 人设有头像，就用它
+            const avatarFile = await db.files.get(myPreset.avatarFileKey);
+            if (avatarFile) {
+                avatarEl.src = URL.createObjectURL(avatarFile.file);
             } else {
+                // 找不到文件，用默认头像
+                avatarEl.src = './assets/default-avatar.png';
+            }
+        } else {
+            // 人设没有头像，用默认头像
+            avatarEl.src = './assets/default-avatar.png';
+        }
+    } else {
+        // 没有关联人设，用默认头像
+        avatarEl.src = './assets/default-avatar.png';
+    }
+} else {
+
                 const contact = await db.contacts.get(currentOpenContactId);
                 if (contact && contact.avatarFileKey) {
                     const avatarFile = await db.files.get(contact.avatarFileKey);
@@ -3293,11 +3249,6 @@ async function addMessageToUI(sender, text, messageId = null) {
             messageWrapper.style.alignItems = 'flex-end';
             messageWrapper.style.gap = '8px';
             messageWrapper.style.marginBottom = '12px';
-            
-            // 【修复】给容器也添加隐藏类
-          if (shouldHide) {
-    messageWrapper.classList.add('history-message');
-}
             
             if (sender === 'user') {
                 messageWrapper.style.justifyContent = 'flex-end';
@@ -3444,11 +3395,9 @@ async function addMessageToUI(sender, text, messageId = null) {
             messageContainer.appendChild(messageEl);
         }
         
-        // 【修复】确保滚动到底部
         messageContainer.scrollTop = messageContainer.scrollHeight;
     }
 }
-
 
 
 // 打开消息编辑弹窗
@@ -4453,7 +4402,11 @@ bgLayer.style.pointerEvents = 'none';
         chatInputArea.style.backgroundColor = '';
         chatInputArea.style.backgroundImage = '';
     }
-    
+    //  同时清除输入框本身
+if (chatInput) {
+    chatInput.style.backgroundColor = '#ffffff'; // 恢复白色背景
+}
+
     if (chatInput) {
         chatInput.style.backgroundColor = '';
         chatInput.style.color = '';
@@ -4590,7 +4543,27 @@ async function applyChatStyles() {
         messageContainer.style.backgroundColor = '#f9f9f9';
     }
 }
+    // 3. 【新增】应用底部导航栏背景
+const chatInputArea = document.querySelector('.dialogue-input-area');
+if (chatInputArea) {
+    const bottomBgColor = await db.settings.get('chatBottomBgColor');
+    if (bottomBgColor) {
+        chatInputArea.style.backgroundColor = bottomBgColor.value;
+    }
     
+    const bottomBgFile = await db.files.get('chatBottomBgImage');
+    const bottomBgUrl = await db.settings.get('chatBottomBgUrl');
+    if (bottomBgFile) {
+        chatInputArea.style.backgroundImage = `url('${URL.createObjectURL(bottomBgFile.file)}')`;
+        chatInputArea.style.backgroundSize = 'cover';
+        chatInputArea.style.backgroundPosition = 'center';
+    } else if (bottomBgUrl) {
+        chatInputArea.style.backgroundImage = `url('${bottomBgUrl.value}')`;
+        chatInputArea.style.backgroundSize = 'cover';
+        chatInputArea.style.backgroundPosition = 'center';
+    }
+}
+
     // 4. 应用输入框样式
     const inputBgColor = await db.settings.get('chatInputBgColor');
     if (inputBgColor) {
@@ -5513,58 +5486,35 @@ document.querySelector('.dialogue-list-content').addEventListener('click', async
     if (oldBgLayer) oldBgLayer.remove();
     
     // 【修复】如果有角色专属背景，创建新的背景层
-    if (contact.chatBackgroundFileKey) {
-        const bgFile = await db.files.get(contact.chatBackgroundFileKey);
-        if (bgFile) {
-            const bgImageUrl = URL.createObjectURL(bgFile.file);
-            
-            messageContainer.style.backgroundImage = `url('${bgImageUrl}')`;
-            messageContainer.style.backgroundSize = 'cover';
-            messageContainer.style.backgroundPosition = 'center';
-            messageContainer.style.backgroundAttachment = 'fixed';
-            
-            console.log('✅ 已应用角色专属背景');
-        }
-    } else {
-        messageContainer.style.backgroundImage = '';
-        messageContainer.style.backgroundColor = '#f9f9f9';
+  if (contact.chatBackgroundFileKey) {
+    const bgFile = await db.files.get(contact.chatBackgroundFileKey);
+    if (bgFile) {
+        const bgImageUrl = URL.createObjectURL(bgFile.file);
+        
+        // 【简化】直接设置容器背景
+        messageContainer.style.backgroundImage = `url('${bgImageUrl}')`;
+        messageContainer.style.backgroundSize = 'cover';
+        messageContainer.style.backgroundPosition = 'center';
+        messageContainer.style.backgroundAttachment = 'fixed'; // 关键：固定背景
+        
+        console.log('✅ 已应用角色专属背景');
     }
+} else {
+    // 清除背景
+    messageContainer.style.backgroundImage = '';
+    messageContainer.style.backgroundColor = '#f9f9f9';
+}
  
-    // 【修复】清空消息容器
+    // 【修复】加载历史消息（按顺序等待）
     messageContainer.innerHTML = ''; 
     const history = await db.chatMessages.where('contactId').equals(currentOpenContactId).toArray();
 
-    // 【关键修复】用 for...of 循环 + await 确保按顺序添加
+    // 【改】用 for...of 循环 + await 确保按顺序添加
     for (const msg of history) {
        await addMessageToUI(msg.sender, msg.text, msg.id);
+       //  滚动到最新消息
+       messageContainer.scrollTop = messageContainer.scrollHeight;
     }
-    
-    // 【新增】等待所有消息渲染完成后再滚动
-    // 使用 requestAnimationFrame 确保 DOM 更新完成
-    requestAnimationFrame(() => {
-        requestAnimationFrame(() => {
-            // 【关键】移除所有隐藏类，确保能正确计算高度
-            const allMessages = messageContainer.querySelectorAll('.history-message');
-            const shouldShowHistory = allMessages.length > 0;
-            
-            if (shouldShowHistory) {
-                // 临时显示所有消息以计算正确的滚动高度
-                allMessages.forEach(el => el.style.display = 'flex');
-            }
-            
-            // 滚动到底部
-            messageContainer.scrollTop = messageContainer.scrollHeight;
-            
-            if (shouldShowHistory) {
-                // 滚动完成后再隐藏历史消息
-                setTimeout(() => {
-                    allMessages.forEach(el => el.style.display = '');
-                }, 50);
-            }
-            
-            console.log('✅ 已滚动到最新消息');
-        });
-    });
     
     // 【修复】最后才应用全局样式（但会跳过角色专属背景）
     setTimeout(() => {
@@ -5574,7 +5524,6 @@ document.querySelector('.dialogue-list-content').addEventListener('click', async
     dialogueListScreen.classList.add('hidden');
     chatWindowScreen.classList.remove('hidden');
 });
-
 
 
     // 【修复】这个函数是干净、正确的版本
@@ -7405,6 +7354,94 @@ contactSettingsAvatarToggle.addEventListener('click', () => {
     contactSettingsAvatarToggle.classList.toggle('active');
 });
 
+// ======================================================
+// 【新功能】撤回AI最新回复并重新生成
+// ======================================================
+const retractBtn = document.querySelector('#retract-btn');
+if (retractBtn) {
+    retractBtn.addEventListener('click', async () => {
+        if (!currentOpenContactId) {
+            alert('请先打开一个对话！');
+            return;
+        }
+        
+        // 1. 获取最新的消息
+        const messages = await db.chatMessages
+            .where('contactId').equals(currentOpenContactId)
+            .reverse()
+            .toArray();
+        
+        if (messages.length === 0) {
+            alert('当前没有消息可以撤回！');
+            return;
+        }
+        
+        // 2. 找到最新的AI回复
+        let lastBotMessageIndex = -1;
+        for (let i = 0; i < messages.length; i++) {
+            if (messages[i].sender === 'bot') {
+                lastBotMessageIndex = i;
+                break; // 找到第一个（也就是最新的）就停止
+            }
+        }
+        
+        if (lastBotMessageIndex === -1) {
+            alert('没有找到AI的回复可以撤回！');
+            return;
+        }
+        
+        // 3. 确认撤回
+        if (!confirm('确定要撤回AI的最新回复吗？\n撤回后会立即重新生成回复。')) {
+            return;
+        }
+        
+        // 4. 删除最新的AI回复（可能是多条消息）
+        const lastBotMessage = messages[lastBotMessageIndex];
+        const lastBotTimestamp = lastBotMessage.timestamp;
+        
+        // 找出所有和这条消息同一时间生成的AI消息（因为AI可能一次回复多条）
+        const messagesToDelete = messages.filter(msg => 
+            msg.sender === 'bot' && 
+            Math.abs(new Date(msg.timestamp) - new Date(lastBotTimestamp)) < 5000 // 5秒内的算同一批
+        );
+        
+        // 5. 从数据库删除
+        for (const msg of messagesToDelete) {
+            await db.chatMessages.delete(msg.id);
+        }
+        
+        // 6. 从UI中移除（从后往前删，避免索引变化）
+        const allBubbles = messageContainer.querySelectorAll('.message-bubble, .message-bubble:has(.message-sticker)');
+        let deletedCount = 0;
+        for (let i = allBubbles.length - 1; i >= 0 && deletedCount < messagesToDelete.length; i--) {
+            const bubble = allBubbles[i];
+            if (bubble.classList.contains('bot-message')) {
+                bubble.parentElement.remove(); // 移除包含头像的wrapper
+                deletedCount++;
+            }
+        }
+        
+        // 7. 显示"正在重新生成..."
+        addMessageToUI('bot', '...');
+        
+        // 8. 重新调用AI生成回复
+        const processingId = Date.now();
+        try {
+            await processAiReply(currentOpenContactId, processingId);
+        } catch (error) {
+            console.error('重新生成失败:', error);
+            // 移除"正在思考"
+            const typingBubble = messageContainer.querySelector('.message-bubble:last-child');
+            if (typingBubble && typingBubble.textContent === '...') {
+                typingBubble.remove();
+            }
+            addMessageToUI('bot', '（重新生成失败，请点击"接收"按钮手动重试）');
+        }
+        
+        // 9. 刷新联系人列表
+        renderContactList();
+    });
+}
 
 //这是事件监听的最底部//  
   </script>
