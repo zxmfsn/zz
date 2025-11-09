@@ -384,7 +384,10 @@ body {
             font-size: 16px; /* 默认的h2太大了，我们把它改小一点 */
         }
         /* --- 添加结束 --- */
-
+/* 强制设置聊天窗口标题的字体大小 */
+#chat-window-title {
+    font-size: 16px !important; /* 改成你想要的大小 */
+}
          /* --- 从这里开始添加“联系人列表项”的新样式 --- */
         
         .contact-list-item {
@@ -1690,6 +1693,7 @@ body {
                     <img id="chat-nav-bg-preview" src="" alt="" style="width: 40px; height: 40px; object-fit: cover; border-radius: 5px; border: 1px solid #ccc; display: none;">
                 </div>
             </div>
+          
         </div>
         
         <!-- 4.2 聊天壁纸 -->
@@ -2315,6 +2319,15 @@ body {
         <div class="toggle-handle"></div>
         <div class="toggle-label">是</div>
     </div>
+                <div class="setting-item">
+    <label>是否启用情侣头像?</label>
+    <div class="toggle-switch" id="contact-settings-couple-avatar-toggle">
+        <div class="toggle-label">否</div>
+        <div class="toggle-handle"></div>
+        <div class="toggle-label">是</div>
+    </div>
+</div>
+
 </div>
 
 <!-- 【新添加】上下文参考轮数 -->
@@ -2417,6 +2430,43 @@ body {
 
 </div>
 
+<!-- 情侣头像设置弹窗 -->
+<div id="couple-avatar-popup" class="popup solid-popup hidden">
+    <div class="popup-content solid-popup-content" style="width: 320px; max-height: 600px;">
+        <h3>设置情侣头像</h3>
+        
+        <!-- 用户头像 -->
+        <div class="setting-item">
+            <label>我的头像</label>
+            <div class="avatar-preview-container">
+                <img id="couple-user-avatar-preview" src="./assets/default-avatar.png" alt="我的头像" style="width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 3px solid #007aff;">
+            </div>
+            <label for="couple-user-avatar-input" class="file-label" style="background-color: rgba(0, 122, 255, 0.8);">
+                上传我的头像
+            </label>
+            <input type="file" id="couple-user-avatar-input" accept="image/*" style="display: none;">
+        </div>
+        
+        <!-- AI头像 -->
+        <div class="setting-item">
+            <label>对方头像</label>
+            <div class="avatar-preview-container">
+                <img id="couple-bot-avatar-preview" src="./assets/default-avatar.png" alt="对方头像" style="width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 3px solid #ff3b30;">
+            </div>
+            <label for="couple-bot-avatar-input" class="file-label" style="background-color: rgba(255, 59, 48, 0.8);">
+                上传对方头像
+            </label>
+            <input type="file" id="couple-bot-avatar-input" accept="image/*" style="display: none;">
+        </div>
+        
+        <div class="button-group" style="margin-top: 20px;">
+            <button class="btn-clear" id="couple-avatar-cancel-btn">取消</button>
+            <button class="btn-save" id="couple-avatar-save-btn">保存</button>
+        </div>
+        
+        <button id="couple-avatar-close-btn" class="close-btn">×</button>
+    </div>
+</div>
 
 
         <!-- 未来可以在这里添加其他手风琴项 -->
@@ -2817,6 +2867,15 @@ let summarySearchTimeout = null; // 用于搜索防抖
     const accordionHeader3 = document.querySelector('#accordion-header-3');
     const accordionContent3 = document.querySelector('#accordion-content-3');
       const contactSettingsAvatarToggle = document.querySelector('#contact-settings-avatar-toggle');
+const contactSettingsCoupleAvatarToggle = document.querySelector('#contact-settings-couple-avatar-toggle');
+const coupleAvatarPopup = document.querySelector('#couple-avatar-popup');
+const coupleUserAvatarPreview = document.querySelector('#couple-user-avatar-preview');
+const coupleUserAvatarInput = document.querySelector('#couple-user-avatar-input');
+const coupleBotAvatarPreview = document.querySelector('#couple-bot-avatar-preview');
+const coupleBotAvatarInput = document.querySelector('#couple-bot-avatar-input');
+const coupleAvatarSaveBtn = document.querySelector('#couple-avatar-save-btn');
+const coupleAvatarCancelBtn = document.querySelector('#couple-avatar-cancel-btn');
+const coupleAvatarCloseBtn = document.querySelector('#couple-avatar-close-btn');
 
       //  聊天界面美化的元素抓取
 const accordionHeader4 = document.querySelector('#accordion-header-4');
@@ -3201,34 +3260,66 @@ async function addMessageToUI(sender, text, messageId = null) {
             avatarEl.style.objectFit = 'cover';
             avatarEl.style.flexShrink = '0';
             
-            // 获取头像
-          // 获取头像
+        
+// 获取头像（优先使用情侣头像）
+const contact = await db.contacts.get(currentOpenContactId);
+
 if (sender === 'user') {
-    // 【修复】从联系人的"我的人设"中读取用户头像
-    const contact = await db.contacts.get(currentOpenContactId);
-    
-    if (contact && contact.myPersonaPresetId) {
-        // 如果联系人关联了人设预设，就用人设的头像
+    // 【优先级1】如果启用了情侣头像，优先使用
+    if (contact && contact.coupleAvatarEnabled && contact.coupleUserAvatarFileKey) {
+        const coupleFile = await db.files.get(contact.coupleUserAvatarFileKey);
+        if (coupleFile) {
+            avatarEl.src = URL.createObjectURL(coupleFile.file);
+        } else {
+            // 找不到情侣头像，使用默认
+            avatarEl.src = './assets/default-avatar.png';
+        }
+    }
+    // 【优先级2】否则从"我的人设"读取
+    else if (contact && contact.myPersonaPresetId) {
         const myPreset = await db.my_persona_presets.get(contact.myPersonaPresetId);
         
         if (myPreset && myPreset.avatarFileKey) {
-            // 人设有头像，就用它
             const avatarFile = await db.files.get(myPreset.avatarFileKey);
             if (avatarFile) {
                 avatarEl.src = URL.createObjectURL(avatarFile.file);
             } else {
-                // 找不到文件，用默认头像
                 avatarEl.src = './assets/default-avatar.png';
             }
         } else {
-            // 人设没有头像，用默认头像
             avatarEl.src = './assets/default-avatar.png';
         }
-    } else {
-        // 没有关联人设，用默认头像
+    }
+    // 【优先级3】都没有就用默认
+    else {
         avatarEl.src = './assets/default-avatar.png';
     }
 } else {
+    // AI的头像
+    // 【优先级1】如果启用了情侣头像，优先使用
+    if (contact && contact.coupleAvatarEnabled && contact.coupleBotAvatarFileKey) {
+        const coupleFile = await db.files.get(contact.coupleBotAvatarFileKey);
+        if (coupleFile) {
+            avatarEl.src = URL.createObjectURL(coupleFile.file);
+        } else {
+            avatarEl.src = './assets/default-avatar.png';
+        }
+    }
+    // 【优先级2】否则用联系人自己的头像
+    else if (contact && contact.avatarFileKey) {
+        const avatarFile = await db.files.get(contact.avatarFileKey);
+        if (avatarFile) {
+            avatarEl.src = URL.createObjectURL(avatarFile.file);
+        } else {
+            avatarEl.src = './assets/default-avatar.png';
+        }
+    }
+    // 【优先级3】都没有就用默认
+    else {
+        avatarEl.src = './assets/default-avatar.png';
+    }
+
+
 
                 const contact = await db.contacts.get(currentOpenContactId);
                 if (contact && contact.avatarFileKey) {
@@ -3695,17 +3786,19 @@ ${stickerListText}
    - 每条消息长度：5-50字（模拟真实打字节奏）
    - 用"|||"分隔每条消息
 
-3. **消息风格要求**
+3. **消息风格要求（重要！）**
+   ✅ 每条消息控制在 5-30 字
+   ✅ 不要一次说完一整段话
    ✅ 口语化：哈哈、emmm、诶、哇、哦
    ✅ 自然节奏：有时一句话，有时几个字
    ✅ 情绪真实：会停顿、会纠正、会打岔
    ✅ 符合人设：根据角色性格调整语气
-   ${stickerListText ? '✅ 适时发送表情包：注意格式规则' : ''}
    
-   ❌ 避免：
-   - 过长的单条消息（超过50字）
-   - 说教式、列表式的回复
-   - 过于正式的措辞
+   ❌ **严禁**：
+   - 一条消息超过40字
+   - 把多个意思挤在一条消息里
+   - 一次性回答完所有问题
+
 
 ---
 
@@ -3716,6 +3809,10 @@ ${stickerListText}
 
 **示例：**
 哈哈你也在啊|||刚才去吃饭了|||诶对了|||上次你说的那个事儿|||我想了想|||可能这样比较好|||要不明天试试？|||你觉得呢
+
+**错误示例（不要这样）：**
+❌ 哈哈你也在啊，我刚才去吃饭了，诶对了，上次你说的那个事儿我想了想，可能这样比较好，要不明天试试？你觉得呢
+（太长了！要拆成多条）
 
 ${stickerListText ? `\n**发送表情包示例：**\n哈哈|||<sticker>笑哭</sticker>|||你太逗了|||不行了|||<sticker>赞</sticker>\n（注意：每个 <sticker> 标签必须独占一条消息）` : ''}
 
@@ -5280,6 +5377,13 @@ apiSummaryPresetSelector.addEventListener('change', async () => {
     } else {
         contactSettingsAvatarToggle.classList.remove('active');
     }
+      // 加载"是否启用情侣头像"
+if (contact.coupleAvatarEnabled) {
+    contactSettingsCoupleAvatarToggle.classList.add('active');
+} else {
+    contactSettingsCoupleAvatarToggle.classList.remove('active');
+}
+
         contactSettingsAvatarInput.value = '';
         contactSettingsBgInput.value = '';
         chatWindowScreen.classList.add('hidden');
@@ -5396,7 +5500,9 @@ apiSummaryPresetSelector.addEventListener('change', async () => {
          myPersonaPresetId: parseInt(contactSettingsMyPersonaPresetSelect.value) || null,
  myPersonaSupplement: contactSettingsMyPersonaSupplementInput.value,
               contextRounds: parseInt(contactSettingsContextValue.value) || 10,
-               showAvatar: contactSettingsAvatarToggle.classList.contains('active')
+               showAvatar: contactSettingsAvatarToggle.classList.contains('active'),
+              coupleAvatarEnabled: contactSettingsCoupleAvatarToggle.classList.contains('active')
+
             
             };
             const avatarFile = contactSettingsAvatarInput.files[0];
@@ -7410,16 +7516,31 @@ if (retractBtn) {
             await db.chatMessages.delete(msg.id);
         }
         
-        // 6. 从UI中移除（从后往前删，避免索引变化）
-        const allBubbles = messageContainer.querySelectorAll('.message-bubble, .message-bubble:has(.message-sticker)');
-        let deletedCount = 0;
-        for (let i = allBubbles.length - 1; i >= 0 && deletedCount < messagesToDelete.length; i--) {
-            const bubble = allBubbles[i];
-            if (bubble.classList.contains('bot-message')) {
-                bubble.parentElement.remove(); // 移除包含头像的wrapper
-                deletedCount++;
-            }
+    // 6. 【修复】从UI中移除消息（兼容有头像和无头像两种情况）
+const allBubbles = Array.from(messageContainer.querySelectorAll('.message-bubble'));
+let deletedCount = 0;
+
+// 从后往前遍历（避免删除时索引变化）
+for (let i = allBubbles.length - 1; i >= 0 && deletedCount < messagesToDelete.length; i--) {
+    const bubble = allBubbles[i];
+    
+    // 只删除AI的消息
+    if (bubble.classList.contains('bot-message')) {
+        // 检查是否有头像容器（messageWrapper）
+        const wrapper = bubble.closest('div[style*="display: flex"]');
+        
+        if (wrapper && wrapper !== messageContainer) {
+            // 有头像：删除整个wrapper
+            wrapper.remove();
+        } else {
+            // 没有头像：直接删除气泡
+            bubble.remove();
         }
+        
+        deletedCount++;
+    }
+}
+
         
         // 7. 显示"正在重新生成..."
         addMessageToUI('bot', '...');
@@ -7442,6 +7563,185 @@ if (retractBtn) {
         renderContactList();
     });
 }
+// ======================================================
+// 【新功能】情侣头像功能
+// ======================================================
+
+
+// 1. 点击"启用情侣头像"开关
+contactSettingsCoupleAvatarToggle.addEventListener('click', async () => {
+    // 【关键修复】先检查是否有当前联系人
+    if (!currentOpenContactId) {
+        alert('请先打开一个联系人的设置页面！');
+        return;
+    }
+    
+    // 切换开关状态
+    const willBeActive = !contactSettingsCoupleAvatarToggle.classList.contains('active');
+    
+    if (willBeActive) {
+        // 【关键】开启时，立即打开弹窗
+        contactSettingsCoupleAvatarToggle.classList.add('active');
+        await openCoupleAvatarPopup();
+    } else {
+        // 关闭时，直接关闭（不需要弹窗）
+        contactSettingsCoupleAvatarToggle.classList.remove('active');
+        // 同时保存关闭状态
+        await db.contacts.update(currentOpenContactId, {
+            coupleAvatarEnabled: false
+        });
+    }
+});
+
+// 2. 打开情侣头像弹窗
+async function openCoupleAvatarPopup() {
+    if (!currentOpenContactId) {
+        alert('错误：没有当前联系人！');
+        return;
+    }
+    
+    const contact = await db.contacts.get(currentOpenContactId);
+    if (!contact) {
+        alert('错误：找不到联系人数据！');
+        return;
+    }
+    
+    // 加载已保存的头像（如果有）
+    coupleUserAvatarPreview.src = './assets/default-avatar.png';
+    coupleBotAvatarPreview.src = './assets/default-avatar.png';
+    
+    if (contact.coupleUserAvatarFileKey) {
+        const userFile = await db.files.get(contact.coupleUserAvatarFileKey);
+        if (userFile) {
+            coupleUserAvatarPreview.src = URL.createObjectURL(userFile.file);
+        }
+    }
+    
+    if (contact.coupleBotAvatarFileKey) {
+        const botFile = await db.files.get(contact.coupleBotAvatarFileKey);
+        if (botFile) {
+            coupleBotAvatarPreview.src = URL.createObjectURL(botFile.file);
+        }
+    }
+    
+    // 清空文件选择器
+    coupleUserAvatarInput.value = '';
+    coupleBotAvatarInput.value = '';
+    
+    // 【关键修复】把弹窗移到body下，并强制设置样式
+    document.body.appendChild(coupleAvatarPopup);
+    coupleAvatarPopup.style.position = 'fixed';
+    coupleAvatarPopup.style.top = '0';
+    coupleAvatarPopup.style.left = '0';
+    coupleAvatarPopup.style.width = '100vw';
+    coupleAvatarPopup.style.height = '100vh';
+    coupleAvatarPopup.style.backgroundColor = 'rgba(0, 0, 0, 0.6)';
+    coupleAvatarPopup.style.display = 'flex';
+    coupleAvatarPopup.style.justifyContent = 'center';
+    coupleAvatarPopup.style.alignItems = 'center';
+    coupleAvatarPopup.style.zIndex = '999999';
+    
+    // 确保内容框也正确显示
+    const content = coupleAvatarPopup.querySelector('.popup-content');
+    if (content) {
+        content.style.backgroundColor = '#ffffff';
+        content.style.padding = '20px 25px';
+        content.style.borderRadius = '25px';
+    }
+    
+    // 移除hidden类
+    coupleAvatarPopup.classList.remove('hidden');
+}
+
+
+// 3. 用户头像预览
+coupleUserAvatarInput.addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+            coupleUserAvatarPreview.src = ev.target.result;
+        };
+        reader.readAsDataURL(file);
+    }
+});
+
+// 4. AI头像预览
+coupleBotAvatarInput.addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+            coupleBotAvatarPreview.src = ev.target.result;
+        };
+        reader.readAsDataURL(file);
+    }
+});
+
+// 5. 保存情侣头像
+coupleAvatarSaveBtn.addEventListener('click', async () => {
+    if (!currentOpenContactId) return;
+    
+    const userFile = coupleUserAvatarInput.files[0];
+    const botFile = coupleBotAvatarInput.files[0];
+    
+    if (!userFile || !botFile) {
+        alert('请同时上传双方的头像！');
+        return;
+    }
+    
+    try {
+        // 保存用户头像
+        const userFileKey = `couple_user_${Date.now()}`;
+        await db.files.put({ key: userFileKey, file: userFile });
+        
+        // 保存AI头像
+        const botFileKey = `couple_bot_${Date.now()}`;
+        await db.files.put({ key: botFileKey, file: botFile });
+        
+        // 更新数据库
+        await db.contacts.update(currentOpenContactId, {
+            coupleUserAvatarFileKey: userFileKey,
+            coupleBotAvatarFileKey: botFileKey,
+            coupleAvatarEnabled: true
+        });
+        
+        alert('情侣头像已保存！');
+        coupleAvatarPopup.classList.add('hidden');
+        
+    } catch (error) {
+        console.error('保存失败:', error);
+        alert('保存失败，请重试！');
+    }
+});
+
+
+// 6. 取消/关闭按钮（点击取消时，也要关闭开关）
+coupleAvatarCancelBtn.addEventListener('click', () => {
+    coupleAvatarPopup.classList.add('hidden');
+    
+    // 【关键】如果用户点了取消，就把开关也关掉
+    contactSettingsCoupleAvatarToggle.classList.remove('active');
+});
+
+
+coupleAvatarCloseBtn.addEventListener('click', () => {
+    coupleAvatarPopup.classList.add('hidden');
+    
+    // 【关键】如果用户点了关闭，就把开关也关掉
+    contactSettingsCoupleAvatarToggle.classList.remove('active');
+});
+
+
+coupleAvatarPopup.addEventListener('click', (e) => {
+    if (e.target === coupleAvatarPopup) {
+        coupleAvatarPopup.classList.add('hidden');
+        
+        // 【关键】如果用户点了背景关闭，就把开关也关掉
+        contactSettingsCoupleAvatarToggle.classList.remove('active');
+    }
+});
+
 
 //这是事件监听的最底部//  
   </script>
