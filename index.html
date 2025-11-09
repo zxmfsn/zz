@@ -2,7 +2,8 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+ <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
     <title>AI小手机</title>
     
     <style>
@@ -384,10 +385,36 @@ body {
             font-size: 16px; /* 默认的h2太大了，我们把它改小一点 */
         }
         /* --- 添加结束 --- */
+      <!-- ======================================================= -->
+<!-- 【新增】朋友圈页面 -->
+<!-- ======================================================= -->
+<div class="moments-screen hidden">
+    <nav class="theme-nav">
+        <button id="moments-settings-btn" class="back-btn">⚙️</button>
+        <h2>朋友圈</h2>
+        <button id="moments-add-btn" class="nav-action-btn">+</button>
+    </nav>
+    
+    <div class="moments-content" id="moments-content">
+        <p class="empty-list-message">暂无动态，点击右上角 + 号发布第一条动态</p>
+    </div>
+    
+    <!-- 复用底部标签栏 -->
+    <div class="bottom-tab-bar">
+        <button class="tab-btn" id="tab-contacts-2">
+            <span>联系人</span>
+        </button>
+        <button class="tab-btn" id="tab-moments-2">
+            <span>朋友圈</span>
+        </button>
+    </div>
+</div>
+
 /* 强制设置聊天窗口标题的字体大小 */
 #chat-window-title {
     font-size: 16px !important; /* 改成你想要的大小 */
 }
+      
          /* --- 从这里开始添加“联系人列表项”的新样式 --- */
         
         .contact-list-item {
@@ -1500,6 +1527,541 @@ body {
     color: #333;
 }
 
+/* ============================================= */
+/* 【iOS修复】防止输入框聚焦时页面放大 */
+/* ============================================= */
+
+/* 1. 确保所有输入框字体大小至少16px（iOS关键） */
+input, textarea, select {
+    font-size: 16px !important;
+}
+
+/* 2. 特殊处理密码输入框 */
+input[type="password"] {
+    font-size: 16px !important;
+}
+
+/* 3. 禁用iOS的自动缩放 */
+input:focus, textarea:focus, select:focus {
+    font-size: 16px !important;
+}
+
+/* 4. 确保body不会被缩放 */
+body {
+    -webkit-text-size-adjust: 100%;
+    -moz-text-size-adjust: 100%;
+    -ms-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+}
+
+/* 5. 特殊处理聊天输入框 */
+#chat-input-box {
+    font-size: 16px !important;
+}
+
+/* 6. 特殊处理弹窗中的输入框 */
+.popup-content input,
+.popup-content textarea {
+    font-size: 16px !important;
+}
+
+/* 7. 设置页面的输入框 */
+.setting-item input,
+.setting-item textarea {
+    font-size: 16px !important;
+}
+/* ============================================= */
+/* 【新功能】多选删除消息模式 */
+/* ============================================= */
+
+/* 1. 删除按钮的样式 */
+#batch-delete-btn {
+    position: absolute;
+    left: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    background-color: #ff3b30;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 5px 10px;
+    font-size: 13px;
+    cursor: pointer;
+    display: none; /* 默认隐藏 */
+    z-index: 10;
+}
+
+#batch-delete-btn:hover {
+    background-color: #ff1f1f;
+}
+
+/* 2. 消息被选中时的样式 */
+.message-bubble.selected {
+    background-color: rgba(255, 59, 48, 0.2) !important;
+    border: 2px solid #ff3b30 !important;
+    box-shadow: 0 0 0 3px rgba(255, 59, 48, 0.1) !important;
+}
+
+/* ============================================= */
+/* 【新增】朋友圈功能专属样式 */
+/* ============================================= */
+
+/* 1. 底部标签栏 */
+.bottom-tab-bar {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 60px;
+    background-color: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    z-index: 50;
+    box-sizing: border-box;
+}
+
+/* 2. 标签按钮 */
+.bottom-tab-bar .tab-btn {
+    flex: 1;
+    height: 100%;
+    background: none;
+    border: none;
+    font-size: 15px;
+    color: #666;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: color 0.2s;
+}
+
+.bottom-tab-bar .tab-btn:hover {
+    color: #333;
+}
+
+/* 3. 朋友圈页面容器 */
+.moments-screen {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #f9f9f9;
+    z-index: 210;
+    display: flex;
+    flex-direction: column;
+}
+
+/* 4. 朋友圈内容区域 */
+.moments-content {
+    flex-grow: 1;
+    overflow-y: auto;
+    padding: 10px;
+    padding-bottom: 70px; /* 留出底部标签栏的空间 */
+    -webkit-overflow-scrolling: touch;
+}
+
+/* 5. 调整联系人列表的底部间距（避免被标签栏遮挡） */
+.dialogue-list-content {
+    padding-bottom: 70px !important; /* 只影响联系人列表 */
+}
+
+
+      /* ============================================= */
+/* 【新增】朋友圈卡片样式 */
+/* ============================================= */
+
+/* 1. 单个朋友圈卡片 */
+.moment-card {
+    background-color: #ffffff;
+    border-radius: 12px;
+    padding: 15px;
+    margin-bottom: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    transition: box-shadow 0.2s;
+}
+
+.moment-card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* 2. 卡片头部（头像 + 用户信息） */
+.moment-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.moment-avatar {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-right: 12px;
+    border: 2px solid #f0f0f0;
+}
+
+.moment-user-info {
+    flex-grow: 1;
+}
+
+.moment-username {
+    font-size: 15px;
+    font-weight: bold;
+    color: #333;
+    margin: 0 0 4px 0;
+}
+
+.moment-time {
+    font-size: 12px;
+    color: #999;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+/* 3. 内容区域 */
+.moment-content-text {
+    font-size: 15px;
+    line-height: 1.6;
+    color: #333;
+    margin-bottom: 10px;
+    word-wrap: break-word;
+}
+
+/* 4. 话题标签 */
+.moment-hashtag {
+    color: #007aff;
+    text-decoration: none;
+    margin-right: 5px;
+}
+
+.moment-hashtag:hover {
+    text-decoration: underline;
+}
+
+/* 5. 定位信息 */
+.moment-location {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 13px;
+    color: #666;
+    margin-bottom: 10px;
+}
+
+.moment-location-icon {
+    font-size: 14px;
+}
+
+/* 6. 图片网格（最多9张） */
+.moment-images {
+    display: grid;
+    gap: 4px;
+    margin-bottom: 12px;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+/* 1张图片 */
+.moment-images.count-1 {
+    grid-template-columns: 1fr;
+    max-width: 200px;
+}
+
+/* 2张图片 */
+.moment-images.count-2 {
+    grid-template-columns: repeat(2, 1fr);
+}
+
+/* 3张图片 */
+.moment-images.count-3 {
+    grid-template-columns: repeat(3, 1fr);
+}
+
+/* 4张图片 */
+.moment-images.count-4 {
+    grid-template-columns: repeat(2, 1fr);
+}
+
+/* 6张图片 */
+.moment-images.count-6 {
+    grid-template-columns: repeat(3, 1fr);
+}
+
+/* 9张图片 */
+.moment-images.count-9 {
+    grid-template-columns: repeat(3, 1fr);
+}
+
+.moment-image {
+    width: 100%;
+    aspect-ratio: 1;
+    object-fit: cover;
+    cursor: pointer;
+    transition: opacity 0.2s;
+}
+
+.moment-image:hover {
+    opacity: 0.9;
+}
+
+/* 7. 互动区域 */
+.moment-actions {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    padding-top: 10px;
+    border-top: 1px solid #f0f0f0;
+}
+
+.moment-action-btn {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
+    padding: 8px 0;
+    background: none;
+    border: none;
+    color: #666;
+    font-size: 14px;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+.moment-action-btn:hover {
+    color: #007aff;
+}
+
+.moment-action-btn.liked {
+    color: #ff3b30;
+}
+
+.moment-action-icon {
+    font-size: 18px;
+}
+/* ============================================= */
+/* 【新增】发布动态弹窗样式 */
+/* ============================================= */
+
+/* 1. 弹窗遮罩层 */
+.publish-moment-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+    z-index: 1000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+/* 2. 弹窗主体 */
+.publish-moment-modal {
+    background-color: #ffffff;
+    border-radius: 16px;
+    width: 100%;
+    max-width: 500px;
+    max-height: 80vh;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    overflow: hidden;
+}
+
+/* 3. 弹窗头部 */
+.publish-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.publish-header h3 {
+    margin: 0;
+    font-size: 17px;
+    font-weight: bold;
+    color: #333;
+}
+
+.publish-cancel-btn,
+.publish-submit-btn {
+    background: none;
+    border: none;
+    font-size: 16px;
+    cursor: pointer;
+    padding: 5px 10px;
+}
+
+.publish-cancel-btn {
+    color: #666;
+}
+
+.publish-submit-btn {
+    color: #007aff;
+    font-weight: bold;
+}
+
+.publish-submit-btn:disabled {
+    color: #ccc;
+    cursor: not-allowed;
+}
+
+/* 4. 弹窗内容区 */
+.publish-content {
+    flex-grow: 1;
+    overflow-y: auto;
+    padding: 20px;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* 5. 文字输入框 */
+#publish-textarea {
+    width: 100%;
+    min-height: 120px;
+    padding: 10px;
+    font-size: 15px;
+    line-height: 1.6;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    resize: none;
+    margin-bottom: 15px;
+    font-family: inherit;
+    box-sizing: border-box;
+}
+
+#publish-textarea:focus {
+    outline: none;
+    border-color: #007aff;
+}
+
+/* 6. 话题标签输入 */
+.publish-hashtags {
+    margin-bottom: 15px;
+}
+
+#publish-hashtag-input {
+    width: 100%;
+    padding: 10px;
+    font-size: 14px;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    box-sizing: border-box;
+}
+
+#publish-hashtag-input:focus {
+    outline: none;
+    border-color: #007aff;
+}
+
+/* 7. 定位输入 */
+.publish-location {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 15px;
+}
+
+.location-icon {
+    font-size: 18px;
+}
+
+#publish-location-input {
+    flex-grow: 1;
+    padding: 10px;
+    font-size: 14px;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    box-sizing: border-box;
+}
+
+#publish-location-input:focus {
+    outline: none;
+    border-color: #007aff;
+}
+
+/* 8. 图片预览区 */
+.publish-images-preview {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    margin-bottom: 15px;
+}
+
+.preview-image-wrapper {
+    position: relative;
+    aspect-ratio: 1;
+    border-radius: 8px;
+    overflow: hidden;
+    background-color: #f0f0f0;
+}
+
+.preview-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.remove-image-btn {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    width: 24px;
+    height: 24px;
+    background-color: rgba(0, 0, 0, 0.6);
+    border: none;
+    border-radius: 50%;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* 9. 添加图片按钮 */
+.publish-add-image {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.add-image-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 15px;
+    background-color: #f0f0f0;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.add-image-btn:hover {
+    background-color: #e0e0e0;
+}
+
+.add-image-icon {
+    font-size: 20px;
+}
+
+.image-count-hint {
+    font-size: 12px;
+    color: #999;
+}
 
         /*这里是CSSstyle的末尾，最底下*/ 
 
@@ -1947,8 +2509,61 @@ body {
         
     </div>
 </div>
-   
-                </div>
+   <!-- 【新添加】数据设置手风琴 -->
+<div class="accordion-item">
+    <div class="accordion-header" id="data-accordion-header">
+        <span>数据设置</span>
+        <span class="arrow">&gt;</span>
+    </div>
+    <div class="accordion-content" id="data-accordion-content">
+        
+        <!-- 1. Token 统计 -->
+        <div class="editor-section">
+            <h4>📊 数据统计</h4>
+            <div style="background-color: #f9f9f9; padding: 15px; border-radius: 8px; margin-top: 10px;">
+                <p style="margin: 5px 0; font-size: 14px; color: #555;">
+                    <strong>联系人数量：</strong><span id="stat-contacts-count">计算中...</span>
+                </p>
+                <p style="margin: 5px 0; font-size: 14px; color: #555;">
+                    <strong>聊天消息数：</strong><span id="stat-messages-count">计算中...</span>
+                </p>
+                <p style="margin: 5px 0; font-size: 14px; color: #555;">
+                    <strong>世界书条目：</strong><span id="stat-worldbook-count">计算中...</span>
+                </p>
+                <p style="margin: 5px 0; font-size: 14px; color: #555;">
+                    <strong>预估 Token 数：</strong><span id="stat-token-count">计算中...</span>
+                </p>
+                <button id="refresh-stats-btn" class="btn-save" style="width: 100%; margin-top: 10px;">刷新统计</button>
+            </div>
+        </div>
+        
+        <!-- 2. 数据备份 -->
+        <div class="editor-section">
+            <h4>💾 数据备份</h4>
+            <p style="font-size: 12px; color: #777; margin-bottom: 10px;">
+                将所有数据（联系人、聊天记录、世界书等）备份到本地文件
+            </p>
+            <button id="backup-data-btn" class="btn-save" style="width: 100%; background-color: #4cd964;">
+                📥 备份所有数据
+            </button>
+        </div>
+        
+        <!-- 3. 数据恢复 -->
+        <div class="editor-section">
+            <h4>📂 数据恢复</h4>
+            <p style="font-size: 12px; color: #ff3b30; margin-bottom: 10px;">
+                ⚠️ 警告：恢复数据会覆盖当前所有数据！
+            </p>
+            <label for="restore-data-input" class="file-label" style="background-color: rgba(255, 149, 0, 0.8); margin: 0;">
+                📤 选择备份文件恢复
+            </label>
+            <input type="file" id="restore-data-input" accept=".json" style="display: none;">
+        </div>
+        
+    </div>
+</div>
+
+                </div>         
         </div>
         <div class="dialogue-list-screen hidden">
             <nav class="theme-nav">
@@ -1959,14 +2574,109 @@ body {
             <div class="dialogue-list-content">
                 <p class="empty-list-message">暂无对话，点击右上角 + 号开始新聊天</p>
                 </div>
-        </div>
+       <!-- ======================================================= -->
+<!-- 【新增】底部标签栏（联系人 / 朋友圈切换） -->
+<!-- ======================================================= -->
+<div class="bottom-tab-bar">
+    <button class="tab-btn" id="tab-contacts">
+        <span>联系人</span>
+    </button>
+    <button class="tab-btn" id="tab-moments">
+        <span>朋友圈</span>
+    </button>
+</div>
 
-        <div class="chat-window-screen hidden">
-             <nav class="theme-nav">
-                 <button id="chat-window-back-btn" class="back-btn">&lt;</button>
-                <h2 id="chat-window-title">AI 助手</h2>
-           <button id="contact-settings-btn" class="nav-action-btn" style="font-size: 24px; font-weight: bold;">...</button>
-            </nav>
+        </div>
+<!-- 【新增】朋友圈页面 -->
+<div class="moments-screen hidden">
+    <nav class="theme-nav">
+        <button id="moments-settings-btn" class="back-btn">⚙️</button>
+        <h2>朋友圈</h2>
+        <button id="moments-add-btn" class="nav-action-btn">+</button>
+    </nav>
+    
+    <div class="moments-content" id="moments-content">
+        <p class="empty-list-message">暂无动态，点击右上角 + 号发布第一条动态</p>
+    </div>
+    
+    <div class="bottom-tab-bar">
+        <button class="tab-btn" id="tab-contacts-2">
+            <span>联系人</span>
+        </button>
+        <button class="tab-btn" id="tab-moments-2">
+            <span>朋友圈</span>
+        </button>
+    </div>
+</div>
+ <!-- 【在这里添加】发布动态弹窗 -->
+    <div class="publish-moment-overlay hidden" id="publish-moment-overlay">
+        <div class="publish-moment-modal">
+            <div class="publish-header">
+                <button class="publish-cancel-btn" id="publish-cancel-btn">取消</button>
+                <h3>发布动态</h3>
+                <button class="publish-submit-btn" id="publish-submit-btn">发布</button>
+            </div>
+            
+            <div class="publish-content">
+                <!-- 文字输入 -->
+                <textarea 
+                    id="publish-textarea" 
+                    placeholder="分享生活点滴，记录美好瞬间..." 
+                    maxlength="2000"
+                ></textarea>
+                
+                <!-- 话题标签输入 -->
+                <div class="publish-hashtags">
+                    <input 
+                        type="text" 
+                        id="publish-hashtag-input" 
+                        placeholder="添加话题标签（用空格分隔，如：美食 旅行）"
+                    >
+                </div>
+                
+                <!-- 定位输入 -->
+                <div class="publish-location">
+                    <span class="location-icon">📍</span>
+                    <input 
+                        type="text" 
+                        id="publish-location-input" 
+                        placeholder="添加定位（可选）"
+                    >
+                </div>
+                
+                <!-- 图片预览区 -->
+                <div class="publish-images-preview" id="publish-images-preview">
+                    <!-- 图片缩略图会动态添加到这里 -->
+                </div>
+                
+                <!-- 添加图片按钮 -->
+                <div class="publish-add-image">
+                    <label for="publish-image-input" class="add-image-btn">
+                        <span class="add-image-icon">📷</span>
+                        <span>添加图片</span>
+                    </label>
+                    <input 
+                        type="file" 
+                        id="publish-image-input" 
+                        accept="image/*" 
+                        multiple 
+                        style="display: none;"
+                    >
+                    <span class="image-count-hint" id="image-count-hint">最多9张</span>
+                </div>
+            </div>
+        </div>
+    </div>
+  
+          <div class="chat-window-screen hidden">
+    <nav class="theme-nav">
+        <button id="chat-window-back-btn" class="back-btn">&lt;</button>
+        <button id="batch-delete-btn">删除</button>
+        <h2 id="chat-window-title">AI 助手</h2>
+        <button id="contact-settings-btn" class="nav-action-btn" style="font-size: 24px; font-weight: bold;">...</button>
+    </nav>
+
+             </nav>
             
             <div class="message-container" id="message-container">
                 </div>
@@ -2673,6 +3383,25 @@ body {
 
     <script>
       // ======================================================
+// 【iOS修复】防止键盘弹出时的缩放问题
+// ======================================================
+
+// 禁用双击缩放
+let lastTouchEnd = 0;
+document.addEventListener('touchend', function (event) {
+    const now = Date.now();
+    if (now - lastTouchEnd <= 300) {
+        event.preventDefault();
+    }
+    lastTouchEnd = now;
+}, false);
+
+// 禁用手势缩放
+document.addEventListener('gesturestart', function (e) {
+    e.preventDefault();
+});
+
+      // ======================================================
 //  移动端浏览器视口高度修复（兼容 iOS 和 Android）
 // ======================================================
 // ======================================================
@@ -2814,16 +3543,19 @@ if (window.visualViewport) {
         worldbook_categories: '++id, name',
         worldbook_entries: '++id, categoryId, name'
     });
-db.version(5).stores({
-  contacts: '++id, name, remark, summarySettings, aiSummaryText, myPersonaSupplement, contextRounds',
+db.version(6).stores({
+    contacts: '++id, name, remark, summarySettings, aiSummaryText, myPersonaSupplement, contextRounds',
     contact_worldbook_links: '[contactId+worldbookEntryId], contactId',
     my_persona_presets: '++id, name',
-    sticker_libraries: '++id, name',              // 表情包库
-    stickers: '++id, libraryId, text, url',      // 表情包数据
-    user_sticker_selection: 'key, libraryIds',    // 用户选中的库
-    role_sticker_selection: 'key, libraryIds'     // 角色选中的库
+    sticker_libraries: '++id, name',
+    stickers: '++id, libraryId, text, url',
+    user_sticker_selection: 'key, libraryIds',
+    role_sticker_selection: 'key, libraryIds',
+    
+    // 【新增】朋友圈相关的表
+    moments: '++id, contactId, timestamp',           // 朋友圈动态
+    moment_comments: '++id, momentId, contactId, timestamp'  // 评论
 });
-
     
     // ======================================================
     // 全局变量
@@ -3081,6 +3813,123 @@ const characterSelectorList = document.querySelector('#character-selector-list')
     // ======================================================
     // 函数定义 (Functions)
     // ======================================================
+
+  // ======================================================
+// 【新增】朋友圈功能 - 核心函数
+// ======================================================
+
+// 1. 渲染朋友圈列表
+async function renderMomentsList() {
+    const momentsContent = document.querySelector('#moments-content');
+    
+    // 从数据库获取所有动态（按时间倒序）
+    const moments = await db.moments.reverse().toArray();
+    
+    if (moments.length === 0) {
+        momentsContent.innerHTML = '<p class="empty-list-message">暂无动态，点击右上角 + 号发布第一条动态</p>';
+        return;
+    }
+    
+    momentsContent.innerHTML = '';
+    
+    for (const moment of moments) {
+        // 获取发布者信息
+        const contact = await db.contacts.get(moment.contactId);
+        if (!contact) continue;
+        
+        // 获取头像
+        let avatarUrl = './assets/default-avatar.png';
+        if (contact.avatarFileKey) {
+            const avatarFile = await db.files.get(contact.avatarFileKey);
+            if (avatarFile) avatarUrl = URL.createObjectURL(avatarFile.file);
+        }
+        
+        // 计算时间差
+        const timeStr = formatMomentTime(moment.timestamp);
+        
+        // 创建卡片HTML
+        const card = document.createElement('div');
+        card.className = 'moment-card';
+        card.dataset.momentId = moment.id;
+        
+        // 处理话题标签
+        let contentHtml = moment.content;
+        if (moment.hashtags && moment.hashtags.length > 0) {
+            moment.hashtags.forEach(tag => {
+                contentHtml += ` <a href="#" class="moment-hashtag">#${tag}</a>`;
+            });
+        }
+        
+        // 构建图片网格
+        let imagesHtml = '';
+        if (moment.images && moment.images.length > 0) {
+            const count = moment.images.length;
+            imagesHtml = `<div class="moment-images count-${count}">`;
+            moment.images.forEach((img, index) => {
+                imagesHtml += `<img src="${img}" alt="图片${index + 1}" class="moment-image" data-index="${index}">`;
+            });
+            imagesHtml += '</div>';
+        }
+        
+        card.innerHTML = `
+            <div class="moment-header">
+                <img src="${avatarUrl}" alt="头像" class="moment-avatar">
+                <div class="moment-user-info">
+                    <p class="moment-username">${contact.name}</p>
+                    <p class="moment-time">${timeStr}</p>
+                </div>
+            </div>
+            
+            <div class="moment-content-text">${contentHtml}</div>
+            
+            ${moment.location ? `
+                <div class="moment-location">
+                    <span class="moment-location-icon">📍</span>
+                    <span>${moment.location}</span>
+                </div>
+            ` : ''}
+            
+            ${imagesHtml}
+            
+            <div class="moment-actions">
+                <button class="moment-action-btn" data-action="like">
+                    <span class="moment-action-icon">❤️</span>
+                    <span>${moment.likeCount || 0}</span>
+                </button>
+                <button class="moment-action-btn" data-action="comment">
+                    <span class="moment-action-icon">💬</span>
+                    <span>${moment.commentCount || 0}</span>
+                </button>
+                <button class="moment-action-btn" data-action="share">
+                    <span class="moment-action-icon">📤</span>
+                    <span>分享</span>
+                </button>
+            </div>
+        `;
+        
+        momentsContent.appendChild(card);
+    }
+}
+
+// 2. 格式化时间显示
+function formatMomentTime(timestamp) {
+    const now = new Date();
+    const postTime = new Date(timestamp);
+    const diff = now - postTime;
+    
+    const seconds = Math.floor(diff / 1000);
+    const minutes = Math.floor(seconds / 60);
+    const hours = Math.floor(minutes / 60);
+    const days = Math.floor(hours / 24);
+    
+    if (seconds < 60) return '刚刚';
+    if (minutes < 60) return `${minutes}分钟前`;
+    if (hours < 24) return `${hours}小时前`;
+    if (days < 7) return `${days}天前`;
+    
+    // 超过7天显示具体日期
+    return `${postTime.getMonth() + 1}月${postTime.getDate()}日`;
+}
     
     function captureDefaultIcons() {
         iconKeys.forEach(key => {
@@ -3321,7 +4170,7 @@ if (sender === 'user') {
 
 
 
-                const contact = await db.contacts.get(currentOpenContactId);
+             
                 if (contact && contact.avatarFileKey) {
                     const avatarFile = await db.files.get(contact.avatarFileKey);
                     if (avatarFile) {
@@ -4106,7 +4955,28 @@ function closePersonaEditor() {
         renderContactList(); 
         await renderCategories();
         await renderWorldbookEntries();
-     
+       // 【新增】创建测试朋友圈数据（仅首次运行）
+    const existingMoments = await db.moments.count();
+    if (existingMoments === 0) {
+        // 创建示例动态
+        await db.moments.add({
+            contactId: 1, // 假设有ID为1的联系人
+            content: '今天发现了一家超棒的咖啡馆，隐藏在巷子深处，环境特别有格调。他们的手冲咖啡真的是一绝，强烈推荐给喜欢咖啡的朋友们！',
+            hashtags: ['美食探店', '咖啡时光'],
+            location: '隐巷咖啡馆 · 市中心',
+            images: [
+                'https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?w=400',
+                'https://images.unsplash.com/photo-1511920170033-f8396924c348?w=400'
+            ],
+            timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000), // 2小时前
+            likes: [],
+            likeCount: 0,
+            commentCount: 0
+        });
+    }
+    
+    // 加载朋友圈列表
+    await renderMomentsList();
 
     })();
     
@@ -7580,12 +8450,24 @@ contactSettingsCoupleAvatarToggle.addEventListener('click', async () => {
     const willBeActive = !contactSettingsCoupleAvatarToggle.classList.contains('active');
     
     if (willBeActive) {
-        // 【关键】开启时，立即打开弹窗
+        // 【新增】如果要开启情侣头像，先检查"显示头像"开关
+        if (!contactSettingsAvatarToggle.classList.contains('active')) {
+            // 如果"显示头像"是关闭的，给出提示并自动打开
+            if (confirm('使用情侣头像需要先开启"是否显示头像"功能。\n是否自动开启？')) {
+                contactSettingsAvatarToggle.classList.add('active');
+            } else {
+                // 用户拒绝，就不打开弹窗
+                return;
+            }
+        }
+        
+        // 开启时，立即打开弹窗
         contactSettingsCoupleAvatarToggle.classList.add('active');
         await openCoupleAvatarPopup();
     } else {
         // 关闭时，直接关闭（不需要弹窗）
         contactSettingsCoupleAvatarToggle.classList.remove('active');
+      
         // 同时保存关闭状态
         await db.contacts.update(currentOpenContactId, {
             coupleAvatarEnabled: false
@@ -7682,23 +8564,38 @@ coupleBotAvatarInput.addEventListener('change', (e) => {
 coupleAvatarSaveBtn.addEventListener('click', async () => {
     if (!currentOpenContactId) return;
     
+    const contact = await db.contacts.get(currentOpenContactId);
+    if (!contact) {
+        alert('错误：找不到联系人数据！');
+        return;
+    }
+    
     const userFile = coupleUserAvatarInput.files[0];
     const botFile = coupleBotAvatarInput.files[0];
     
-    if (!userFile || !botFile) {
-        alert('请同时上传双方的头像！');
+    // 【关键修复】如果用户没有重新上传文件，就使用之前保存的
+    let userFileKey = contact.coupleUserAvatarFileKey;
+    let botFileKey = contact.coupleBotAvatarFileKey;
+    
+    // 如果用户上传了新的用户头像
+    if (userFile) {
+        userFileKey = `couple_user_${Date.now()}`;
+        await db.files.put({ key: userFileKey, file: userFile });
+    }
+    
+    // 如果用户上传了新的AI头像
+    if (botFile) {
+        botFileKey = `couple_bot_${Date.now()}`;
+        await db.files.put({ key: botFileKey, file: botFile });
+    }
+    
+    // 【关键】检查是否至少有一个头像（新的或旧的）
+    if (!userFileKey || !botFileKey) {
+        alert('请至少上传双方的头像一次！');
         return;
     }
     
     try {
-        // 保存用户头像
-        const userFileKey = `couple_user_${Date.now()}`;
-        await db.files.put({ key: userFileKey, file: userFile });
-        
-        // 保存AI头像
-        const botFileKey = `couple_bot_${Date.now()}`;
-        await db.files.put({ key: botFileKey, file: botFile });
-        
         // 更新数据库
         await db.contacts.update(currentOpenContactId, {
             coupleUserAvatarFileKey: userFileKey,
@@ -7741,8 +8638,522 @@ coupleAvatarPopup.addEventListener('click', (e) => {
         contactSettingsCoupleAvatarToggle.classList.remove('active');
     }
 });
+// ======================================================
+// 【新功能】数据设置功能
+// ======================================================
+
+// 1. 手风琴展开/折叠
+const dataAccordionHeader = document.querySelector('#data-accordion-header');
+const dataAccordionContent = document.querySelector('#data-accordion-content');
+
+dataAccordionHeader.addEventListener('click', async () => {
+    dataAccordionHeader.classList.toggle('expanded');
+    dataAccordionContent.classList.toggle('expanded');
+    
+    // 展开时自动刷新统计
+    if (dataAccordionContent.classList.contains('expanded')) {
+        await refreshDataStats();
+    }
+});
+
+// 2. 刷新数据统计
+async function refreshDataStats() {
+    try {
+        // 统计联系人数量
+        const contactsCount = await db.contacts.count();
+        document.querySelector('#stat-contacts-count').textContent = contactsCount;
+        
+        // 统计聊天消息数
+        const messagesCount = await db.chatMessages.count();
+        document.querySelector('#stat-messages-count').textContent = messagesCount;
+        
+        // 统计世界书条目
+        const worldbookCount = await db.worldbook_entries.count();
+        document.querySelector('#stat-worldbook-count').textContent = worldbookCount;
+        
+        // 预估 Token 数（粗略计算：中文1字≈2token，英文1词≈1.3token）
+        let totalTokens = 0;
+        
+        // 联系人人设
+        const contacts = await db.contacts.toArray();
+        contacts.forEach(c => {
+            if (c.persona) totalTokens += Math.ceil(c.persona.length * 2);
+            if (c.aiSummaryText) totalTokens += Math.ceil(c.aiSummaryText.length * 2);
+        });
+        
+        // 聊天消息
+        const messages = await db.chatMessages.toArray();
+        messages.forEach(m => {
+            if (m.text) totalTokens += Math.ceil(m.text.length * 2);
+        });
+        
+        // 世界书
+        const entries = await db.worldbook_entries.toArray();
+        entries.forEach(e => {
+            if (e.content) totalTokens += Math.ceil(e.content.length * 2);
+        });
+        
+        document.querySelector('#stat-token-count').textContent = totalTokens.toLocaleString() + ' (约)';
+        
+    } catch (error) {
+        console.error('统计失败:', error);
+        alert('统计失败，请查看控制台');
+    }
+}
+
+// 3. 刷新统计按钮
+document.querySelector('#refresh-stats-btn').addEventListener('click', refreshDataStats);
+
+// 4. 备份数据
+document.querySelector('#backup-data-btn').addEventListener('click', async () => {
+    try {
+        // 确认备份
+        if (!confirm('确定要备份所有数据吗？\n备份文件将保存到您的下载文件夹。')) {
+            return;
+        }
+        
+        const backupBtn = document.querySelector('#backup-data-btn');
+        backupBtn.disabled = true;
+        backupBtn.textContent = '正在备份...';
+        
+        // 导出所有表的数据
+        const backupData = {
+            version: '1.0',
+            timestamp: new Date().toISOString(),
+            data: {
+                settings: await db.settings.toArray(),
+                files: await db.files.toArray(),
+                contacts: await db.contacts.toArray(),
+                chatMessages: await db.chatMessages.toArray(),
+                apiPresets: await db.apiPresets.toArray(),
+                worldbook_categories: await db.worldbook_categories.toArray(),
+                worldbook_entries: await db.worldbook_entries.toArray(),
+                contact_worldbook_links: await db.contact_worldbook_links.toArray(),
+                my_persona_presets: await db.my_persona_presets.toArray(),
+                sticker_libraries: await db.sticker_libraries.toArray(),
+                stickers: await db.stickers.toArray(),
+                user_sticker_selection: await db.user_sticker_selection.toArray(),
+                role_sticker_selection: await db.role_sticker_selection.toArray()
+            }
+        };
+        
+        // 转换为 JSON
+        const jsonString = JSON.stringify(backupData, null, 2);
+        
+        // 创建下载链接
+        const blob = new Blob([jsonString], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `AI小手机备份_${new Date().toISOString().slice(0, 10)}.json`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        
+        alert('备份成功！文件已下载到您的设备。');
+        
+    } catch (error) {
+        console.error('备份失败:', error);
+        alert('备份失败：' + error.message);
+    } finally {
+        const backupBtn = document.querySelector('#backup-data-btn');
+        backupBtn.disabled = false;
+        backupBtn.textContent = '📥 备份所有数据';
+    }
+});
+
+// 5. 恢复数据
+document.querySelector('#restore-data-input').addEventListener('change', async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    
+    // 严格确认
+    if (!confirm('⚠️ 警告！恢复数据会完全覆盖当前所有数据！\n\n确定要继续吗？')) {
+        e.target.value = '';
+        return;
+    }
+    
+    if (!confirm('最后确认：真的要恢复备份吗？\n这个操作无法撤销！')) {
+        e.target.value = '';
+        return;
+    }
+    
+    try {
+        const reader = new FileReader();
+        reader.onload = async (ev) => {
+            try {
+                const backupData = JSON.parse(ev.target.result);
+                
+                // 验证备份文件
+                if (!backupData.version || !backupData.data) {
+                    throw new Error('无效的备份文件格式');
+                }
+                
+                // 清空所有表
+                await db.settings.clear();
+                await db.files.clear();
+                await db.contacts.clear();
+                await db.chatMessages.clear();
+                await db.apiPresets.clear();
+                await db.worldbook_categories.clear();
+                await db.worldbook_entries.clear();
+                await db.contact_worldbook_links.clear();
+                await db.my_persona_presets.clear();
+                await db.sticker_libraries.clear();
+                await db.stickers.clear();
+                await db.user_sticker_selection.clear();
+                await db.role_sticker_selection.clear();
+                
+                // 恢复数据
+                if (backupData.data.settings) await db.settings.bulkAdd(backupData.data.settings);
+                if (backupData.data.files) await db.files.bulkAdd(backupData.data.files);
+                if (backupData.data.contacts) await db.contacts.bulkAdd(backupData.data.contacts);
+                if (backupData.data.chatMessages) await db.chatMessages.bulkAdd(backupData.data.chatMessages);
+                if (backupData.data.apiPresets) await db.apiPresets.bulkAdd(backupData.data.apiPresets);
+                if (backupData.data.worldbook_categories) await db.worldbook_categories.bulkAdd(backupData.data.worldbook_categories);
+                if (backupData.data.worldbook_entries) await db.worldbook_entries.bulkAdd(backupData.data.worldbook_entries);
+                if (backupData.data.contact_worldbook_links) await db.contact_worldbook_links.bulkAdd(backupData.data.contact_worldbook_links);
+                if (backupData.data.my_persona_presets) await db.my_persona_presets.bulkAdd(backupData.data.my_persona_presets);
+                if (backupData.data.sticker_libraries) await db.sticker_libraries.bulkAdd(backupData.data.sticker_libraries);
+                if (backupData.data.stickers) await db.stickers.bulkAdd(backupData.data.stickers);
+                if (backupData.data.user_sticker_selection) await db.user_sticker_selection.bulkAdd(backupData.data.user_sticker_selection);
+                if (backupData.data.role_sticker_selection) await db.role_sticker_selection.bulkAdd(backupData.data.role_sticker_selection);
+                
+                alert('数据恢复成功！\n页面将自动刷新以加载新数据。');
+                location.reload();
+                
+            } catch (error) {
+                console.error('恢复失败:', error);
+                alert('恢复失败：' + error.message);
+            }
+        };
+        reader.readAsText(file);
+        
+    } catch (error) {
+        console.error('读取文件失败:', error);
+        alert('读取文件失败：' + error.message);
+    } finally {
+        e.target.value = '';
+    }
+});
+
+// ======================================================
+// 【新功能】多选删除消息模式
+// ======================================================
+
+let isBatchDeleteMode = false; // 是否处于多选删除模式
+let selectedMessageIds = new Set(); // 存储被选中的消息ID
+
+// 1. 点击标题栏进入/退出多选模式
+const chatWindowTitle = document.querySelector('#chat-window-title');
+const batchDeleteBtn = document.querySelector('#batch-delete-btn');
+
+// 保存原始标题
+let originalChatTitle = '';
+
+chatWindowTitle.addEventListener('click', async () => {
+    if (!currentOpenContactId) return;
+    
+    // 切换模式
+    isBatchDeleteMode = !isBatchDeleteMode;
+    
+    if (isBatchDeleteMode) {
+        // 【修改】进入多选模式 - 保存原标题并改成删除提示
+        originalChatTitle = chatWindowTitle.textContent;
+        chatWindowTitle.textContent = '删除中，再次点击退出';
+        batchDeleteBtn.style.display = 'block';
+        selectedMessageIds.clear(); // 清空之前的选择
+        
+        // 移除所有消息的选中样式
+        messageContainer.querySelectorAll('.message-bubble').forEach(bubble => {
+            bubble.classList.remove('selected');
+        });
+        
+    } else {
+        // 【修改】退出多选模式 - 恢复原标题
+        chatWindowTitle.textContent = originalChatTitle;
+        batchDeleteBtn.style.display = 'none';
+        selectedMessageIds.clear();
+        
+        // 移除所有消息的选中样式
+        messageContainer.querySelectorAll('.message-bubble').forEach(bubble => {
+            bubble.classList.remove('selected');
+        });
+    }
+});
 
 
+// 2. 点击消息进行选中/取消选中
+messageContainer.addEventListener('click', (e) => {
+    // 只有在多选模式下才响应
+    if (!isBatchDeleteMode) return;
+    
+    // 找到被点击的消息气泡
+    const bubble = e.target.closest('.message-bubble');
+    if (!bubble) return;
+    
+    const messageId = parseInt(bubble.dataset.messageId);
+    if (!messageId) return;
+    
+    // 切换选中状态
+    if (selectedMessageIds.has(messageId)) {
+        // 取消选中
+        selectedMessageIds.delete(messageId);
+        bubble.classList.remove('selected');
+    } else {
+        // 选中
+        selectedMessageIds.add(messageId);
+        bubble.classList.add('selected');
+    }
+    
+    // 更新删除按钮文字
+    if (selectedMessageIds.size > 0) {
+        batchDeleteBtn.textContent = `删除 (${selectedMessageIds.size})`;
+    } else {
+        batchDeleteBtn.textContent = '删除';
+    }
+});
+
+// 3. 点击删除按钮
+
+batchDeleteBtn.addEventListener('click', async () => {
+    if (selectedMessageIds.size === 0) {
+        alert('请先选择要删除的消息！');
+        return;
+    }
+    
+    if (!confirm(`确定要删除选中的 ${selectedMessageIds.size} 条消息吗？`)) {
+        return;
+    }
+    
+    try {
+        // 从数据库删除
+        for (const messageId of selectedMessageIds) {
+            await db.chatMessages.delete(messageId);
+        }
+        
+        // 从UI中移除
+        messageContainer.querySelectorAll('.message-bubble').forEach(bubble => {
+            const messageId = parseInt(bubble.dataset.messageId);
+            if (selectedMessageIds.has(messageId)) {
+                // 检查是否有头像容器
+                const wrapper = bubble.closest('div[style*="display: flex"]');
+                if (wrapper && wrapper !== messageContainer) {
+                    wrapper.remove();
+                } else {
+                    bubble.remove();
+                }
+            }
+        });
+        
+        // 清空选择
+        selectedMessageIds.clear();
+        
+        // 【修改】退出多选模式并恢复标题
+        isBatchDeleteMode = false;
+        chatWindowTitle.textContent = originalChatTitle;
+        batchDeleteBtn.style.display = 'none';
+        batchDeleteBtn.textContent = '删除'; 
+        
+        alert('删除成功！');
+        renderContactList();
+        
+    } catch (error) {
+        console.error('删除失败:', error);
+        alert('删除失败，请重试！');
+    }
+});
+// ======================================================
+// 【新增】朋友圈功能 - 底部标签栏切换
+// ======================================================
+
+// 1. 只抓取新增的元素（不重复声明已有变量）
+const tabContacts = document.querySelector('#tab-contacts');
+const tabContacts2 = document.querySelector('#tab-contacts-2');
+const tabMoments = document.querySelector('#tab-moments');
+const tabMoments2 = document.querySelector('#tab-moments-2');
+const momentsScreen = document.querySelector('.moments-screen');
+const momentsSettingsBtn = document.querySelector('#moments-settings-btn');
+const momentsAddBtn = document.querySelector('#moments-add-btn');
+
+// 2. 添加安全检查（如果元素不存在就不执行）
+if (tabContacts && tabContacts2 && tabMoments && tabMoments2 && momentsScreen) {
+    
+    // 3. 切换到联系人页面
+    function switchToContacts() {
+        dialogueListScreen.classList.remove('hidden');
+        momentsScreen.classList.add('hidden');
+    }
+
+    // 4. 切换到朋友圈页面
+    function switchToMoments() {
+        dialogueListScreen.classList.add('hidden');
+        momentsScreen.classList.remove('hidden');
+    }
+
+    // 5. 绑定事件监听器
+    tabContacts.addEventListener('click', switchToContacts);
+    tabContacts2.addEventListener('click', switchToContacts);
+    tabMoments.addEventListener('click', switchToMoments);
+    tabMoments2.addEventListener('click', switchToMoments);
+
+    // 6. 朋友圈设置按钮
+    if (momentsSettingsBtn) {
+        momentsSettingsBtn.addEventListener('click', () => {
+            appGrid.classList.remove('home-screen-hidden');
+            dock.classList.remove('home-screen-hidden');
+            momentsScreen.classList.add('hidden');
+            dialogueListScreen.classList.add('hidden');
+        });
+    }
+
+   // 7. 发布动态按钮 - 【修复版】
+    // 先在外面定义所有元素和函数
+    const publishOverlay = document.querySelector('#publish-moment-overlay');
+    const publishCancelBtn = document.querySelector('#publish-cancel-btn');
+    const publishSubmitBtn = document.querySelector('#publish-submit-btn');
+    const publishTextarea = document.querySelector('#publish-textarea');
+    const publishHashtagInput = document.querySelector('#publish-hashtag-input');
+    const publishLocationInput = document.querySelector('#publish-location-input');
+    const publishImageInput = document.querySelector('#publish-image-input');
+    const publishImagesPreview = document.querySelector('#publish-images-preview');
+    const imageCountHint = document.querySelector('#image-count-hint');
+
+    let selectedImages = [];
+
+    // 更新图片数量提示
+    function updateImageCountHint() {
+        if (!imageCountHint) return;
+        const count = selectedImages.length;
+        imageCountHint.textContent = count === 0 ? '最多9张' : `已选 ${count}/9 张`;
+    }
+
+    // 渲染图片预览
+    function renderImagePreview() {
+        if (!publishImagesPreview) return;
+        publishImagesPreview.innerHTML = '';
+        
+        selectedImages.forEach((imgSrc, index) => {
+            const wrapper = document.createElement('div');
+            wrapper.className = 'preview-image-wrapper';
+            
+            wrapper.innerHTML = `
+                <img src="${imgSrc}" alt="预览${index + 1}" class="preview-image">
+                <button class="remove-image-btn" data-index="${index}">×</button>
+            `;
+            
+            publishImagesPreview.appendChild(wrapper);
+        });
+        
+        document.querySelectorAll('.remove-image-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const index = parseInt(btn.dataset.index);
+                selectedImages.splice(index, 1);
+                renderImagePreview();
+                updateImageCountHint();
+            });
+        });
+    }
+
+    // 打开发布弹窗
+    if (momentsAddBtn) {
+        momentsAddBtn.addEventListener('click', () => {
+            if (!publishOverlay) return;
+            publishOverlay.classList.remove('hidden');
+            publishTextarea.value = '';
+            publishHashtagInput.value = '';
+            publishLocationInput.value = '';
+            selectedImages = [];
+            publishImagesPreview.innerHTML = '';
+            updateImageCountHint();
+        });
+    }
+
+    // 关闭发布弹窗
+    if (publishCancelBtn) {
+        publishCancelBtn.addEventListener('click', () => {
+            publishOverlay.classList.add('hidden');
+        });
+    }
+
+    // 点击遮罩层也关闭
+    if (publishOverlay) {
+        publishOverlay.addEventListener('click', (e) => {
+            if (e.target === publishOverlay) {
+                publishOverlay.classList.add('hidden');
+            }
+        });
+    }
+
+    // 选择图片
+    if (publishImageInput) {
+        publishImageInput.addEventListener('change', (e) => {
+            const files = Array.from(e.target.files);
+            
+            const remainingSlots = 9 - selectedImages.length;
+            const filesToAdd = files.slice(0, remainingSlots);
+            
+            filesToAdd.forEach(file => {
+                if (file.type.startsWith('image/')) {
+                    const reader = new FileReader();
+                    reader.onload = (event) => {
+                        selectedImages.push(event.target.result);
+                        renderImagePreview();
+                        updateImageCountHint();
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+            
+            e.target.value = '';
+        });
+    }
+
+    // 发布动态
+    if (publishSubmitBtn) {
+        publishSubmitBtn.addEventListener('click', async () => {
+            const content = publishTextarea.value.trim();
+            
+            if (!content && selectedImages.length === 0) {
+                alert('请输入内容或添加图片！');
+                return;
+            }
+            
+            try {
+                const hashtagsText = publishHashtagInput.value.trim();
+                const hashtags = hashtagsText ? hashtagsText.split(/\s+/).filter(t => t) : [];
+                const location = publishLocationInput.value.trim();
+                
+                const momentData = {
+                    contactId: 0,
+                    content: content,
+                    hashtags: hashtags,
+                    location: location || null,
+                    images: selectedImages,
+                    timestamp: new Date(),
+                    likes: [],
+                    likeCount: 0,
+                    commentCount: 0
+                };
+                
+                await db.moments.add(momentData);
+                await renderMomentsList();
+                publishOverlay.classList.add('hidden');
+                alert('发布成功！');
+                
+            } catch (error) {
+                console.error('发布失败:', error);
+                alert('发布失败，请重试！');
+            }
+        });
+    }
+    
+} else {
+    console.error('朋友圈功能初始化失败：找不到必要的HTML元素');
+}
+
+      
 //这是事件监听的最底部//  
   </script>
 <!--这里是body的最下方，有需要添加的功能可以直接搜索，然后添加到这个注释的最上面-->
