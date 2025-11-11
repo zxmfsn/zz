@@ -390,7 +390,7 @@ body {
 <!-- ======================================================= -->
 <div class="moments-screen hidden">
     <nav class="theme-nav">
-        <button id="moments-settings-btn" class="back-btn">⚙️</button>
+     
         <h2>朋友圈</h2>
         <button id="moments-add-btn" class="nav-action-btn">+</button>
     </nav>
@@ -572,6 +572,16 @@ body {
             text-align: center;
             color: #333;
         }
+      /* 【新增】朋友圈页面标题字体大小 */
+.moments-screen .theme-nav h2 {
+    font-size: 16px !important;  /* 改成你想要的大小，比如 18px, 22px, 24px */
+}
+
+/* 【新增】用户主页标题字体大小 */
+.user-profile-screen .theme-nav h2 {
+    font-size: 16px !important;  /* 改成你想要的大小 */
+}
+
         .back-btn {
             background: none;
             border: none;
@@ -2053,6 +2063,27 @@ body {
 .add-image-btn:hover {
     background-color: #e0e0e0;
 }
+/* 【新增】让两个切换按钮和"添加图片"按钮样式完全一致 */
+#image-mode-real,
+#image-mode-text {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 10px 15px;
+    background-color: #f0f0f0;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    font-size: 14px;
+    color: #333;
+}
+
+#image-mode-real:hover,
+#image-mode-text:hover {
+    background-color: #e0e0e0;
+}
 
 .add-image-icon {
     font-size: 20px;
@@ -2062,7 +2093,145 @@ body {
     font-size: 12px;
     color: #999;
 }
+/* ============================================= */
+/* 【新增】用户主页样式 */
+/* ============================================= */
 
+.user-profile-screen {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    background-color: #f5f5f5 !important;
+    z-index: 999999 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+}
+
+.user-profile-screen.hidden {
+    display: none !important;
+}
+
+/* 2. 背景墙区域 */
+.profile-header {
+    position: relative;
+    width: 100%;
+}
+
+.profile-cover {
+    width: 100%;
+    height: 200px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background-size: cover;
+    background-position: center;
+}
+
+/* 3. 头像区域 */
+.profile-avatar-section {
+    position: relative;
+    text-align: center;
+    margin-top: -50px;
+    padding-bottom: 15px;
+    background-color: #ffffff;
+    border-radius: 20px 20px 0 0;
+}
+
+.profile-avatar {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    border: 5px solid #ffffff;
+    object-fit: cover;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.profile-avatar:hover {
+    transform: scale(1.05);
+}
+
+.profile-nickname {
+    margin: 10px 0 0 0;
+    font-size: 20px;
+    font-weight: bold;
+    color: #333;
+}
+.profile-signature {
+    margin: 5px 0 0 0;
+    font-size: 14px;
+    color: #999;
+    min-height: 20px;
+}
+
+/* 4. 统计信息栏 */
+.profile-stats {
+    display: flex;
+    justify-content: space-around;
+    padding: 20px 0;
+    background-color: #ffffff;
+    border-bottom: 8px solid #f5f5f5;
+}
+
+.stat-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.stat-number {
+    font-size: 24px;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 5px;
+}
+
+.stat-label {
+    font-size: 14px;
+    color: #999;
+}
+
+/* 5. 九宫格动态列表 */
+.profile-moments-grid {
+    background-color: #f5f5f5;
+    padding: 10px;
+    min-height: 300px;
+}
+
+
+/* 7. 空状态提示 */
+.profile-moments-grid .empty-list-message {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 60px 20px;
+    color: #999;
+    font-size: 14px;
+}
+/* ============================================= */
+/* 【新增】用户主页设置页面样式 */
+/* ============================================= */
+
+.user-profile-settings-screen {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    background-color: #f0f0f0 !important;
+    z-index: 99999999 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    overflow-y: auto !important;
+}
+
+.user-profile-settings-screen.hidden {
+    display: none !important;
+}
         /*这里是CSSstyle的末尾，最底下*/ 
 
     </style>
@@ -2590,7 +2759,7 @@ body {
 <!-- 【新增】朋友圈页面 -->
 <div class="moments-screen hidden">
     <nav class="theme-nav">
-        <button id="moments-settings-btn" class="back-btn">⚙️</button>
+     
         <h2>朋友圈</h2>
         <button id="moments-add-btn" class="nav-action-btn">+</button>
     </nav>
@@ -2607,6 +2776,8 @@ body {
             <span>朋友圈</span>
         </button>
     </div>
+
+
 </div>
  <!-- 【在这里添加】发布动态弹窗 -->
     <div class="publish-moment-overlay hidden" id="publish-moment-overlay">
@@ -2650,20 +2821,30 @@ body {
                 </div>
                 
                 <!-- 添加图片按钮 -->
-                <div class="publish-add-image">
-                    <label for="publish-image-input" class="add-image-btn">
-                        <span class="add-image-icon">📷</span>
-                        <span>添加图片</span>
-                    </label>
-                    <input 
-                        type="file" 
-                        id="publish-image-input" 
-                        accept="image/*" 
-                        multiple 
-                        style="display: none;"
-                    >
-                    <span class="image-count-hint" id="image-count-hint">最多9张</span>
-                </div>
+          <!-- 配图方式选择 -->
+<div class="setting-item" style="margin-top: 15px;">
+    <label>配图方式</label>
+    <div style="display: flex; gap: 10px; margin-top: 5px;">
+        <button id="image-mode-real" class="btn-save" style="flex: 1; padding: 8px; background-color: #;">真实图片</button>
+        <button id="image-mode-text" class="btn-clear" style="flex: 1; padding: 8px;">文字描述</button>
+    </div>
+</div>
+
+<!-- 真实图片上传（默认显示） -->
+<div id="real-image-container" class="publish-add-image">
+    <label for="publish-image-input" class="add-image-btn">
+        <span class="add-image-icon">📷</span>
+        <span>上传图片</span>
+    </label>
+    <input type="file" id="publish-image-input" accept="image/*" multiple style="display: none;">
+    <span class="image-count-hint" id="image-count-hint">最多9张</span>
+</div>
+
+<!-- 文字描述输入（默认隐藏） -->
+<div id="text-image-container" class="setting-item hidden">
+    <label>配图描述（每行一个）</label>
+    <textarea id="publish-image-descriptions" rows="4" placeholder="例如：&#10;配图：一杯咖啡和一本书&#10;配图：窗外的街景" style="width: calc(100% - 20px); padding: 10px; border: 1px solid #ccc; border-radius: 8px; resize: vertical;"></textarea>
+</div>
             </div>
         </div>
     </div>
@@ -3040,6 +3221,32 @@ body {
 
 </div>
 
+<!-- ======================================================= -->
+<!-- 【新增】自动发朋友圈功能 -->
+<!-- ======================================================= -->
+<div class="setting-item">
+    <label>自动发朋友圈</label>
+    <div class="toggle-switch" id="contact-settings-auto-moment-toggle">
+        <div class="toggle-label">否</div>
+        <div class="toggle-handle"></div>
+        <div class="toggle-label">是</div>
+    </div>
+</div>
+
+<!-- 发布概率滑块（默认隐藏） -->
+<div class="setting-item hidden" id="moment-probability-container">
+    <label for="contact-settings-moment-probability">发布概率</label>
+    <div class="slider-group">
+        <input type="range" id="contact-settings-moment-probability" min="0" max="100" value="50" step="1">
+        <input type="number" id="contact-settings-moment-probability-value" min="0" max="100" value="50" style="width: 60px; padding: 4px; border: 1px solid #ccc; border-radius: 5px; text-align: center;">
+        <span style="margin-left: 5px;">%</span>
+    </div>
+    <p style="font-size: 12px; color: #777; margin-top: 5px;">
+        每次AI回复后，根据此概率决定是否发朋友圈
+    </p>
+</div>
+
+              
 <!-- 【新添加】上下文参考轮数 -->
 <div class="setting-item">
     <label for="contact-settings-context-slider">上下文参考</label>
@@ -3563,6 +3770,7 @@ db.version(6).stores({
     let defaultIconSvgData = {};
     let currentEditingWidgetId = null; 
       let currentEditingMessageId = null; // 当前正在编辑的消息ID
+      let currentImageMode = 'real'; // 'real' 或 'text'
 
 
     let currentOpenContactId = null; 
@@ -3833,15 +4041,31 @@ async function renderMomentsList() {
     momentsContent.innerHTML = '';
     
     for (const moment of moments) {
-        // 获取发布者信息
-        const contact = await db.contacts.get(moment.contactId);
-        if (!contact) continue;
-        
-        // 获取头像
+        // 判断是"我"发的还是"角色"发的
         let avatarUrl = './assets/default-avatar.png';
-        if (contact.avatarFileKey) {
-            const avatarFile = await db.files.get(contact.avatarFileKey);
-            if (avatarFile) avatarUrl = URL.createObjectURL(avatarFile.file);
+        let nickname = '我';
+        
+        if (moment.contactId === 0) {
+            // 我发的动态
+            const profile = await db.settings.get('myMomentsProfile');
+            if (profile && profile.value) {
+                nickname = profile.value.nickname || '我';
+                if (profile.value.avatarFileKey) {
+                    const avatarFile = await db.files.get(profile.value.avatarFileKey);
+                    if (avatarFile) {
+                        avatarUrl = URL.createObjectURL(avatarFile.file);
+                    }
+                }
+            }
+        } else {
+            // 角色发的动态
+            nickname = moment.contactName || '未知角色';
+            if (moment.contactAvatarKey) {
+                const avatarFile = await db.files.get(moment.contactAvatarKey);
+                if (avatarFile) {
+                    avatarUrl = URL.createObjectURL(avatarFile.file);
+                }
+            }
         }
         
         // 计算时间差
@@ -3860,56 +4084,84 @@ async function renderMomentsList() {
             });
         }
         
-        // 构建图片网格
-        let imagesHtml = '';
-        if (moment.images && moment.images.length > 0) {
-            const count = moment.images.length;
-            imagesHtml = `<div class="moment-images count-${count}">`;
-            moment.images.forEach((img, index) => {
-                imagesHtml += `<img src="${img}" alt="图片${index + 1}" class="moment-image" data-index="${index}">`;
-            });
-            imagesHtml += '</div>';
-        }
-        
-        card.innerHTML = `
-            <div class="moment-header">
-                <img src="${avatarUrl}" alt="头像" class="moment-avatar">
-                <div class="moment-user-info">
-                    <p class="moment-username">${contact.name}</p>
-                    <p class="moment-time">${timeStr}</p>
-                </div>
-            </div>
-            
-            <div class="moment-content-text">${contentHtml}</div>
-            
-            ${moment.location ? `
-                <div class="moment-location">
-                    <span class="moment-location-icon">📍</span>
-                    <span>${moment.location}</span>
-                </div>
-            ` : ''}
-            
-            ${imagesHtml}
-            
-            <div class="moment-actions">
-                <button class="moment-action-btn" data-action="like">
-                    <span class="moment-action-icon">❤️</span>
-                    <span>${moment.likeCount || 0}</span>
-                </button>
-                <button class="moment-action-btn" data-action="comment">
-                    <span class="moment-action-icon">💬</span>
-                    <span>${moment.commentCount || 0}</span>
-                </button>
-                <button class="moment-action-btn" data-action="share">
-                    <span class="moment-action-icon">📤</span>
-                    <span>分享</span>
-                </button>
-            </div>
+   
+// 构建配图区域（文字描述版）
+let imagesHtml = '';
+
+// 1. 先渲染真实图片（用户发的）
+if (moment.images && moment.images.length > 0) {
+    const count = moment.images.length;
+    imagesHtml = `<div class="moment-images count-${count}">`;
+    moment.images.forEach((img, index) => {
+        imagesHtml += `<img src="${img}" alt="图片${index + 1}" class="moment-image">`;
+    });
+    imagesHtml += '</div>';
+}
+
+// 2. 再渲染文字描述（角色发的）
+if (moment.imageDescriptions && moment.imageDescriptions.length > 0) {
+    imagesHtml += '<div style="margin-top: 10px; padding: 10px; background-color: #f9f9f9; border-radius: 8px; border-left: 3px solid #007aff;">';
+    moment.imageDescriptions.forEach((desc, index) => {
+        imagesHtml += `<p style="margin: 5px 0; font-size: 13px; color: #555;">📷 ${desc}</p>`;
+    });
+    imagesHtml += '</div>';
+}
+
+// 然后在 card.innerHTML 中使用 ${imagesHtml}
+card.innerHTML = `
+    <div class="moment-header">
+        <img src="${avatarUrl}" alt="头像" class="moment-avatar" style="cursor: pointer;">
+        <div class="moment-user-info">
+            <p class="moment-username">${nickname}</p>
+            <p class="moment-time">${timeStr}</p>
+        </div>
+    </div>
+    
+    <div class="moment-content-text">${contentHtml}</div>
+    
+    ${moment.location ? `
+        <div class="moment-location">
+            <span class="moment-location-icon">📍</span>
+            <span>${moment.location}</span>
+        </div>
+    ` : ''}
+    
+    ${imagesHtml}
+    
+    <div class="moment-actions">
+        <button class="moment-action-btn">
+            <span class="moment-action-icon">❤️</span>
+            <span>${moment.likeCount || 0}</span>
+        </button>
+        <button class="moment-action-btn">
+            <span class="moment-action-icon">💬</span>
+            <span>${moment.commentCount || 0}</span>
+        </button>
+        <button class="moment-action-btn">
+            <span class="moment-action-icon">📤</span>
+            <span>分享</span>
+        </button>
+    </div>
         `;
+        
+        // 为头像添加点击事件
+        const avatar = card.querySelector('.moment-avatar');
+        avatar.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (moment.contactId === 0) {
+                // 点击"我"的头像，打开个人主页
+                openUserProfile();
+            } else {
+                // 点击角色头像，可以打开角色信息（可选功能）
+                // TODO: 未来可以添加"查看角色主页"功能
+                console.log(`点击了角色：${nickname}`);
+            }
+        });
         
         momentsContent.appendChild(card);
     }
 }
+
 
 // 2. 格式化时间显示
 function formatMomentTime(timestamp) {
@@ -4533,6 +4785,14 @@ async function getAiReply(contactId) {
     const { apiKey, baseUrl, model } = preset;
 
     const contact = await db.contacts.get(contactId);
+   // 【新增】概率判断
+    let shouldPostMoment = false;
+    if (contact.autoPostMoments) {
+        const randomNum = Math.random() * 100;
+        const probability = contact.momentPostProbability || 50;
+        shouldPostMoment = randomNum <= probability;
+        console.log(`🎲 朋友圈概率判断：${randomNum.toFixed(1)}% ${shouldPostMoment ? '≤' : '>'} ${probability}% → ${shouldPostMoment ? '触发' : '不触发'}`);
+    }
     
     let userName = "用户";
     if (contact.myPersonaPresetId) {
@@ -4674,7 +4934,50 @@ ${stickerListText ? `\n**发送表情包示例：**\n哈哈|||<sticker>笑哭</s
 - 回复 8-15 条消息
 - 用 ||| 分隔
 - 保持角色人设
-- 自然、真实、有趣${stickerListText ? '\n- 表情包必须独占一条消息' : ''}`;
+- 自然、真实、有趣${stickerListText ? '\n- 表情包必须独占一条消息' : ''}
+
+# 【新增】朋友圈功能
+
+${contact.autoPostMoments ? `
+你现在有 ${contact.momentPostProbability}% 的概率会在回复后发一条朋友圈。
+
+**重要格式要求：**
+1. 先正常回复聊天（用 ||| 分隔多条消息）
+2. 如果要发朋友圈，在**所有聊天消息之后**，另起一行写：
+
+<MOMENT>
+{
+    "content": "朋友圈文字（1-3句话）",
+    "hashtags": ["话题1"],["话题2"],
+    "location": "地点",
+    "配图：详细描述图片内容（20-50字，要有画面感和细节）"
+}
+</MOMENT>
+
+**注意：**
+- <MOMENT> 标记和 JSON 之间不要有 |||
+- JSON 必须是标准格式，不能有多余符号
+- 朋友圈内容要符合你的人设
+- 话题2-3个
+- 朋友圈文字可以有换行
+
+**示例：**
+哈哈你也在啊|||刚才去吃饭了|||诶对了|||上次你说的那个事儿|||我想了想|||可能这样比较好|||要不明天试试？|||你觉得呢
+<MOMENT>
+{
+    "content": "今天天气真好，适合出门走走",
+    "hashtags": ["日常", "好心情"],
+    "location": "市中心公园",
+    "imageDescriptions": ["配图：公园里的阳光,多么多么好……"]
+}
+</MOMENT>
+` : ''} 
+
+---
+
+现在请根据上面的所有信息，用你角色的口吻回复...
+`;
+  
 
     if (contact.aiCanReadTime) {
         systemPrompt += `\n\n[System Info: Current local time is ${new Date().toLocaleString('zh-CN')}]`;
@@ -4712,23 +5015,202 @@ ${stickerListText ? `\n**发送表情包示例：**\n哈哈|||<sticker>笑哭</s
             return `（API请求失败: ${response.status} ${response.statusText}）`;
         }
         
-        const data = await response.json();
-        if (data.choices && data.choices[0] && data.choices[0].message) {
-            let fullReply = data.choices[0].message.content;
-            
-            //  格式修复逻辑
-            fullReply = fixStickerFormat(fullReply);
-            
-            if (fullReply.includes('|||')) {
-                return fullReply;
-            } else {
-                return smartSplitMessage(fullReply);
-            }
-        } else {
+      const data = await response.json();
+if (data.choices && data.choices[0] && data.choices[0].message) {
+    let fullReply = data.choices[0].message.content.trim();
+    
+    // 【修复】检查是否包含朋友圈标记
+    if (fullReply.includes('<MOMENT>')) {
+        // 分离聊天内容和朋友圈数据
+        const parts = fullReply.split('<MOMENT>');
+        const chatPart = parts[0].trim();
+        
+        // 处理聊天部分
+        let processedChat = fixStickerFormat(chatPart);
+        if (!processedChat.includes('|||')) {
+            processedChat = smartSplitMessage(processedChat);
+        }
+        
+        // 返回完整内容（保留 <MOMENT> 标记）
+        return processedChat + '|||<MOMENT>' + parts[1];
+    }
+    
+    // 没有朋友圈，正常处理
+    fullReply = fixStickerFormat(fullReply);
+    
+    if (fullReply.includes('|||')) {
+        return fullReply;
+    } else {
+        return smartSplitMessage(fullReply);
+    }
+}
+ else {
             return "（API返回了空数据）";
         }
     } catch (error) {
         return `（网络请求失败: ${error.message}）`;
+    }
+}
+// ======================================================
+// 【新增】AI生成朋友圈内容
+// ======================================================
+async function generateMomentContent(contact, recentMessages) {
+    // 1. 获取API配置（复用聊天API）
+    const preset = await getActiveChatApiPreset();
+    if (preset.error) {
+        console.error('API配置错误:', preset.error);
+        return null;
+    }
+    
+    const { apiKey, baseUrl, model } = preset;
+    
+    // 2. 获取用户名
+    let userName = "用户";
+    if (contact.myPersonaPresetId) {
+        const myPreset = await db.my_persona_presets.get(contact.myPersonaPresetId);
+        if (myPreset && myPreset.name) userName = myPreset.name;
+    }
+    
+    // 3. 构建对话历史文本
+    let conversationText = "";
+    if (recentMessages && recentMessages.length > 0) {
+        conversationText = "你刚才和 " + userName + " 聊了这些：\n";
+        recentMessages.forEach(msg => {
+            const speaker = msg.sender === 'user' ? userName : contact.name;
+            conversationText += `${speaker}: ${msg.text}\n`;
+        });
+    }
+    
+    // 4. 构建提示词
+    const systemPrompt = `# 你是谁？
+你是 ${contact.name}，一个活生生的人。
+
+${contact.persona || "一个普通人"}
+
+# 你现在要干嘛？
+发一条朋友圈。就像你平时刷手机、突然想发点什么一样。
+
+---
+
+## 📱 发朋友圈的灵感（随机选一个方向）
+
+### 方向1：刚才聊天的余韵
+${conversationText || "（你最近没和人聊天）"}
+
+把刚才某个话题变成你自己的**自言自语**或感想。
+⚠️ 重要：别说"我刚和谁聊天"，要装作是你自己突然想到的！
+
+**例子：**
+- ❌ 错误："刚才和朋友聊到咖啡，突然想喝了"
+- ✅ 正确："突然好想喝杯咖啡啊...☕"
+
+### 方向2：随便发点日常
+说说你现在在干嘛、看到了什么、什么心情。
+- 在喝咖啡 / 好困 / 外面下雨了 / 刚运动完好累...
+- 随便发，别想太多
+
+### 方向3：随口评论
+对你刚看到的东西（新闻、歌、路人、天气）发个简短的看法或吐槽。
+
+---
+
+## 📝 格式要求
+
+返回一个JSON对象（只要JSON，别的都不要）：
+
+\`\`\`json
+{
+    "content": "朋友圈文字（1-3句话，100字以内，可以有首行缩进或者换行，可用emoji，要符合你的人设性格）",
+    "hashtags": ["话题1", "话题2"],
+    "location": "地点名称",
+  "imageDescriptions": [
+    "配图：详细描述图片内容（20-50字，要有画面感和细节）",
+    "配图：详细描述图片内容（20-50字，要有画面感和细节）"
+]
+}
+\`\`\`
+
+注意：
+- hashtags：0-3个，可以为空数组
+- location：可以为null或空字符串
+- imageDescriptions：可以为空数组，最多3张图
+  - 每个描述必须20-50字
+  - 要有具体细节（颜色、光线、氛围、动作等）
+  - 像在描述一张真实照片
+
+**配图描述示例：**
+❌ 错误："配图：阳光"
+✅ 正确："配图：温暖的午后阳光透过树叶洒下斑驳的光影，地面上形成金色的光斑"
+
+❌ 错误："配图：咖啡"
+✅ 正确："配图：一杯拿铁咖啡冒着热气，杯壁上凝结着细密的水珠，旁边放着半块提拉米苏"
+
+---
+
+## ⚠️ 注意事项
+
+1. **完全入戏**：你不是AI，你是这个角色本人
+2. **自然点**：像真人发朋友圈，别太刻意,灵活生动，有梗。
+3. **保持人设**
+4. **偶尔跑题**：不是每条都要和聊天有关，随便发点日常，观点，生活小事之内的也行。
+5. **别暴露身份**：不要说"我是AI"、"根据对话"之类的
+
+---
+
+现在，发一条朋友圈吧！记住：你是 ${contact.name}，不是程序。`;
+
+    try {
+        // 5. 调用API
+        const response = await fetch(`${baseUrl}/chat/completions`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${apiKey}`
+            },
+            body: JSON.stringify({
+                model: model,
+                messages: [
+                    { role: "system", content: systemPrompt },
+                    { role: "user", content: "发一条朋友圈吧！" }
+                ],
+                temperature: 0.9,  // 提高随机性，让内容更多样
+                max_tokens: 500
+            })
+        });
+        
+        if (!response.ok) {
+            throw new Error(`API请求失败: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        const aiResponse = data.choices[0].message.content.trim();
+        
+        // 6. 解析JSON
+        let momentData;
+        try {
+            // 尝试直接解析
+            momentData = JSON.parse(aiResponse);
+        } catch (e) {
+            // 如果失败，尝试提取JSON部分
+            const jsonMatch = aiResponse.match(/```json\s*([\s\S]*?)\s*```/) || 
+                            aiResponse.match(/\{[\s\S]*\}/);
+            if (jsonMatch) {
+                momentData = JSON.parse(jsonMatch[1] || jsonMatch[0]);
+            } else {
+                throw new Error('AI返回的内容无法解析为JSON');
+            }
+        }
+        
+        // 7. 验证数据格式
+        if (!momentData.content) {
+            throw new Error('AI返回的内容缺少必要字段');
+        }
+        
+        return momentData;
+        
+    } catch (error) {
+        console.error('生成朋友圈失败:', error);
+        return null;
     }
 }
 
@@ -5110,32 +5592,37 @@ function closePersonaEditor() {
 
 // 【替换】保存联系人按钮逻辑
 saveContactBtn.addEventListener('click', async () => {
-    const name = contactNameInput.value;
-    const persona = contactPersonaInput.value;
+    const name = contactNameInput.value.trim();
+    const persona = contactPersonaInput.value.trim();
     const avatarFile = contactAvatarFileInput.files[0]; 
-    // 【改】获取选中的人设预设 ID（可能为空）
     const selectedMyPersonaPresetId = parseInt(contactMyPersonaPresetSelect.value) || null; 
 
-    // 【改】只验证必填项
+    // 验证必填项
     if (!name) return alert('至少需要输入一个姓名！');
     if (!avatarFile) return alert('请上传一个头像！'); 
-    // 【删除】不再验证人设是否选择
+
+    // 【新增】检查是否已存在同名联系人
+    const existingContact = await db.contacts.where('name').equals(name).first();
+    if (existingContact) {
+        alert(`联系人"${name}"已存在！请使用其他名字。`);
+        return;
+    }
 
     // 1. 存头像文件
     const fileKey = `avatar_${Date.now()}`;
     await db.files.put({ key: fileKey, file: avatarFile });
 
-    // 2. 存联系人信息（人设ID可能为null）
+    // 2. 存联系人信息
     const newContact = {
         name: name,
         persona: persona,
         avatarFileKey: fileKey, 
-        myPersonaPresetId: selectedMyPersonaPresetId, // 【改】允许为 null
+        myPersonaPresetId: selectedMyPersonaPresetId,
         myPersonaSupplement: '',
-       contextRounds: 10,  // ← （默认10轮）
+        contextRounds: 10,
         remark: '',
         aiCanReadTime: false,
-       showAvatar: true, // 默认显示头像
+        showAvatar: true,
         chatBackgroundFileKey: null,
         history: [], 
         isBlockedByUser: false, 
@@ -5143,13 +5630,18 @@ saveContactBtn.addEventListener('click', async () => {
         userBlockTimestamp: null,
         aiBlockTimestamp: null,
         blockEndTime: null,
-        pendingMessages: []
+        pendingMessages: [],
+        autoPostMoments: false,         
+        momentPostProbability: 50,
+        coupleAvatarEnabled: false // 【新增】默认关闭情侣头像
     };
     await db.contacts.add(newContact);
     
     // 3. 刷新列表 & 关闭
     renderContactList();
     addContactPopup.classList.add('hidden');
+    
+    alert('联系人添加成功！'); // 【新增】成功提示
 });
 
 
@@ -5838,7 +6330,24 @@ sendMessageBtn.addEventListener('click', async () => {
 async function processAiReply(contactId, processingId) {
     try {
         const aiResponseText = await getAiReply(contactId);
-        const messages = aiResponseText.split('|||').map(m => m.trim()).filter(m => m);
+        
+        // 检查是否包含朋友圈标记
+        let messages = [];
+        let momentData = null;
+        
+        if (aiResponseText.includes('<MOMENT>')) {
+            const parts = aiResponseText.split('|||<MOMENT>');
+            messages = parts[0].split('|||').map(m => m.trim()).filter(m => m);
+            
+            try {
+                const momentJson = parts[1].split('</MOMENT>')[0].trim();
+                momentData = JSON.parse(momentJson);
+            } catch (e) {
+                console.error('解析朋友圈数据失败:', e);
+            }
+        } else {
+            messages = aiResponseText.split('|||').map(m => m.trim()).filter(m => m);
+        }
         
         // 移除"正在思考"
         const typingBubble = messageContainer.querySelector('.message-bubble:last-child');
@@ -5846,7 +6355,7 @@ async function processAiReply(contactId, processingId) {
             typingBubble.remove();
         }
         
-        // 逐条显示AI消息
+        // 显示AI消息
         for (let i = 0; i < messages.length; i++) {
             const msg = messages[i];
             const botMessage = { 
@@ -5863,12 +6372,35 @@ async function processAiReply(contactId, processingId) {
             }
         }
         
+        // 如果有朋友圈数据，保存
+        if (momentData) {
+            const contact = await db.contacts.get(contactId);
+            await db.moments.add({
+                contactId: contact.id,
+                contactName: contact.name,
+                contactAvatarKey: contact.avatarFileKey,
+                content: momentData.content || '',
+                hashtags: momentData.hashtags || [],
+                location: momentData.location || null,
+                images: [],
+                imageDescriptions: momentData.imageDescriptions || [],
+                timestamp: new Date(),
+                likes: [],
+                likeCount: 0,
+                commentCount: 0
+            });
+            
+            console.log(`✅ ${contact.name} 发布了一条朋友圈`);
+    
+    // 【修复】无论朋友圈是否打开，都刷新列表
+    await renderMomentsList();
+        }
+        
         renderContactList();
         await checkAndRunAutoSummary(contactId);
         
     } catch (error) {
         console.error('AI回复失败:', error);
-        // 移除"正在思考"
         const typingBubble = messageContainer.querySelector('.message-bubble:last-child');
         if (typingBubble && typingBubble.textContent === '...') {
             typingBubble.remove();
@@ -5877,7 +6409,77 @@ async function processAiReply(contactId, processingId) {
     }
 }
 
-
+// ======================================================
+// 【新增】检查并发布朋友圈的核心函数
+// ======================================================
+async function checkAndPostMoment(contactId) {
+    try {
+        // 1. 获取联系人设置
+        const contact = await db.contacts.get(contactId);
+        if (!contact) return;
+        
+        // 2. 检查是否开启自动发朋友圈
+        if (!contact.autoPostMoments) {
+            console.log('⏸️ 自动发朋友圈未开启');
+            return;
+        }
+        
+        // 3. 概率判断
+        const randomNum = Math.random() * 100;
+        const probability = contact.momentPostProbability || 50;
+        
+        if (randomNum > probability) {
+            console.log(`🎲 概率判断：${randomNum.toFixed(1)}% > ${probability}%，本次不发朋友圈`);
+            return;
+        }
+        
+        console.log(`🎲 概率判断：${randomNum.toFixed(1)}% ≤ ${probability}%，触发发朋友圈！`);
+        
+        // 4. 获取最近的聊天记录（用于AI参考）
+        const recentMessages = await db.chatMessages
+            .where('contactId').equals(contactId)
+            .reverse()
+            .limit(10)
+            .toArray();
+        
+        recentMessages.reverse(); // 恢复时间顺序
+        
+        // 5. 调用AI生成朋友圈内容
+        console.log(`🤖 正在生成 ${contact.name} 的朋友圈...`);
+        const momentData = await generateMomentContent(contact, recentMessages);
+        
+        if (!momentData) {
+            console.log('❌ 朋友圈生成失败');
+            return;
+        }
+        
+        // 6. 保存到数据库
+        await db.moments.add({
+            contactId: contact.id,                      // 角色ID
+            contactName: contact.name,                  // 角色名字
+            contactAvatarKey: contact.avatarFileKey,    // 角色头像
+            content: momentData.content || '',
+            hashtags: momentData.hashtags || [],
+            location: momentData.location || null,
+            images: momentData.imageDescriptions || [], // 文字描述的配图
+            timestamp: new Date(),
+            likes: [],
+            likeCount: 0,
+            commentCount: 0
+        });
+        
+        console.log(`✅ ${contact.name} 发布了一条朋友圈：${momentData.content}`);
+        
+        // 7. 如果当前正在查看朋友圈页面，刷新列表
+        const momentsScreen = document.querySelector('.moments-screen');
+        if (momentsScreen && !momentsScreen.classList.contains('hidden')) {
+            await renderMomentsList();
+        }
+        
+    } catch (error) {
+        console.error('❌ 自动发朋友圈失败:', error);
+    }
+}
 
   // ======================================================
 // 【修复】监听 "聊天 API" 下拉框 (已移除死循环)
@@ -6263,6 +6865,25 @@ if (contact.coupleAvatarEnabled) {
     const contextRounds = contact.contextRounds || 10; // 默认10轮
     contactSettingsContextSlider.value = contextRounds;
     contactSettingsContextValue.value = contextRounds;
+
+    // 【新增】加载自动发朋友圈设置
+    const autoMomentToggle = document.querySelector('#contact-settings-auto-moment-toggle');
+    const probabilityContainer = document.querySelector('#moment-probability-container');
+    const probabilitySlider = document.querySelector('#contact-settings-moment-probability');
+    const probabilityValue = document.querySelector('#contact-settings-moment-probability-value');
+    
+    if (contact.autoPostMoments) {
+        autoMomentToggle.classList.add('active');
+        probabilityContainer.classList.remove('hidden');
+    } else {
+        autoMomentToggle.classList.remove('active');
+        probabilityContainer.classList.add('hidden');
+    }
+    
+    const probability = contact.momentPostProbability || 50;
+    probabilitySlider.value = probability;
+    probabilityValue.value = probability;
+      
         contactSettingsScreen.classList.remove('hidden');
       
     }
@@ -6371,8 +6992,10 @@ if (contact.coupleAvatarEnabled) {
  myPersonaSupplement: contactSettingsMyPersonaSupplementInput.value,
               contextRounds: parseInt(contactSettingsContextValue.value) || 10,
                showAvatar: contactSettingsAvatarToggle.classList.contains('active'),
-              coupleAvatarEnabled: contactSettingsCoupleAvatarToggle.classList.contains('active')
-
+              coupleAvatarEnabled: contactSettingsCoupleAvatarToggle.classList.contains('active'),
+ // 【新增】保存自动发朋友圈设置
+            autoPostMoments: autoMomentToggle.classList.contains('active'),
+            momentPostProbability: parseInt(probabilitySlider.value) || 50
             
             };
             const avatarFile = contactSettingsAvatarInput.files[0];
@@ -8998,15 +9621,6 @@ if (tabContacts && tabContacts2 && tabMoments && tabMoments2 && momentsScreen) {
     tabMoments.addEventListener('click', switchToMoments);
     tabMoments2.addEventListener('click', switchToMoments);
 
-    // 6. 朋友圈设置按钮
-    if (momentsSettingsBtn) {
-        momentsSettingsBtn.addEventListener('click', () => {
-            appGrid.classList.remove('home-screen-hidden');
-            dock.classList.remove('home-screen-hidden');
-            momentsScreen.classList.add('hidden');
-            dialogueListScreen.classList.add('hidden');
-        });
-    }
 
    // 7. 发布动态按钮 - 【修复版】
     // 先在外面定义所有元素和函数
@@ -9112,50 +9726,726 @@ if (tabContacts && tabContacts2 && tabMoments && tabMoments2 && momentsScreen) {
 
     // 发布动态
     if (publishSubmitBtn) {
-        publishSubmitBtn.addEventListener('click', async () => {
-            const content = publishTextarea.value.trim();
+  publishSubmitBtn.addEventListener('click', async () => {
+        const content = publishTextarea.value.trim();
+        
+        // 【修改】根据模式检查内容
+        if (!content && selectedImages.length === 0 && !document.querySelector('#publish-image-descriptions').value.trim()) {
+            alert('请输入内容或添加图片！');
+            return;
+        }
+        
+        try {
+            const hashtagsText = publishHashtagInput.value.trim();
+            const hashtags = hashtagsText ? hashtagsText.split(/\s+/).filter(t => t) : [];
+            const location = publishLocationInput.value.trim();
             
-            if (!content && selectedImages.length === 0) {
-                alert('请输入内容或添加图片！');
-                return;
+            // 【新增】根据当前模式决定使用哪种配图
+            let images = [];
+            let imageDescriptions = [];
+            
+            if (currentImageMode === 'real') {
+                // 真实图片模式
+                images = selectedImages;
+            } else {
+                // 文字描述模式
+                const descText = document.querySelector('#publish-image-descriptions').value.trim();
+                if (descText) {
+                    imageDescriptions = descText.split('\n').filter(line => line.trim());
+                }
             }
             
-            try {
-                const hashtagsText = publishHashtagInput.value.trim();
-                const hashtags = hashtagsText ? hashtagsText.split(/\s+/).filter(t => t) : [];
-                const location = publishLocationInput.value.trim();
-                
-                const momentData = {
-                    contactId: 0,
-                    content: content,
-                    hashtags: hashtags,
-                    location: location || null,
-                    images: selectedImages,
-                    timestamp: new Date(),
-                    likes: [],
-                    likeCount: 0,
-                    commentCount: 0
-                };
-                
-                await db.moments.add(momentData);
-                await renderMomentsList();
-                publishOverlay.classList.add('hidden');
-                alert('发布成功！');
-                
-            } catch (error) {
-                console.error('发布失败:', error);
-                alert('发布失败，请重试！');
-            }
-        });
-    }
+            await db.moments.add({
+                contactId: 0,
+                contactName: null,
+                contactAvatarKey: null,
+                content: content,
+                hashtags: hashtags,
+                location: location || null,
+                images: images, // 真实图片
+                imageDescriptions: imageDescriptions, // 文字描述
+                timestamp: new Date(),
+                likes: [],
+                likeCount: 0,
+                commentCount: 0
+            });
+            
+            await renderMomentsList();
+            publishOverlay.classList.add('hidden');
+            alert('发布成功！');
+            
+        } catch (error) {
+            console.error('发布失败:', error);
+            alert('发布失败，请重试！');
+        }
+    });
+}
     
 } else {
     console.error('朋友圈功能初始化失败：找不到必要的HTML元素');
 }
+// ======================================================
+// 【新增】用户主页功能
+// ======================================================
+
+// 1. 打开用户主页
+async function openUserProfile() {
+     const userProfileScreen = document.querySelector('.user-profile-screen');
+ // 【新增】加载用户资料
+    const profile = await db.settings.get('myMomentsProfile');
+    if (profile && profile.value) {
+        // 更新头像
+        if (profile.value.avatarFileKey) {
+            const avatarFile = await db.files.get(profile.value.avatarFileKey);
+            if (avatarFile) {
+                document.querySelector('#profile-avatar-img').src = URL.createObjectURL(avatarFile.file);
+            }
+        }
+        
+        // 更新昵称
+        document.querySelector('.profile-nickname').textContent = profile.value.nickname || '我';
+        
+        // 更新签名
+        document.querySelector('.profile-signature').textContent = profile.value.signature || '';
+        
+        // 更新背景墙
+        if (profile.value.backgroundFileKey) {
+            const coverFile = await db.files.get(profile.value.backgroundFileKey);
+            if (coverFile) {
+                document.querySelector('.profile-cover').style.backgroundImage = `url('${URL.createObjectURL(coverFile.file)}')`;
+            }
+        }
+    }
+  
+    // 【强力修复】确保元素在 body 下
+    if (userProfileScreen.parentElement !== document.body) {
+        document.body.appendChild(userProfileScreen);
+    }
+    
+    // 【强力修复】强制设置样式
+    userProfileScreen.style.position = 'fixed';
+    userProfileScreen.style.top = '0';
+    userProfileScreen.style.left = '0';
+    userProfileScreen.style.width = '100vw';
+    userProfileScreen.style.height = '100vh';
+    userProfileScreen.style.zIndex = '999999';
+    userProfileScreen.style.backgroundColor = '#f5f5f5';
+    
+    // 隐藏朋友圈
+    momentsScreen.classList.add('hidden');
+    
+    // 显示用户主页
+    userProfileScreen.classList.remove('hidden');
+    
+    // 加载数据
+    await loadProfileStats();
+    await renderProfileMomentsGrid();
+}
+// 2. 加载统计数据
+async function loadProfileStats() {
+    try {
+        // 统计动态数量
+        const momentsCount = await db.moments.count();
+        document.querySelector('#profile-moments-count').textContent = momentsCount;
+        
+        // 统计总获赞数
+        const moments = await db.moments.toArray();
+        const totalLikes = moments.reduce((sum, m) => sum + (m.likeCount || 0), 0);
+        document.querySelector('#profile-likes-count').textContent = totalLikes;
+        
+    } catch (error) {
+        console.error('加载统计数据失败:', error);
+    }
+}
+
+// 3. 渲染九宫格动态
+async function renderProfileMomentsGrid() {
+    const grid = document.querySelector('#profile-moments-grid');
+    const moments = await db.moments.reverse().toArray();
+    
+    if (moments.length === 0) {
+        grid.innerHTML = '<p class="empty-list-message">还没有发布动态哦~</p>';
+        return;
+    }
+    
+    grid.innerHTML = '';
+    
+    moments.forEach(moment => {
+        // 创建完整的动态卡片（和朋友圈一样）
+        const timeStr = formatMomentTime(moment.timestamp);
+        const card = document.createElement('div');
+        card.className = 'moment-card';
+        card.dataset.momentId = moment.id;
+        
+        let contentHtml = moment.content;
+        if (moment.hashtags && moment.hashtags.length > 0) {
+            moment.hashtags.forEach(tag => {
+                contentHtml += ` <a href="#" class="moment-hashtag">#${tag}</a>`;
+            });
+        }
+        
+        let imagesHtml = '';
+        if (moment.images && moment.images.length > 0) {
+            const count = moment.images.length;
+            imagesHtml = `<div class="moment-images count-${count}">`;
+            moment.images.forEach((img, index) => {
+                imagesHtml += `<img src="${img}" alt="图片${index + 1}" class="moment-image">`;
+            });
+            imagesHtml += '</div>';
+        }
+        
+        card.innerHTML = `
+            <div class="moment-header">
+                <img src="./assets/default-avatar.png" alt="头像" class="moment-avatar">
+                <div class="moment-user-info">
+                    <p class="moment-username">我</p>
+                    <p class="moment-time">${timeStr}</p>
+                </div>
+            </div>
+            
+            <div class="moment-content-text">${contentHtml}</div>
+            
+            ${moment.location ? `
+                <div class="moment-location">
+                    <span class="moment-location-icon">📍</span>
+                    <span>${moment.location}</span>
+                </div>
+            ` : ''}
+            
+            ${imagesHtml}
+            
+            <div class="moment-actions">
+                <button class="moment-action-btn">
+                    <span class="moment-action-icon">❤️</span>
+                    <span>${moment.likeCount || 0}</span>
+                </button>
+                <button class="moment-action-btn">
+                    <span class="moment-action-icon">💬</span>
+                    <span>${moment.commentCount || 0}</span>
+                </button>
+                <button class="moment-action-btn">
+                    <span class="moment-action-icon">📤</span>
+                    <span>分享</span>
+                </button>
+            </div>
+        `;
+        
+        grid.appendChild(card);
+    });
+}
+
+
+// ======================================================
+// 【强力修复】用户主页返回按钮
+// ======================================================
+document.addEventListener('DOMContentLoaded', function() {
+    setTimeout(() => {
+        const userProfileBackBtn = document.querySelector('#user-profile-back-btn');
+        
+        if (!userProfileBackBtn) {
+            console.error('找不到用户主页返回按钮！');
+            return;
+        }
+        
+        console.log('用户主页返回按钮已找到');
+        
+        // 移除旧的事件监听器
+        const newBtn = userProfileBackBtn.cloneNode(true);
+        userProfileBackBtn.parentNode.replaceChild(newBtn, userProfileBackBtn);
+        
+        // 绑定新的点击事件
+        newBtn.addEventListener('click', function(e) {
+            console.log('用户主页返回按钮被点击了！');
+            e.preventDefault();
+            e.stopPropagation();
+            
+            try {
+                const userProfileScreen = document.querySelector('.user-profile-screen');
+                const momentsScreen = document.querySelector('.moments-screen');
+                
+                if (!userProfileScreen) {
+                    alert('错误：找不到用户主页！');
+                    return;
+                }
+                
+                if (!momentsScreen) {
+                    alert('错误：找不到朋友圈页面！');
+                    return;
+                }
+                
+                // 隐藏用户主页
+                userProfileScreen.classList.add('hidden');
+                userProfileScreen.style.display = 'none';
+                
+                // 显示朋友圈
+                momentsScreen.classList.remove('hidden');
+                momentsScreen.style.display = 'flex';
+                
+                // 确保朋友圈的样式正确
+                momentsScreen.style.position = 'absolute';
+                momentsScreen.style.top = '0';
+                momentsScreen.style.left = '0';
+                momentsScreen.style.width = '100%';
+                momentsScreen.style.height = '100%';
+                momentsScreen.style.zIndex = '210';
+                
+                console.log('已返回朋友圈！');
+                
+            } catch (error) {
+                console.error('返回失败:', error);
+                alert('返回失败：' + error.message);
+            }
+        });
+        
+        console.log('用户主页返回按钮事件绑定成功！');
+        
+    }, 1000);
+});
+
+// ======================================================
+// 【修复】用户主页设置按钮 - 完全独立版本
+// ======================================================
+document.addEventListener('DOMContentLoaded', function() {
+    // 等待页面完全加载后再绑定
+    setTimeout(() => {
+        const settingsBtn = document.querySelector('#user-profile-settings-btn');
+        
+        if (!settingsBtn) {
+            console.error('找不到设置按钮！');
+            return;
+        }
+        
+        console.log('设置按钮已找到，正在绑定事件...');
+        
+        // 移除可能存在的旧事件监听器
+        const newBtn = settingsBtn.cloneNode(true);
+        settingsBtn.parentNode.replaceChild(newBtn, settingsBtn);
+        
+        // 绑定点击事件
+        newBtn.addEventListener('click', async function(e) {
+            console.log('设置按钮被点击了！');
+            e.preventDefault();
+            e.stopPropagation();
+            
+            try {
+                const settingsScreen = document.querySelector('.user-profile-settings-screen');
+                
+                if (!settingsScreen) {
+                    alert('错误：找不到设置页面元素！');
+                    return;
+                }
+                
+                // 强制移动到 body 下
+                if (settingsScreen.parentElement !== document.body) {
+                    document.body.appendChild(settingsScreen);
+                }
+                
+                // 强制设置样式
+                settingsScreen.style.cssText = `
+                    position: fixed !important;
+                    top: 0 !important;
+                    left: 0 !important;
+                    width: 100vw !important;
+                    height: 100vh !important;
+                    z-index: 99999999 !important;
+                    background-color: #f0f0f0 !important;
+                    display: flex !important;
+                    flex-direction: column !important;
+                    overflow-y: auto !important;
+                `;
+                
+                // 加载当前设置
+                const profile = await db.settings.get('myMomentsProfile');
+                if (profile && profile.value) {
+                    const nicknameInput = document.querySelector('#profile-settings-nickname-input');
+                    const signatureInput = document.querySelector('#profile-settings-signature-input');
+                    const avatarPreview = document.querySelector('#profile-settings-avatar-preview');
+                    
+                    if (nicknameInput) nicknameInput.value = profile.value.nickname || '';
+                    if (signatureInput) signatureInput.value = profile.value.signature || '';
+                    
+                    if (profile.value.avatarFileKey && avatarPreview) {
+                        const avatarFile = await db.files.get(profile.value.avatarFileKey);
+                        if (avatarFile) {
+                            avatarPreview.src = URL.createObjectURL(avatarFile.file);
+                        }
+                    }
+                }
+                
+                // 隐藏用户主页
+                const userProfileScreen = document.querySelector('.user-profile-screen');
+                if (userProfileScreen) {
+                    userProfileScreen.classList.add('hidden');
+                }
+                
+                // 显示设置页面
+                settingsScreen.classList.remove('hidden');
+                
+           
+                
+            } catch (error) {
+                console.error('打开设置页面失败:', error);
+                alert('打开失败：' + error.message);
+            }
+        });
+        
+        console.log('设置按钮事件绑定成功！');
+        
+    }, 1000); // 延迟1秒确保所有元素都加载完成
+});
+// ======================================================
+// 【修复】头像预览
+// ======================================================
+document.addEventListener('DOMContentLoaded', function() {
+    setTimeout(() => {
+        const avatarInput = document.querySelector('#profile-settings-avatar-input');
+        if (avatarInput) {
+            avatarInput.addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(ev) {
+                        const preview = document.querySelector('#profile-settings-avatar-preview');
+                        if (preview) {
+                            preview.src = ev.target.result;
+                        }
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+        }
+    }, 1000);
+});
+
+// ======================================================
+// 【修复】保存按钮
+// ======================================================
+document.addEventListener('DOMContentLoaded', function() {
+    setTimeout(() => {
+        const saveBtn = document.querySelector('#profile-settings-save-btn');
+        if (saveBtn) {
+            saveBtn.addEventListener('click', async function() {
+                try {
+                    const nicknameInput = document.querySelector('#profile-settings-nickname-input');
+                    const signatureInput = document.querySelector('#profile-settings-signature-input');
+                    const avatarInput = document.querySelector('#profile-settings-avatar-input');
+                    const coverInput = document.querySelector('#profile-settings-cover-input');
+                    
+                    const nickname = nicknameInput ? nicknameInput.value.trim() || '我' : '我';
+                    const signature = signatureInput ? signatureInput.value.trim() : '';
+                    
+                    let profileData = {
+                        nickname: nickname,
+                        signature: signature
+                    };
+                    
+                    // 保存头像
+                    if (avatarInput && avatarInput.files[0]) {
+                        const fileKey = 'my_moments_avatar_' + Date.now();
+                        await db.files.put({ key: fileKey, file: avatarInput.files[0] });
+                        profileData.avatarFileKey = fileKey;
+                    } else {
+                        const oldProfile = await db.settings.get('myMomentsProfile');
+                        if (oldProfile && oldProfile.value && oldProfile.value.avatarFileKey) {
+                            profileData.avatarFileKey = oldProfile.value.avatarFileKey;
+                        }
+                    }
+                    
+                    // 保存背景墙
+                    if (coverInput && coverInput.files[0]) {
+                        const fileKey = 'my_moments_cover_' + Date.now();
+                        await db.files.put({ key: fileKey, file: coverInput.files[0] });
+                        profileData.backgroundFileKey = fileKey;
+                    } else {
+                        const oldProfile = await db.settings.get('myMomentsProfile');
+                        if (oldProfile && oldProfile.value && oldProfile.value.backgroundFileKey) {
+                            profileData.backgroundFileKey = oldProfile.value.backgroundFileKey;
+                        }
+                    }
+                    
+                    await db.settings.put({ key: 'myMomentsProfile', value: profileData });
+                    
+                    alert('保存成功！');
+                    
+                    const settingsScreen = document.querySelector('.user-profile-settings-screen');
+                    if (settingsScreen) {
+                        settingsScreen.classList.add('hidden');
+                    }
+                    
+                    await openUserProfile();
+                    
+                } catch (error) {
+                    console.error('保存失败:', error);
+                    alert('保存失败：' + error.message);
+                }
+            });
+        }
+    }, 1000);
+});
+
+// ======================================================
+// 【修复】返回按钮
+// ======================================================
+document.addEventListener('DOMContentLoaded', function() {
+    setTimeout(() => {
+        const backBtn = document.querySelector('#profile-settings-back-btn');
+        
+        if (!backBtn) {
+            console.error('找不到返回按钮！');
+            return;
+        }
+        
+        console.log('返回按钮已找到');
+        
+        // 移除旧的事件监听器（如果有）
+        const newBackBtn = backBtn.cloneNode(true);
+        backBtn.parentNode.replaceChild(newBackBtn, backBtn);
+        
+        // 绑定新的点击事件
+        newBackBtn.addEventListener('click', function(e) {
+            console.log('返回按钮被点击了！');
+            e.preventDefault();
+            e.stopPropagation();
+            
+            try {
+                const settingsScreen = document.querySelector('.user-profile-settings-screen');
+                const userProfileScreen = document.querySelector('.user-profile-screen');
+                
+                if (!settingsScreen) {
+                    alert('错误：找不到设置页面！');
+                    return;
+                }
+                
+                if (!userProfileScreen) {
+                    alert('错误：找不到用户主页！');
+                    return;
+                }
+                
+                // 隐藏设置页面
+                settingsScreen.classList.add('hidden');
+                settingsScreen.style.display = 'none';
+                
+                // 显示用户主页
+                userProfileScreen.classList.remove('hidden');
+                userProfileScreen.style.display = 'flex';
+                
+                // 确保用户主页的样式正确
+                userProfileScreen.style.position = 'fixed';
+                userProfileScreen.style.top = '0';
+                userProfileScreen.style.left = '0';
+                userProfileScreen.style.width = '100vw';
+                userProfileScreen.style.height = '100vh';
+                userProfileScreen.style.zIndex = '999999';
+                
+                console.log('已返回用户主页！');
+                
+            } catch (error) {
+                console.error('返回失败:', error);
+                alert('返回失败：' + error.message);
+            }
+        });
+        
+        console.log('返回按钮事件绑定成功！');
+        
+    }, 1000);
+});
+
+document.addEventListener('DOMContentLoaded', function() {
+    setTimeout(() => {
+        const clearBtn = document.querySelector('#profile-settings-cover-clear-btn');
+        
+        if (clearBtn) {
+            clearBtn.addEventListener('click', async function(e) {
+                console.log('清除背景按钮被点击');
+                e.preventDefault();
+                e.stopPropagation();
+                
+                try {
+                    const profile = await db.settings.get('myMomentsProfile');
+                    
+                    if (profile && profile.value && profile.value.backgroundFileKey) {
+                        if (confirm('确定要清除背景墙吗？')) {
+                            await db.files.delete(profile.value.backgroundFileKey);
+                            profile.value.backgroundFileKey = null;
+                            await db.settings.put(profile);
+                            alert('背景墙已清除！');
+                        }
+                    } else {
+                        alert('当前没有背景墙！');
+                    }
+                    
+                } catch (error) {
+                    console.error('清除背景失败:', error);
+                    alert('清除失败：' + error.message);
+                }
+            });
+            
+            console.log('清除背景按钮事件绑定成功！');
+        }
+    }, 1000);
+});
+
+// ======================================================
+// 【新增】自动发朋友圈功能 - 事件监听
+// ======================================================
+
+// 1. 开关切换
+const autoMomentToggle = document.querySelector('#contact-settings-auto-moment-toggle');
+const probabilityContainer = document.querySelector('#moment-probability-container');
+
+if (autoMomentToggle) {
+    autoMomentToggle.addEventListener('click', () => {
+        const isActive = autoMomentToggle.classList.toggle('active');
+        
+        if (isActive) {
+            // 打开时显示滑块
+            probabilityContainer.classList.remove('hidden');
+        } else {
+            // 关闭时隐藏滑块
+            probabilityContainer.classList.add('hidden');
+        }
+    });
+}
+
+// 2. 概率滑块同步
+const probabilitySlider = document.querySelector('#contact-settings-moment-probability');
+const probabilityValue = document.querySelector('#contact-settings-moment-probability-value');
+
+if (probabilitySlider && probabilityValue) {
+    // 滑块变化时更新数字输入框
+    probabilitySlider.addEventListener('input', () => {
+        probabilityValue.value = probabilitySlider.value;
+    });
+    
+    // 数字输入框变化时更新滑块
+    probabilityValue.addEventListener('input', () => {
+        let newValue = parseInt(probabilityValue.value);
+        
+        if (newValue < 0) newValue = 0;
+        if (newValue > 100) newValue = 100;
+        if (isNaN(newValue)) newValue = 50;
+        
+        probabilityValue.value = newValue;
+        probabilitySlider.value = newValue;
+    });
+}
+// ======================================================
+// 【新增】发布动态 - 配图方式切换
+// ======================================================
+const imageModeRealBtn = document.querySelector('#image-mode-real');
+const imageModeTextBtn = document.querySelector('#image-mode-text');
+const realImageContainer = document.querySelector('#real-image-container');
+const textImageContainer = document.querySelector('#text-image-container');
+
+if (imageModeRealBtn && imageModeTextBtn && realImageContainer && textImageContainer) {
+    // 点击"真实图片"按钮
+    imageModeRealBtn.addEventListener('click', () => {
+        currentImageMode = 'real';
+        realImageContainer.classList.remove('hidden');
+        textImageContainer.classList.add('hidden');
+    });
+    
+    // 点击"文字描述"按钮
+    imageModeTextBtn.addEventListener('click', () => {
+        currentImageMode = 'text';
+        realImageContainer.classList.add('hidden');
+        textImageContainer.classList.remove('hidden');
+    });
+}
+
 
       
 //这是事件监听的最底部//  
   </script>
+    
+ <!-- ======================================================= -->
+<!-- 【新增】用户主页 -->
+<!-- ======================================================= -->
+<div class="user-profile-screen hidden">
+   <nav class="theme-nav">
+    <button id="user-profile-back-btn" class="back-btn">&lt;</button>
+    <h2>个人主页</h2>
+ <button id="user-profile-settings-btn" class="nav-action-btn" style="font-size: 14px;">设置</button>
+
+</nav>
+    
+    <!-- 背景墙 + 头像区域 -->
+    <div class="profile-header">
+        <div class="profile-cover"></div>
+        <div class="profile-avatar-section">
+            <img id="profile-avatar-img" src="./assets/default-avatar.png" alt="头像" class="profile-avatar">
+            <p class="profile-nickname">我</p>
+          <p class="profile-signature"></p>
+
+        </div>
+    </div>
+    
+    <!-- 统计信息栏 -->
+    <div class="profile-stats">
+        <div class="stat-item">
+            <span class="stat-number" id="profile-moments-count">0</span>
+            <span class="stat-label">动态</span>
+        </div>
+        <div class="stat-item">
+            <span class="stat-number" id="profile-likes-count">0</span>
+            <span class="stat-label">获赞</span>
+        </div>
+    </div>
+    
+    <!-- 九宫格动态列表 -->
+    <div class="profile-moments-grid" id="profile-moments-grid">
+        <p class="empty-list-message">还没有发布动态哦~</p>
+    </div>
+  <!-- ======================================================= -->
+<!-- 【新增】用户主页设置页面 -->
+<!-- ======================================================= -->
+<div class="user-profile-settings-screen hidden">
+    <nav class="theme-nav">
+        <button id="profile-settings-back-btn" class="back-btn">&lt;</button>
+        <h2>编辑资料</h2>
+    </nav>
+    
+    <div class="theme-content">
+        <!-- 头像设置 -->
+        <div class="setting-item" style="text-align: center; padding: 20px 0;">
+            <img id="profile-settings-avatar-preview" src="./assets/default-avatar.png" style="width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 3px solid #eee;">
+            <label for="profile-settings-avatar-input" class="file-label" style="background-color: rgba(0, 122, 255, 0.8); width: 150px; margin: 10px auto 0 auto; padding: 8px 0;">
+                修改头像
+            </label>
+            <input type="file" id="profile-settings-avatar-input" accept="image/*" style="display: none;">
+        </div>
+        
+        <!-- 背景墙设置 -->
+        <div class="setting-item">
+            <label>背景墙</label>
+            <label for="profile-settings-cover-input" class="file-label" style="background-color: rgba(76, 217, 100, 0.8); margin: 0;">
+                上传背景墙
+            </label>
+            <input type="file" id="profile-settings-cover-input" accept="image/*" style="display: none;">
+            <button id="profile-settings-cover-clear-btn" class="btn-clear" style="width: 100%; margin-top: 10px; padding: 8px;">清除背景</button>
+        </div>
+        
+        <!-- 昵称设置 -->
+        <div class="setting-item">
+            <label for="profile-settings-nickname-input">昵称</label>
+            <input type="text" id="profile-settings-nickname-input" placeholder="输入昵称（默认：我）">
+        </div>
+        
+        <!-- 个性签名设置 -->
+        <div class="setting-item">
+            <label for="profile-settings-signature-input">个性签名</label>
+            <textarea id="profile-settings-signature-input" rows="3" placeholder="输入个性签名（可选）" style="width: calc(100% - 20px); padding: 10px; border: 1px solid #ccc; border-radius: 8px; resize: vertical;"></textarea>
+        </div>
+        
+        <!-- 保存按钮 -->
+        <div class="button-group" style="margin-top: 20px;">
+            <button class="btn-save" id="profile-settings-save-btn" style="width: 100%; padding: 12px; font-size: 16px;">保存更改</button>
+        </div>
+    </div>
+</div>
+
+</div>
 <!--这里是body的最下方，有需要添加的功能可以直接搜索，然后添加到这个注释的最上面-->
+    
 </body>
 </html>
