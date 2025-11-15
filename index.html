@@ -414,7 +414,11 @@ body {
 #chat-window-title {
     font-size: 16px !important; /* 改成你想要的大小 */
 }
-      
+  /* 【强制修复】聊天窗口标题字体 */
+.chat-window-screen .theme-nav h2 {
+    font-size: 16px !important;
+    font-weight: normal !important;
+}    
          /* --- 从这里开始添加“联系人列表项”的新样式 --- */
         
         .contact-list-item {
@@ -2232,7 +2236,180 @@ body {
 .user-profile-settings-screen.hidden {
     display: none !important;
 }
-        /*这里是CSSstyle的末尾，最底下*/ 
+      /* ============================================= */
+/* 【新增】朋友圈点赞功能样式 */
+/* ============================================= */
+
+/* 1. 点赞者列表容器 */
+.moment-likes-list {
+    padding: 10px 15px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    margin-top: 10px;
+    font-size: 13px;
+    color: #666;
+    line-height: 1.6;
+}
+
+.moment-likes-list .likes-icon {
+    color: #ff3b30;
+    margin-right: 5px;
+}
+
+.moment-likes-list .liker-name {
+    color: #007aff;
+    margin-right: 5px;
+}
+
+/* 2. 爱心飞出动画 */
+@keyframes heart-fly {
+    0% {
+        transform: translate(0, 0) scale(1);
+        opacity: 1;
+    }
+    50% {
+        transform: translate(0, -30px) scale(1.5);
+        opacity: 0.8;
+    }
+    100% {
+        transform: translate(0, -60px) scale(0.5);
+        opacity: 0;
+    }
+}
+
+.flying-heart {
+    position: absolute;
+    font-size: 24px;
+    color: #ff3b30;
+    pointer-events: none;
+    animation: heart-fly 1s ease-out forwards;
+    z-index: 1000;
+}
+/* ======================================================= */
+/* 【新增】朋友圈评论功能样式 */
+/* ======================================================= */
+
+/* 评论区容器 */
+.moment-comments-section {
+    padding: 10px 15px;
+    border-top: 1px solid #f0f0f0;
+    background-color: #fafafa;
+}
+
+/* 生成评论按钮 */
+/* 评论区头部 */
+.comments-header {
+    display: flex;
+    justify-content: flex-start;
+    padding: 8px 0;
+    margin-bottom: 8px;
+}
+
+.generate-comments-link {
+    font-size: 13px;
+    color: #999;           
+    font-style: italic;  
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: 4px;
+    transition: background-color 0.2s;
+}
+
+
+.generate-comments-link:hover {
+    background-color: #f0f0f0;
+}
+
+.generate-comments-link:active {
+    background-color: #e0e0e0;
+}
+
+/* 生成中状态 */
+.generate-comments-link.loading {
+    color: #999;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+
+/* 评论列表 */
+.comments-list {
+    margin-bottom: 10px;
+}
+
+/* 单条评论 */
+.comment-item {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 12px;
+    padding: 8px;
+    background-color: white;
+    border-radius: 8px;
+}
+
+.comment-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    object-fit: cover;
+    flex-shrink: 0;
+}
+
+.comment-content {
+    flex-grow: 1;
+}
+
+.comment-user {
+    font-size: 14px;
+    font-weight: bold;
+    color: #333;
+    margin: 0 0 4px 0;
+}
+
+.comment-text {
+    font-size: 14px;
+    color: #555;
+    margin: 0 0 4px 0;
+    word-wrap: break-word;
+}
+
+.comment-time {
+    font-size: 12px;
+    color: #999;
+    margin: 0;
+}
+
+/* 评论输入区 */
+.comment-input-area {
+    display: flex;
+    gap: 8px;
+    margin-top: 10px;
+}
+
+.comment-input {
+    flex-grow: 1;
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 18px;
+    font-size: 14px;
+    outline: none;
+}
+
+.send-comment-btn {
+    padding: 8px 16px;
+    background-color: #007aff;
+    color: white;
+    border: none;
+    border-radius: 18px;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.send-comment-btn:hover {
+    background-color: #0056b3;
+}
+
+        /*这里是CSS末尾，style的末尾，最底下*/ 
 
     </style>
   <script src="https://unpkg.com/dexie@4/dist/dexie.js"></script>
@@ -3221,9 +3398,7 @@ body {
 
 </div>
 
-<!-- ======================================================= -->
-<!-- 【新增】自动发朋友圈功能 -->
-<!-- ======================================================= -->
+<!-- 【修改】自动发朋友圈功能 -->
 <div class="setting-item">
     <label>自动发朋友圈</label>
     <div class="toggle-switch" id="contact-settings-auto-moment-toggle">
@@ -3233,16 +3408,29 @@ body {
     </div>
 </div>
 
-<!-- 发布概率滑块（默认隐藏） -->
-<div class="setting-item hidden" id="moment-probability-container">
-    <label for="contact-settings-moment-probability">发布概率</label>
+<!-- 【新增】发布间隔时间（默认隐藏） -->
+<div class="setting-item hidden" id="moment-interval-container">
+    <label for="contact-settings-moment-interval">发布间隔（分钟）</label>
     <div class="slider-group">
-        <input type="range" id="contact-settings-moment-probability" min="0" max="100" value="50" step="1">
-        <input type="number" id="contact-settings-moment-probability-value" min="0" max="100" value="50" style="width: 60px; padding: 4px; border: 1px solid #ccc; border-radius: 5px; text-align: center;">
-        <span style="margin-left: 5px;">%</span>
+        <input type="range" id="contact-settings-moment-interval" min="1" max="60" value="5" step="1">
+        <input type="number" id="contact-settings-moment-interval-value" min="1" max="60" value="5" style="width: 60px; padding: 4px; border: 1px solid #ccc; border-radius: 5px; text-align: center;">
+        <span style="margin-left: 5px;">分钟</span>
     </div>
     <p style="font-size: 12px; color: #777; margin-top: 5px;">
-        每次AI回复后，根据此概率决定是否发朋友圈
+        每隔多久自动发一次朋友圈
+    </p>
+</div>
+
+<!-- 【新增】冷却时间（默认隐藏） -->
+<div class="setting-item hidden" id="moment-cooldown-container">
+    <label for="contact-settings-moment-cooldown">冷却时间（分钟，最多10小时）</label>
+    <div class="slider-group">
+        <input type="range" id="contact-settings-moment-cooldown" min="1" max="6000" value="10" step="1">
+        <input type="number" id="contact-settings-moment-cooldown-value" min="1" max="600" value="10" style="width: 60px; padding: 4px; border: 1px solid #ccc; border-radius: 5px; text-align: center;">
+        <span style="margin-left: 5px;">分钟</span>
+    </div>
+    <p style="font-size: 12px; color: #777; margin-top: 5px;">
+        发布后必须等待的冷却时间
     </p>
 </div>
 
@@ -4142,9 +4330,47 @@ card.innerHTML = `
             <span>分享</span>
         </button>
     </div>
+    ${moment.likes && moment.likes.length > 0 ? `
+     <div class="moment-likes-list">
+        <span class="likes-icon">❤️</span>
+        ${moment.likes.map(like => `<span class="liker-name">${like.name}</span>`).join(', ')}
+    </div>
+      <!-- 【新增】评论区（默认隐藏） -->
+<div class="moment-comments-section" data-moment-id="${moment.id}">
+
+    <div class="comments-header">
+        <span class="generate-comments-link">生成评论</span>
+    </div>
+   <div class="comments-list">
+        ${moment.comments && moment.comments.length > 0 ? moment.comments.map(comment => `
+            <div class="comment-item">
+                <img src="${comment.avatarKey ? 'URL.createObjectURL(await db.files.get(comment.avatarKey).file)' : './assets/default-avatar.png'}" class="comment-avatar">
+                <div class="comment-content">
+                    <p class="comment-user">${comment.userName}</p>
+                    <p class="comment-text">${comment.text}</p>
+                    <p class="comment-time">${formatCommentTime(comment.timestamp)}</p>
+                </div>
+            </div>
+        `).join('') : ''}
+    </div>
+
+   
+` : ''}
         `;
         
         // 为头像添加点击事件
+
+
+// 【新增】点击"生成评论"按钮
+const generateLink = card.querySelector('.generate-comments-link');
+if (generateLink) {
+    generateLink.addEventListener('click', async (e) => {
+        e.stopPropagation();
+        const momentId = parseInt(card.dataset.momentId);
+        await generateCommentsForMoment(momentId, generateLink);
+    });
+}
+
         const avatar = card.querySelector('.moment-avatar');
         avatar.addEventListener('click', (e) => {
             e.stopPropagation();
@@ -4157,9 +4383,310 @@ card.innerHTML = `
                 console.log(`点击了角色：${nickname}`);
             }
         });
-        
-        momentsContent.appendChild(card);
+        const likeBtn = card.querySelectorAll('.moment-action-btn')[0];
+if (likeBtn) {
+    likeBtn.addEventListener('click', async (e) => {
+        e.stopPropagation();
+        const momentId = parseInt(card.dataset.momentId);
+        await toggleMyLike(momentId, likeBtn);
+    });
+}
+// 左滑删除功能
+let startX = 0;
+let currentX = 0;
+
+card.addEventListener('touchstart', (e) => {
+    startX = e.touches[0].clientX;
+});
+
+card.addEventListener('touchmove', (e) => {
+    currentX = e.touches[0].clientX;
+    const diff = currentX - startX;
+    if (diff < 0) { // 只响应左滑
+        card.style.transform = `translateX(${diff}px)`;
     }
+});
+
+card.addEventListener('touchend', async () => {
+    const diff = currentX - startX;
+    if (diff < -100) { // 滑动超过100px
+        if (confirm('确定删除这条动态吗？')) {
+            await db.moments.delete(moment.id);
+            card.remove();
+        } else {
+            card.style.transform = '';
+        }
+    } else {
+        card.style.transform = '';
+    }
+    startX = 0;
+    currentX = 0;
+});
+
+momentsContent.appendChild(card);
+
+        momentsContent.appendChild(card);
+
+    }
+}
+// ======================================================
+// 【新增】朋友圈点赞功能
+// ======================================================
+
+// 1. 我点赞/取消点赞
+async function toggleMyLike(momentId, buttonElement) {
+    try {
+        const moment = await db.moments.get(momentId);
+        if (!moment) return;
+        
+        const myUserId = 0; // 我的ID固定为0
+        const myLikeIndex = moment.likes.findIndex(like => like.userId === myUserId);
+        
+        if (myLikeIndex !== -1) {
+            // 已点赞，取消点赞
+            moment.likes.splice(myLikeIndex, 1);
+            moment.likeCount = moment.likes.length;
+        } else {
+            // 未点赞，添加点赞
+            moment.likes.push({
+                userId: myUserId,
+                name: '我',
+                timestamp: new Date()
+            });
+            moment.likeCount = moment.likes.length;
+            
+            // 播放爱心飞出动画
+            createFlyingHeart(buttonElement);
+        }
+        
+        // 更新数据库
+        await db.moments.update(momentId, {
+            likes: moment.likes,
+            likeCount: moment.likeCount
+        });
+        
+        // 刷新列表
+     // 【修复】只更新当前卡片，不刷新整个列表
+const card = document.querySelector(`[data-moment-id="${momentId}"]`);
+if (card) {
+    // 更新点赞数
+    const likeCountSpan = card.querySelectorAll('.moment-action-btn')[0].querySelector('span:last-child');
+    if (likeCountSpan) {
+        likeCountSpan.textContent = moment.likeCount;
+    }
+    
+    // 更新点赞列表
+    const existingLikesList = card.querySelector('.moment-likes-list');
+    if (moment.likes.length > 0) {
+        const likesHtml = `
+            <div class="moment-likes-list">
+                <span class="likes-icon">❤️</span>
+                ${moment.likes.map(like => `<span class="liker-name">${like.name}</span>`).join(', ')}
+            </div>
+        `;
+        if (existingLikesList) {
+            existingLikesList.outerHTML = likesHtml;
+        } else {
+            card.querySelector('.moment-actions').insertAdjacentHTML('afterend', likesHtml);
+        }
+    } else if (existingLikesList) {
+        existingLikesList.remove();
+    }
+}
+
+        
+    } catch (error) {
+        console.error('点赞失败:', error);
+    }
+}
+
+// 2. 创建爱心飞出动画
+function createFlyingHeart(buttonElement) {
+    const heart = document.createElement('div');
+    heart.className = 'flying-heart';
+    heart.textContent = '❤️';
+    
+    // 获取按钮位置
+    const rect = buttonElement.getBoundingClientRect();
+    heart.style.left = rect.left + rect.width / 2 + 'px';
+    heart.style.top = rect.top + 'px';
+    
+    document.body.appendChild(heart);
+    
+    // 动画结束后移除元素
+    setTimeout(() => {
+        heart.remove();
+    }, 1000);
+}
+
+// 3. 角色自动点赞（延迟1-3秒）
+async function autoLikeByContacts(momentId) {
+    try {
+        // 获取所有联系人
+        const contacts = await db.contacts.toArray();
+        if (contacts.length === 0) return;
+        
+        // 为每个角色设置随机延迟
+        contacts.forEach((contact, index) => {
+            const delay = Math.random() * 2000 + 1000 + (index * 200); // 1-3秒 + 错开时间
+            
+            setTimeout(async () => {
+                const moment = await db.moments.get(momentId);
+                if (!moment) return;
+                
+                // 检查该角色是否已点赞
+                const alreadyLiked = moment.likes.some(like => like.userId === contact.id);
+                if (alreadyLiked) return;
+                
+                // 添加点赞
+                moment.likes.push({
+                    userId: contact.id,
+                    name: contact.name,
+                    timestamp: new Date()
+                });
+                moment.likeCount = moment.likes.length;
+                
+                // 更新数据库
+                await db.moments.update(momentId, {
+                    likes: moment.likes,
+                    likeCount: moment.likeCount
+                });
+                
+                // 刷新列表
+                await renderMomentsList();
+                
+            }, delay);
+        });
+        
+    } catch (error) {
+        console.error('自动点赞失败:', error);
+    }
+}
+// ======================================================
+// 【新增】生成评论的核心函数
+// ======================================================
+async function generateCommentsForMoment(momentId, buttonElement) {
+  const originalText = buttonElement.textContent;
+    try {
+    // 1. 更新链接状态
+
+buttonElement.textContent = '正在生成...';
+buttonElement.classList.add('loading');
+        
+        // 2. 获取动态数据
+        const moment = await db.moments.get(momentId);
+        if (!moment) throw new Error('找不到动态');
+        
+        // 3. 获取所有联系人
+        const contacts = await db.contacts.toArray();
+        if (contacts.length === 0) {
+            alert('暂无联系人可以评论');
+            return;
+        }
+        
+        // 4. 获取API配置
+        const preset = await getActiveChatApiPreset();
+        if (preset.error) {
+            alert(preset.error);
+            return;
+        }
+        
+        // 5. 构建提示词
+        const systemPrompt = `你需要为多个角色生成对朋友圈的评论。
+
+**朋友圈内容：**
+${moment.content}
+
+**角色列表：**
+${contacts.map((c, i) => `${i + 1}. ${c.name}：${c.persona || '普通人'}`).join('\n')}
+
+**要求：**
+- 为每个角色生成1条评论（15-50字）
+- 评论要符合角色人设
+- 评论要自然、真实
+- 用JSON数组格式返回
+
+**格式示例：**
+[
+  {"name": "角色A", "text": "评论内容"},
+  {"name": "角色B", "text": "评论内容"}
+]`;
+
+        // 6. 调用API
+        const { apiKey, baseUrl, model } = preset;
+        const response = await fetch(`${baseUrl}/chat/completions`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${apiKey}`
+            },
+            body: JSON.stringify({
+                model: model,
+                messages: [
+                    { role: "system", content: systemPrompt },
+                    { role: "user", content: "请生成评论" }
+                ],
+                temperature: 0.8,
+                max_tokens: 1000
+            })
+        });
+        
+        if (!response.ok) throw new Error('API请求失败');
+        
+        const data = await response.json();
+        const aiResponse = data.choices[0].message.content.trim();
+        
+        // 7. 解析JSON
+        let comments;
+        try {
+            const jsonMatch = aiResponse.match(/\[[\s\S]*\]/);
+            comments = JSON.parse(jsonMatch ? jsonMatch[0] : aiResponse);
+        } catch (e) {
+            throw new Error('AI返回格式错误');
+        }
+        
+        // 8. 保存评论到数据库
+        const existingComments = moment.comments || [];
+        comments.forEach(comment => {
+            const contact = contacts.find(c => c.name === comment.name);
+            if (contact) {
+                existingComments.push({
+                    id: Date.now() + Math.random(),
+                    userId: contact.id,
+                    userName: contact.name,
+                    avatarKey: contact.avatarFileKey,
+                    text: comment.text,
+                    timestamp: new Date()
+                });
+            }
+        });
+        
+        await db.moments.update(momentId, { 
+            comments: existingComments,
+            commentCount: existingComments.length
+        });
+        
+        // 9. 刷新UI
+        await renderMomentsList();
+        
+    } catch (error) {
+        console.error('生成评论失败:', error);
+        alert('生成失败：' + error.message);
+  } finally {
+    buttonElement.textContent = originalText;
+    buttonElement.classList.remove('loading');
+}
+}
+
+// 格式化评论时间
+function formatCommentTime(timestamp) {
+    const date = new Date(timestamp);
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+    return `${year}-${month}-${day} ${hours}:${minutes}`;
 }
 
 
@@ -6371,7 +6898,11 @@ async function processAiReply(contactId, processingId) {
                 await new Promise(resolve => setTimeout(resolve, 300 + Math.random() * 500));
             }
         }
-        
+        // 【新增】检查是否需要发朋友圈
+if (shouldPostMoment) {
+    console.log('🎲 触发自动发朋友圈');
+    await checkAndPostMoment(contactId);
+}
         // 如果有朋友圈数据，保存
         if (momentData) {
             const contact = await db.contacts.get(contactId);
@@ -6414,38 +6945,31 @@ async function processAiReply(contactId, processingId) {
 // ======================================================
 async function checkAndPostMoment(contactId) {
     try {
-        // 1. 获取联系人设置
         const contact = await db.contacts.get(contactId);
-        if (!contact) return;
+        if (!contact || !contact.autoPostMoments) return;
         
-        // 2. 检查是否开启自动发朋友圈
-        if (!contact.autoPostMoments) {
-            console.log('⏸️ 自动发朋友圈未开启');
+        const now = Date.now();
+        const lastPostTime = contact.lastMomentPostTime || 0;
+        const cooldown = (contact.momentCooldown || 10) * 60 * 1000; // 转换为毫秒
+        
+        // 检查冷却时间
+        if (now - lastPostTime < cooldown) {
+            console.log(`⏳ 冷却中，还需等待 ${Math.ceil((cooldown - (now - lastPostTime)) / 60000)} 分钟`);
             return;
         }
         
-        // 3. 概率判断
-        const randomNum = Math.random() * 100;
-        const probability = contact.momentPostProbability || 50;
+        console.log(`🤖 冷却时间已过，开始生成朋友圈...`);
         
-        if (randomNum > probability) {
-            console.log(`🎲 概率判断：${randomNum.toFixed(1)}% > ${probability}%，本次不发朋友圈`);
-            return;
-        }
-        
-        console.log(`🎲 概率判断：${randomNum.toFixed(1)}% ≤ ${probability}%，触发发朋友圈！`);
-        
-        // 4. 获取最近的聊天记录（用于AI参考）
+        // 获取最近的聊天记录
         const recentMessages = await db.chatMessages
             .where('contactId').equals(contactId)
             .reverse()
             .limit(10)
             .toArray();
         
-        recentMessages.reverse(); // 恢复时间顺序
+        recentMessages.reverse();
         
-        // 5. 调用AI生成朋友圈内容
-        console.log(`🤖 正在生成 ${contact.name} 的朋友圈...`);
+        // 调用AI生成朋友圈内容
         const momentData = await generateMomentContent(contact, recentMessages);
         
         if (!momentData) {
@@ -6453,24 +6977,28 @@ async function checkAndPostMoment(contactId) {
             return;
         }
         
-        // 6. 保存到数据库
+        // 保存到数据库
         await db.moments.add({
-            contactId: contact.id,                      // 角色ID
-            contactName: contact.name,                  // 角色名字
-            contactAvatarKey: contact.avatarFileKey,    // 角色头像
+            contactId: contact.id,
+            contactName: contact.name,
+            contactAvatarKey: contact.avatarFileKey,
             content: momentData.content || '',
             hashtags: momentData.hashtags || [],
             location: momentData.location || null,
-            images: momentData.imageDescriptions || [], // 文字描述的配图
+            images: [],
+            imageDescriptions: momentData.imageDescriptions || [],
             timestamp: new Date(),
             likes: [],
             likeCount: 0,
             commentCount: 0
         });
         
-        console.log(`✅ ${contact.name} 发布了一条朋友圈：${momentData.content}`);
+        // 更新最后发布时间
+        await db.contacts.update(contactId, { lastMomentPostTime: now });
         
-        // 7. 如果当前正在查看朋友圈页面，刷新列表
+        console.log(`✅ ${contact.name} 发布了一条朋友圈`);
+        
+        // 刷新朋友圈列表
         const momentsScreen = document.querySelector('.moments-screen');
         if (momentsScreen && !momentsScreen.classList.contains('hidden')) {
             await renderMomentsList();
@@ -6480,6 +7008,7 @@ async function checkAndPostMoment(contactId) {
         console.error('❌ 自动发朋友圈失败:', error);
     }
 }
+
 
   // ======================================================
 // 【修复】监听 "聊天 API" 下拉框 (已移除死循环)
@@ -6866,23 +7395,32 @@ if (contact.coupleAvatarEnabled) {
     contactSettingsContextSlider.value = contextRounds;
     contactSettingsContextValue.value = contextRounds;
 
-    // 【新增】加载自动发朋友圈设置
-    const autoMomentToggle = document.querySelector('#contact-settings-auto-moment-toggle');
-    const probabilityContainer = document.querySelector('#moment-probability-container');
-    const probabilitySlider = document.querySelector('#contact-settings-moment-probability');
-    const probabilityValue = document.querySelector('#contact-settings-moment-probability-value');
-    
-    if (contact.autoPostMoments) {
-        autoMomentToggle.classList.add('active');
-        probabilityContainer.classList.remove('hidden');
-    } else {
-        autoMomentToggle.classList.remove('active');
-        probabilityContainer.classList.add('hidden');
-    }
-    
-    const probability = contact.momentPostProbability || 50;
-    probabilitySlider.value = probability;
-    probabilityValue.value = probability;
+// 【修改】加载自动发朋友圈设置
+const autoMomentToggle = document.querySelector('#contact-settings-auto-moment-toggle');
+const intervalContainer = document.querySelector('#moment-interval-container');
+const cooldownContainer = document.querySelector('#moment-cooldown-container');
+const intervalSlider = document.querySelector('#contact-settings-moment-interval');
+const intervalValue = document.querySelector('#contact-settings-moment-interval-value');
+const cooldownSlider = document.querySelector('#contact-settings-moment-cooldown');
+const cooldownValue = document.querySelector('#contact-settings-moment-cooldown-value');
+
+if (contact.autoPostMoments) {
+    autoMomentToggle.classList.add('active');
+    intervalContainer.classList.remove('hidden');
+    cooldownContainer.classList.remove('hidden');
+} else {
+    autoMomentToggle.classList.remove('active');
+    intervalContainer.classList.add('hidden');
+    cooldownContainer.classList.add('hidden');
+}
+
+const interval = contact.momentInterval || 5;
+const cooldown = contact.momentCooldown || 10;
+intervalSlider.value = interval;
+intervalValue.value = interval;
+cooldownSlider.value = cooldown;
+cooldownValue.value = cooldown;
+
       
         contactSettingsScreen.classList.remove('hidden');
       
@@ -6994,8 +7532,10 @@ if (contact.coupleAvatarEnabled) {
                showAvatar: contactSettingsAvatarToggle.classList.contains('active'),
               coupleAvatarEnabled: contactSettingsCoupleAvatarToggle.classList.contains('active'),
  // 【新增】保存自动发朋友圈设置
-            autoPostMoments: autoMomentToggle.classList.contains('active'),
-            momentPostProbability: parseInt(probabilitySlider.value) || 50
+       autoPostMoments: autoMomentToggle.classList.contains('active'),
+momentInterval: parseInt(intervalValue.value) || 5,
+momentCooldown: parseInt(cooldownValue.value) || 10
+
             
             };
             const avatarFile = contactSettingsAvatarInput.files[0];
@@ -9755,25 +10295,27 @@ if (tabContacts && tabContacts2 && tabMoments && tabMoments2 && momentsScreen) {
                 }
             }
             
-            await db.moments.add({
-                contactId: 0,
-                contactName: null,
-                contactAvatarKey: null,
-                content: content,
-                hashtags: hashtags,
-                location: location || null,
-                images: images, // 真实图片
-                imageDescriptions: imageDescriptions, // 文字描述
-                timestamp: new Date(),
-                likes: [],
-                likeCount: 0,
-                commentCount: 0
-            });
-            
-            await renderMomentsList();
-            publishOverlay.classList.add('hidden');
-            alert('发布成功！');
-            
+           const newMomentId = await db.moments.add({
+    contactId: 0,
+    contactName: null,
+    contactAvatarKey: null,
+    content: content,
+    hashtags: hashtags,
+    location: location || null,
+    images: images,
+    imageDescriptions: imageDescriptions,
+    timestamp: new Date(),
+    likes: [],
+    likeCount: 0,
+    commentCount: 0
+});
+
+await renderMomentsList();
+publishOverlay.classList.add('hidden');
+alert('发布成功!');
+
+// 【修复】触发角色自动点赞
+await autoLikeByContacts(newMomentId);
         } catch (error) {
             console.error('发布失败:', error);
             alert('发布失败，请重试！');
@@ -10291,44 +10833,61 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // 1. 开关切换
 const autoMomentToggle = document.querySelector('#contact-settings-auto-moment-toggle');
-const probabilityContainer = document.querySelector('#moment-probability-container');
+const intervalContainer = document.querySelector('#moment-interval-container');
+const cooldownContainer = document.querySelector('#moment-cooldown-container');
 
 if (autoMomentToggle) {
     autoMomentToggle.addEventListener('click', () => {
         const isActive = autoMomentToggle.classList.toggle('active');
         
         if (isActive) {
-            // 打开时显示滑块
-            probabilityContainer.classList.remove('hidden');
+            intervalContainer.classList.remove('hidden');
+            cooldownContainer.classList.remove('hidden');
         } else {
-            // 关闭时隐藏滑块
-            probabilityContainer.classList.add('hidden');
+            intervalContainer.classList.add('hidden');
+            cooldownContainer.classList.add('hidden');
         }
     });
 }
 
-// 2. 概率滑块同步
-const probabilitySlider = document.querySelector('#contact-settings-moment-probability');
-const probabilityValue = document.querySelector('#contact-settings-moment-probability-value');
+// 2. 发布间隔滑块同步
+const intervalSlider = document.querySelector('#contact-settings-moment-interval');
+const intervalValue = document.querySelector('#contact-settings-moment-interval-value');
 
-if (probabilitySlider && probabilityValue) {
-    // 滑块变化时更新数字输入框
-    probabilitySlider.addEventListener('input', () => {
-        probabilityValue.value = probabilitySlider.value;
+if (intervalSlider && intervalValue) {
+    intervalSlider.addEventListener('input', () => {
+        intervalValue.value = intervalSlider.value;
     });
     
-    // 数字输入框变化时更新滑块
-    probabilityValue.addEventListener('input', () => {
-        let newValue = parseInt(probabilityValue.value);
-        
-        if (newValue < 0) newValue = 0;
-        if (newValue > 100) newValue = 100;
-        if (isNaN(newValue)) newValue = 50;
-        
-        probabilityValue.value = newValue;
-        probabilitySlider.value = newValue;
+    intervalValue.addEventListener('input', () => {
+        let newValue = parseInt(intervalValue.value);
+        if (newValue < 1) newValue = 1;
+        if (newValue > 60) newValue = 60;
+        if (isNaN(newValue)) newValue = 5;
+        intervalValue.value = newValue;
+        intervalSlider.value = newValue;
     });
 }
+
+// 3. 冷却时间滑块同步
+const cooldownSlider = document.querySelector('#contact-settings-moment-cooldown');
+const cooldownValue = document.querySelector('#contact-settings-moment-cooldown-value');
+
+if (cooldownSlider && cooldownValue) {
+    cooldownSlider.addEventListener('input', () => {
+        cooldownValue.value = cooldownSlider.value;
+    });
+    
+    cooldownValue.addEventListener('input', () => {
+        let newValue = parseInt(cooldownValue.value);
+        if (newValue < 1) newValue = 1;
+        if (newValue > 120) newValue = 120;
+        if (isNaN(newValue)) newValue = 10;
+        cooldownValue.value = newValue;
+        cooldownSlider.value = newValue;
+    });
+}
+
 // ======================================================
 // 【新增】发布动态 - 配图方式切换
 // ======================================================
@@ -10353,9 +10912,19 @@ if (imageModeRealBtn && imageModeTextBtn && realImageContainer && textImageConta
     });
 }
 
+// 【新增】定时检测器 - 每分钟检查一次所有角色
+setInterval(async () => {
+    const contacts = await db.contacts.toArray();
+    for (const contact of contacts) {
+        if (contact.autoPostMoments) {
+            await checkAndPostMoment(contact.id);
+        }
+    }
+}, 60000); // 每60秒检查一次
 
-      
-//这是事件监听的最底部//  
+
+ 
+//这是事件监听末尾//  
   </script>
     
  <!-- ======================================================= -->
