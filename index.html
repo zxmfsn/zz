@@ -535,14 +535,18 @@ body {
         }
 
         /* 9. 聊天气泡的基础样式 */
-      .message-bubble {
+.message-bubble {
     max-width: 80%;
     padding: 10px 15px;
     border-radius: 18px;
     word-wrap: break-word;
     box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-    position: relative; /*  确保在背景层上方 */
-    z-index: 1; /*  确保在背景层上方 */
+    position: relative;
+    z-index: 1;
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
 }
 
         /* 10. 用户发出的消息 (右边, 蓝色) */
@@ -1690,13 +1694,16 @@ body {
 /* ============================================= */
 
 /* 1. 单个朋友圈卡片 */
-.moment-card {
+..moment-card {
     background-color: #ffffff;
     border-radius: 12px;
     padding: 15px;
     margin-bottom: 12px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
     transition: box-shadow 0.2s;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-touch-callout: none;
 }
 
 .moment-card:hover {
@@ -2408,7 +2415,10 @@ body {
 .send-comment-btn:hover {
     background-color: #0056b3;
 }
-
+/* 如果有自定义删除确认弹窗 */
+.delete-confirm-popup {
+    z-index: 9999999999 !important;
+}
         /*这里是CSS末尾，style的末尾，最底下*/ 
 
     </style>
@@ -3888,7 +3898,7 @@ document.addEventListener('focusout', (e) => {
         target.tagName === 'TEXTAREA' || 
         target.isContentEditable) {
         
-        console.log('输入框失去焦点:', target.id || target.className);
+     //   console.log('输入框失去焦点:', target.id || target.className);
         
         // 延迟检测键盘收起
         setTimeout(() => {
@@ -4336,7 +4346,7 @@ card.innerHTML = `
         ${moment.likes.map(like => `<span class="liker-name">${like.name}</span>`).join(', ')}
     </div>
       <!-- 【新增】评论区（默认隐藏） -->
-<div class="moment-comments-section" data-moment-id="${moment.id}">
+<div class="moment-comments-section hidden" data-moment-id="${moment.id}">
 
     <div class="comments-header">
         <span class="generate-comments-link">生成评论</span>
@@ -4391,41 +4401,52 @@ if (likeBtn) {
         await toggleMyLike(momentId, likeBtn);
     });
 }
-// 左滑删除功能
-let startX = 0;
-let currentX = 0;
 
-card.addEventListener('touchstart', (e) => {
-    startX = e.touches[0].clientX;
-});
 
-card.addEventListener('touchmove', (e) => {
-    currentX = e.touches[0].clientX;
-    const diff = currentX - startX;
-    if (diff < 0) { // 只响应左滑
-        card.style.transform = `translateX(${diff}px)`;
-    }
-});
-
-card.addEventListener('touchend', async () => {
-    const diff = currentX - startX;
-    if (diff < -100) { // 滑动超过100px
-        if (confirm('确定删除这条动态吗？')) {
-            await db.moments.delete(moment.id);
-            card.remove();
-        } else {
-            card.style.transform = '';
+// 【新增】点击"评论"按钮，显示/隐藏评论区
+const commentBtn = card.querySelectorAll('.moment-action-btn')[1]; // 第二个按钮是"评论"
+if (commentBtn) {
+    commentBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const commentsSection = card.querySelector('.moment-comments-section');
+        if (commentsSection) {
+            commentsSection.classList.toggle('hidden');
         }
-    } else {
-        card.style.transform = '';
-    }
-    startX = 0;
-    currentX = 0;
+    });
+}
+// 长按删除 - 必须在所有子元素事件之后绑定
+let longPressTimer = null;
+
+card.addEventListener('mousedown', (e) => {
+    console.log('✅ 按下');
+    longPressTimer = setTimeout(() => {
+        console.log('✅ 长按触发！');
+        if (navigator.vibrate) navigator.vibrate(50);
+        if (confirm('确定删除？')) {
+            db.moments.delete(moment.id);
+            card.remove();
+        }
+    }, 800);
 });
 
-momentsContent.appendChild(card);
+card.addEventListener('mousemove', () => {
+    clearTimeout(longPressTimer);
+});
 
-        momentsContent.appendChild(card);
+card.addEventListener('mouseup', () => {
+    clearTimeout(longPressTimer);
+});
+
+card.addEventListener('mouseleave', () => {
+    clearTimeout(longPressTimer);
+});
+
+
+      
+momentsContent.appendChild(card);
+//console.log('卡片已添加，ID:', moment.id);
+//console.log('卡片元素:', card);
+     
 
     }
 }
@@ -4651,7 +4672,7 @@ ${contacts.map((c, i) => `${i + 1}. ${c.name}：${c.persona || '普通人'}`).jo
             const contact = contacts.find(c => c.name === comment.name);
             if (contact) {
                 existingComments.push({
-                    id: Date.now() + Math.random(),
+                     id: Date.now() + Math.floor(Math.random() * 10000),
                     userId: contact.id,
                     userName: contact.name,
                     avatarKey: contact.avatarFileKey,
@@ -10307,7 +10328,8 @@ if (tabContacts && tabContacts2 && tabMoments && tabMoments2 && momentsScreen) {
     timestamp: new Date(),
     likes: [],
     likeCount: 0,
-    commentCount: 0
+    commentCount: 0,
+             comments: []
 });
 
 await renderMomentsList();
@@ -10317,8 +10339,8 @@ alert('发布成功!');
 // 【修复】触发角色自动点赞
 await autoLikeByContacts(newMomentId);
         } catch (error) {
-            console.error('发布失败:', error);
-            alert('发布失败，请重试！');
+            console.error('发布失败:', error); // ← 关键：查看具体错误
+        alert('发布失败：' + error.message); // ← 显示错误信息
         }
     });
 }
@@ -10485,11 +10507,11 @@ document.addEventListener('DOMContentLoaded', function() {
         const userProfileBackBtn = document.querySelector('#user-profile-back-btn');
         
         if (!userProfileBackBtn) {
-            console.error('找不到用户主页返回按钮！');
+          //  console.error('找不到用户主页返回按钮！');
             return;
         }
         
-        console.log('用户主页返回按钮已找到');
+       // console.log('用户主页返回按钮已找到');
         
         // 移除旧的事件监听器
         const newBtn = userProfileBackBtn.cloneNode(true);
@@ -10497,7 +10519,7 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // 绑定新的点击事件
         newBtn.addEventListener('click', function(e) {
-            console.log('用户主页返回按钮被点击了！');
+          //  console.log('用户主页返回按钮被点击了！');
             e.preventDefault();
             e.stopPropagation();
             
