@@ -4297,190 +4297,227 @@ async function renderMomentsList() {
             });
         }
         
-   
-// 构建配图区域（文字描述版）
-let imagesHtml = '';
+        // 构建配图区域（文字描述版）
+        let imagesHtml = '';
 
-// 1. 先渲染真实图片（用户发的）
-if (moment.images && moment.images.length > 0) {
-    const count = moment.images.length;
-    imagesHtml = `<div class="moment-images count-${count}">`;
-    moment.images.forEach((img, index) => {
-        imagesHtml += `<img src="${img}" alt="图片${index + 1}" class="moment-image">`;
-    });
-    imagesHtml += '</div>';
-}
+        // 1. 先渲染真实图片（用户发的）
+        if (moment.images && moment.images.length > 0) {
+            const count = moment.images.length;
+            imagesHtml = `<div class="moment-images count-${count}">`;
+            moment.images.forEach((img, index) => {
+                imagesHtml += `<img src="${img}" alt="图片${index + 1}" class="moment-image">`;
+            });
+            imagesHtml += '</div>';
+        }
 
-// 2. 再渲染文字描述（角色发的）
-if (moment.imageDescriptions && Array.isArray(moment.imageDescriptions) && moment.imageDescriptions.length > 0) {
-    imagesHtml += '<div style="margin-top: 10px; padding: 10px; background-color: #f9f9f9; border-radius: 8px; border-left: 3px solid #007aff;">';
-    for (let i = 0; i < moment.imageDescriptions.length; i++) {
-        const desc = moment.imageDescriptions[i];
-        imagesHtml += `<p style="margin: 5px 0; font-size: 13px; color: #555;">📷 ${desc}</p>`;
-    }
-    imagesHtml += '</div>';
-}
+        // 2. 再渲染文字描述（角色发的）
+        if (moment.imageDescriptions && Array.isArray(moment.imageDescriptions) && moment.imageDescriptions.length > 0) {
+            imagesHtml += '<div style="margin-top: 10px; padding: 10px; background-color: #f9f9f9; border-radius: 8px; border-left: 3px solid #007aff;">';
+            for (let i = 0; i < moment.imageDescriptions.length; i++) {
+                const desc = moment.imageDescriptions[i];
+                imagesHtml += `<p style="margin: 5px 0; font-size: 13px; color: #555;">📷 ${desc}</p>`;
+            }
+            imagesHtml += '</div>';
+        }
 
-
-// 然后在 card.innerHTML 中使用 ${imagesHtml}
-card.innerHTML = `
-    <div class="moment-header">
-        <img src="${avatarUrl}" alt="头像" class="moment-avatar" style="cursor: pointer;">
-        <div class="moment-user-info">
-            <p class="moment-username">${nickname}</p>
-            <p class="moment-time">${timeStr}</p>
-        </div>
-    </div>
-    
-    <div class="moment-content-text">${contentHtml}</div>
-    
-    ${moment.location ? `
-        <div class="moment-location">
-            <span class="moment-location-icon">📍</span>
-            <span>${moment.location}</span>
-        </div>
-    ` : ''}
-    
-    ${imagesHtml}
-    
-    <div class="moment-actions">
-        <button class="moment-action-btn">
-            <span class="moment-action-icon">❤️</span>
-            <span>${moment.likeCount || 0}</span>
-        </button>
-        <button class="moment-action-btn">
-            <span class="moment-action-icon">💬</span>
-            <span>${moment.commentCount || 0}</span>
-        </button>
-        <button class="moment-action-btn">
-            <span class="moment-action-icon">📤</span>
-            <span>分享</span>
-        </button>
-    </div>
-    ${moment.likes && moment.likes.length > 0 ? `
-     <div class="moment-likes-list">
-        <span class="likes-icon">❤️</span>
-        ${moment.likes.map(like => `<span class="liker-name">${like.name}</span>`).join(', ')}
-    </div>
-      <!-- 【新增】评论区（默认隐藏） -->
-<div class="moment-comments-section hidden" data-moment-id="${moment.id}">
-
-    <div class="comments-header">
-        <span class="generate-comments-link">生成评论</span>
-    </div>
-   <div class="comments-list">
-        ${moment.comments && moment.comments.length > 0 ? moment.comments.map(comment => `
-            <div class="comment-item">
-                <img src="${comment.avatarKey ? 'URL.createObjectURL(await db.files.get(comment.avatarKey).file)' : 'https://img.heliar.top/file/1763345515902_IMG_8744.png'}" class="comment-avatar">
-                <div class="comment-content">
-                    <p class="comment-user">${comment.userName}</p>
-                    <p class="comment-text">${comment.text}</p>
-                    <p class="comment-time">${formatCommentTime(comment.timestamp)}</p>
+        // 然后在 card.innerHTML 中使用 ${imagesHtml}
+        card.innerHTML = `
+            <div class="moment-header">
+                <img src="${avatarUrl}" alt="头像" class="moment-avatar" style="cursor: pointer;">
+                <div class="moment-user-info">
+                    <p class="moment-username">${nickname}</p>
+                    <p class="moment-time">${timeStr}</p>
                 </div>
             </div>
-        `).join('') : ''}
-    </div>
-
-   
-` : ''}
+            
+            <div class="moment-content-text">${contentHtml}</div>
+            
+            ${moment.location ? `
+                <div class="moment-location">
+                    <span class="moment-location-icon">📍</span>
+                    <span>${moment.location}</span>
+                </div>
+            ` : ''}
+            
+            ${imagesHtml}
+            
+            <div class="moment-actions">
+                <button class="moment-action-btn">
+                    <span class="moment-action-icon">❤️</span>
+                    <span>${moment.likeCount || 0}</span>
+                </button>
+                <button class="moment-action-btn">
+                    <span class="moment-action-icon">💬</span>
+                    <span>${moment.commentCount || 0}</span>
+                </button>
+                <button class="moment-action-btn">
+                    <span class="moment-action-icon">📤</span>
+                    <span>分享</span>
+                </button>
+            </div>
+            ${moment.likes && moment.likes.length > 0 ? `
+                <div class="moment-likes-list">
+                    <span class="likes-icon">❤️</span>
+                    ${moment.likes.map(like => `<span class="liker-name">${like.name}</span>`).join(', ')}
+                </div>
+                <div class="moment-comments-section hidden" data-moment-id="${moment.id}">
+                    <div class="comments-header">
+                        <span class="generate-comments-link">生成评论</span>
+                    </div>
+                    <div class="comments-list">
+                        ${moment.comments && moment.comments.length > 0 ? moment.comments.map(comment => `
+                            <div class="comment-item">
+                                <img src="${comment.avatarKey ? 'URL.createObjectURL(await db.files.get(comment.avatarKey).file)' : 'https://img.heliar.top/file/1763345515902_IMG_8744.png'}" class="comment-avatar">
+                                <div class="comment-content">
+                                    <p class="comment-user">${comment.userName}</p>
+                                    <p class="comment-text">${comment.text}</p>
+                                    <p class="comment-time">${formatCommentTime(comment.timestamp)}</p>
+                                </div>
+                            </div>
+                        `).join('') : ''}
+                    </div>
+                </div>
+            ` : ''}
         `;
         
         // 为头像添加点击事件
-
-
-// 【新增】点击"生成评论"按钮
-const generateLink = card.querySelector('.generate-comments-link');
-if (generateLink) {
-    generateLink.addEventListener('click', async (e) => {
-        e.stopPropagation();
-        const momentId = parseInt(card.dataset.momentId);
-        await generateCommentsForMoment(momentId, generateLink);
-    });
-}
-
         const avatar = card.querySelector('.moment-avatar');
         avatar.addEventListener('click', (e) => {
             e.stopPropagation();
             if (moment.contactId === 0) {
-                // 点击"我"的头像，打开个人主页
                 openUserProfile();
             } else {
-                // 点击角色头像，可以打开角色信息（可选功能）
-                // TODO: 未来可以添加"查看角色主页"功能
                 console.log(`点击了角色：${nickname}`);
             }
         });
+        
+        // 点赞按钮
         const likeBtn = card.querySelectorAll('.moment-action-btn')[0];
-if (likeBtn) {
-    likeBtn.addEventListener('click', async (e) => {
-        e.stopPropagation();
-        const momentId = parseInt(card.dataset.momentId);
-        await toggleMyLike(momentId, likeBtn);
-    });
-}
+        if (likeBtn) {
+            likeBtn.addEventListener('click', async (e) => {
+                e.stopPropagation();
+                const momentId = parseInt(card.dataset.momentId);
+                await toggleMyLike(momentId, likeBtn);
+            });
+        }
 
+        // 【核心修复】评论按钮 - 完全独立的事件处理
+        const commentBtn = card.querySelectorAll('.moment-action-btn')[1];
+        if (commentBtn) {
+            let isCommentBtnTouch = false; // 标记：这次触摸是否来自评论按钮
+            
+            // 移动端 - touchstart（标记 + 阻止冒泡）
+            commentBtn.addEventListener('touchstart', (e) => {
+                isCommentBtnTouch = true;
+                e.stopPropagation(); // 关键：阻止冒泡到卡片
+            }, { passive: false });
+            
+            // 移动端 - touchend（执行切换）
+            commentBtn.addEventListener('touchend', (e) => {
+                if (!isCommentBtnTouch) return;
+                
+                e.stopPropagation();
+                e.preventDefault(); // 阻止触发 click
+                
+                const commentsSection = card.querySelector('.moment-comments-section');
+                if (commentsSection) {
+                    commentsSection.classList.toggle('hidden');
+                }
+                
+                // 重置标记（延迟重置，确保卡片的 touchstart 能读到）
+                setTimeout(() => {
+                    isCommentBtnTouch = false;
+                }, 100);
+            }, { passive: false });
+            
+            // 桌面端 - click
+            commentBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const commentsSection = card.querySelector('.moment-comments-section');
+                if (commentsSection) {
+                    commentsSection.classList.toggle('hidden');
+                }
+            });
+            
+            // 阻止长按菜单
+            commentBtn.addEventListener('contextmenu', (e) => {
+                e.preventDefault();
+            });
+            
+            // 【关键】在卡片的长按逻辑中检查这个标记
+            card.isCommentBtnTouch = () => isCommentBtnTouch;
+        }
 
-// 【新增】点击"评论"按钮，显示/隐藏评论区
-const commentBtn = card.querySelectorAll('.moment-action-btn')[1]; // 第二个按钮是"评论"
-if (commentBtn) {
-    commentBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        const commentsSection = card.querySelector('.moment-comments-section');
-        if (commentsSection) {
-            commentsSection.classList.toggle('hidden');
+        // 【核心修复】生成评论按钮
+        const generateLink = card.querySelector('.generate-comments-link');
+        if (generateLink) {
+            generateLink.addEventListener('click', async (e) => {
+                e.stopPropagation();
+                const momentId = parseInt(card.dataset.momentId);
+                await generateCommentsForMoment(momentId, generateLink);
+            });
         }
-    });
+
+        // 【核心修复】长按删除 - 检查是否是评论按钮触摸
+        let longPressTimer = null;
+        
+        // 桌面端（鼠标）
+        card.addEventListener('mousedown', (e) => {
+            longPressTimer = setTimeout(() => {
+                if (navigator.vibrate) navigator.vibrate(50);
+                if (confirm('确定删除这条动态吗？')) {
+                    db.moments.delete(moment.id);
+                    card.remove();
+                }
+            }, 800);
+        });
+        
+        card.addEventListener('mousemove', () => {
+            clearTimeout(longPressTimer);
+        });
+        
+        card.addEventListener('mouseup', () => {
+            clearTimeout(longPressTimer);
+        });
+        
+        card.addEventListener('mouseleave', () => {
+            clearTimeout(longPressTimer);
+        });
+        
+        // 移动端（触摸）- 关键修复！
+        card.addEventListener('touchstart', (e) => {
+            // 【关键】如果是评论按钮的触摸，不启动长按计时器
+            if (card.isCommentBtnTouch && card.isCommentBtnTouch()) {
+                return;
+            }
+            
+            longPressTimer = setTimeout(() => {
+                if (navigator.vibrate) navigator.vibrate(50);
+                if (confirm('确定删除这条动态吗？')) {
+                    db.moments.delete(moment.id);
+                    card.remove();
+                }
+            }, 800);
+        }, { passive: true });
+        
+        card.addEventListener('touchmove', () => {
+            clearTimeout(longPressTimer);
+        }, { passive: true });
+        
+        card.addEventListener('touchend', () => {
+            clearTimeout(longPressTimer);
+        }, { passive: true });
+        
+        card.addEventListener('touchcancel', () => {
+            clearTimeout(longPressTimer);
+        });
+
+        momentsContent.appendChild(card);
+    }
 }
-// 长按删除 - 必须在所有子元素事件之后绑定
-let longPressTimer = null;
-// 桌面端（鼠标）
-card.addEventListener('mousedown', (e) => {
-    longPressTimer = setTimeout(() => {
-        if (navigator.vibrate) navigator.vibrate(50);
-        if (confirm('确定删除这条动态吗？')) {
-            db.moments.delete(moment.id);
-            card.remove();
-        }
-    }, 800);
-});
-card.addEventListener('mousemove', () => {
-    clearTimeout(longPressTimer);
-});
-card.addEventListener('mouseup', () => {
-    clearTimeout(longPressTimer);
-});
-card.addEventListener('mouseleave', () => {
-    clearTimeout(longPressTimer);
-});
-// 移动端（触摸）- 关键修复！
-card.addEventListener('touchstart', (e) => {
-    longPressTimer = setTimeout(() => {
-        if (navigator.vibrate) navigator.vibrate(50);
-        if (confirm('确定删除这条动态吗？')) {
-            db.moments.delete(moment.id);
-            card.remove();
-        }
-    }, 800);
-}, { passive: true });
-card.addEventListener('touchmove', () => {
-    clearTimeout(longPressTimer);
-}, { passive: true });
-card.addEventListener('touchend', () => {
-    clearTimeout(longPressTimer);
-}, { passive: true });
-card.addEventListener('touchcancel', () => {
-    clearTimeout(longPressTimer);
-});
 
 
       
-momentsContent.appendChild(card);
-//console.log('卡片已添加，ID:', moment.id);
-//console.log('卡片元素:', card);
-     
-
-    }
-}
 // ======================================================
 // 【新增】朋友圈点赞功能
 // ======================================================
@@ -5438,17 +5475,16 @@ function smartSplitMessage(text) {
 // 【优化版】获取AI回复 - 自然聊天风格 + 多条消息
 // ======================================================
 async function getAiReply(contactId) {
-    // 【新增】概率判断
-    let shouldPostMoment = false;
     const preset = await getActiveChatApiPreset();
     if (preset.error) {
         return preset.error; 
     }
     const { apiKey, baseUrl, model } = preset;
-
-    const contact = await db.contacts.get(contactId);
+    const contact = await db.contacts.get(contactId);  // ← 先定义 contact
  
-    if (contact.autoPostMoments) {
+    // 【新增】概率判断 - 移到这里！
+    let shouldPostMoment = false;
+    if (contact.autoPostMoments) {  // ← 现在可以安全使用了
         const randomNum = Math.random() * 100;
         const probability = contact.momentPostProbability || 50;
         shouldPostMoment = randomNum <= probability;
