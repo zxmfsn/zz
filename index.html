@@ -5930,27 +5930,32 @@ ${conversationText || "（你最近没和人聊天）"}
         
         const data = await response.json();
         const aiResponse = data.choices[0].message.content.trim();
-        
-     // 6. 解析JSON
+  // 6. 解析JSON
 let momentData;
 try {
-    // 先清理可能的markdown代码块标记
     let cleanedResponse = aiResponse.trim();
     
-    // 移除可能的 ```json 和 ``` 标记
-    cleanedResponse = cleanedResponse.replace(/```json\s*/g, '');
-    cleanedResponse = cleanedResponse.replace(/```\s*/g, '');
+    // 移除 markdown 标记
+    cleanedResponse = cleanedResponse.replace(/```json\s*/gi, '').replace(/```\s*/g, '');
     
-    // 提取JSON部分（找到第一个 { 到最后一个 }）
+    // 提取 JSON
     const jsonStart = cleanedResponse.indexOf('{');
     const jsonEnd = cleanedResponse.lastIndexOf('}');
     
     if (jsonStart === -1 || jsonEnd === -1) {
-        throw new Error('AI返回的内容中没有找到JSON对象');
+        console.error('AI 原始返回:', aiResponse);
+        throw new Error('未找到有效 JSON');
     }
     
     const jsonString = cleanedResponse.substring(jsonStart, jsonEnd + 1);
-    momentData = JSON.parse(jsonString);
+    
+    // 修复常见 JSON 错误
+    const fixedJson = jsonString
+        .replace(/,\s*}/g, '}')  // 移除尾部逗号
+        .replace(/,\s*]/g, ']')
+        .replace(/\n/g, ' ');    // 移除换行
+    
+    momentData = JSON.parse(fixedJson);
     
     // 【新增】验证必要字段并提供默认值
     if (!momentData.content) momentData.content = '';
