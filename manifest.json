@@ -1,0 +1,22 @@
+{
+  "name": "昭昭chat",
+  "short_name": "昭昭chat",
+  "description": "一个智能对话应用",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#007aff",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "https://img.heliar.top/file/1763345515902_IMG_8744.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "https://img.heliar.top/file/1763345515902_IMG_8744.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

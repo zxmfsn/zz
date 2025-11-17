@@ -4471,7 +4471,6 @@ momentsContent.appendChild(card);
 // ======================================================
 // 【新增】朋友圈点赞功能
 // ======================================================
-
 // 1. 我点赞/取消点赞
 async function toggleMyLike(momentId, buttonElement) {
     try {
@@ -4504,35 +4503,47 @@ async function toggleMyLike(momentId, buttonElement) {
             likeCount: moment.likeCount
         });
         
-        // 刷新列表
-     // 【修复】只更新当前卡片，不刷新整个列表
-const card = document.querySelector(`[data-moment-id="${momentId}"]`);
-if (card) {
-    // 更新点赞数
-    const likeCountSpan = card.querySelectorAll('.moment-action-btn')[0].querySelector('span:last-child');
-    if (likeCountSpan) {
-        likeCountSpan.textContent = moment.likeCount;
-    }
-    
-    // 更新点赞列表
-    const existingLikesList = card.querySelector('.moment-likes-list');
-    if (moment.likes.length > 0) {
-        const likesHtml = `
-            <div class="moment-likes-list">
-                <span class="likes-icon">❤️</span>
-                ${moment.likes.map(like => `<span class="liker-name">${like.name}</span>`).join(', ')}
-            </div>
-        `;
-        if (existingLikesList) {
-            existingLikesList.outerHTML = likesHtml;
-        } else {
-            card.querySelector('.moment-actions').insertAdjacentHTML('afterend', likesHtml);
+        // 【关键修复】直接在当前卡片上更新，不刷新整个列表
+        const card = document.querySelector(`[data-moment-id="${momentId}"]`);
+        if (card) {
+            // 1. 更新点赞按钮的数字
+            const likeBtn = card.querySelectorAll('.moment-action-btn')[0];
+            if (likeBtn) {
+                const likeCountSpan = likeBtn.querySelector('span:last-child');
+                if (likeCountSpan) {
+                    likeCountSpan.textContent = moment.likeCount;
+                }
+            }
+            
+            // 2. 更新或创建点赞列表
+            const existingLikesList = card.querySelector('.moment-likes-list');
+            
+            if (moment.likes.length > 0) {
+                // 有点赞，显示点赞列表
+                const likesHtml = `
+                    <div class="moment-likes-list">
+                        <span class="likes-icon">❤️</span>
+                        ${moment.likes.map(like => `<span class="liker-name">${like.name}</span>`).join(', ')}
+                    </div>
+                `;
+                
+                if (existingLikesList) {
+                    // 已有点赞列表，直接替换
+                    existingLikesList.outerHTML = likesHtml;
+                } else {
+                    // 没有点赞列表，在互动区域后面插入
+                    const actionsDiv = card.querySelector('.moment-actions');
+                    if (actionsDiv) {
+                        actionsDiv.insertAdjacentHTML('afterend', likesHtml);
+                    }
+                }
+            } else {
+                // 没有点赞，移除点赞列表
+                if (existingLikesList) {
+                    existingLikesList.remove();
+                }
+            }
         }
-    } else if (existingLikesList) {
-        existingLikesList.remove();
-    }
-}
-
         
     } catch (error) {
         console.error('点赞失败:', error);
@@ -4591,8 +4602,39 @@ async function autoLikeByContacts(momentId) {
                     likeCount: moment.likeCount
                 });
                 
-                // 刷新列表
-                await renderMomentsList();
+                // 【关键修复】直接在当前卡片上更新，不刷新整个列表
+                const card = document.querySelector(`[data-moment-id="${momentId}"]`);
+                if (card) {
+                    // 1. 更新点赞按钮的数字
+                    const likeBtn = card.querySelectorAll('.moment-action-btn')[0];
+                    if (likeBtn) {
+                        const likeCountSpan = likeBtn.querySelector('span:last-child');
+                        if (likeCountSpan) {
+                            likeCountSpan.textContent = moment.likeCount;
+                        }
+                    }
+                    
+                    // 2. 更新点赞列表
+                    const existingLikesList = card.querySelector('.moment-likes-list');
+                    
+                    if (moment.likes.length > 0) {
+                        const likesHtml = `
+                            <div class="moment-likes-list">
+                                <span class="likes-icon">❤️</span>
+                                ${moment.likes.map(like => `<span class="liker-name">${like.name}</span>`).join(', ')}
+                            </div>
+                        `;
+                        
+                        if (existingLikesList) {
+                            existingLikesList.outerHTML = likesHtml;
+                        } else {
+                            const actionsDiv = card.querySelector('.moment-actions');
+                            if (actionsDiv) {
+                                actionsDiv.insertAdjacentHTML('afterend', likesHtml);
+                            }
+                        }
+                    }
+                }
                 
             }, delay);
         });
@@ -4601,6 +4643,7 @@ async function autoLikeByContacts(momentId) {
         console.error('自动点赞失败:', error);
     }
 }
+
 // ======================================================
 // 【新增】生成评论的核心函数
 // ======================================================
@@ -4700,13 +4743,53 @@ ${contacts.map((c, i) => `${i + 1}. ${c.name}：${c.persona || '普通人'}`).jo
             }
         });
         
-        await db.moments.update(momentId, { 
+            await db.moments.update(momentId, { 
             comments: existingComments,
             commentCount: existingComments.length
         });
         
-        // 9. 刷新UI
-        await renderMomentsList();
+        // 9. 【修复】直接在当前卡片上渲染评论，不刷新整个列表
+        const currentCard = document.querySelector(`[data-moment-id="${momentId}"]`);
+        if (currentCard) {
+            const commentsSection = currentCard.querySelector('.moment-comments-section');
+            if (commentsSection) {
+                // 更新评论列表
+                const commentsList = commentsSection.querySelector('.comments-list');
+                if (commentsList) {
+                    commentsList.innerHTML = '';
+                    
+                    // 渲染所有评论
+                    for (const comment of existingComments) {
+                        const commentItem = document.createElement('div');
+                        commentItem.className = 'comment-item';
+                        
+                        // 获取评论者头像
+                        let avatarUrl = './assets/default-avatar.png';
+                        if (comment.avatarKey) {
+                            const avatarFile = await db.files.get(comment.avatarKey);
+                            if (avatarFile) {
+                                avatarUrl = URL.createObjectURL(avatarFile.file);
+                            }
+                        }
+                        
+                        commentItem.innerHTML = `
+                            <img src="${avatarUrl}" class="comment-avatar">
+                            <div class="comment-content">
+                                <p class="comment-user">${comment.userName}</p>
+                                <p class="comment-text">${comment.text}</p>
+                                <p class="comment-time">${formatCommentTime(comment.timestamp)}</p>
+                            </div>
+                        `;
+                        
+                        commentsList.appendChild(commentItem);
+                    }
+                }
+                
+                // 确保评论区是展开状态
+                commentsSection.classList.remove('hidden');
+            }
+        }
+
         
     } catch (error) {
         console.error('生成评论失败:', error);
@@ -5338,12 +5421,12 @@ function smartSplitMessage(text) {
     return messages.join('|||');
 }
  
-    // 【修复】这个函数是干净、正确的版本
- // 【最终版】getAiReply
-// ======================================================
+
 // 【优化版】获取AI回复 - 自然聊天风格 + 多条消息
 // ======================================================
 async function getAiReply(contactId) {
+    // 【新增】概率判断
+    let shouldPostMoment = false;
     const preset = await getActiveChatApiPreset();
     if (preset.error) {
         return preset.error; 
@@ -5351,8 +5434,7 @@ async function getAiReply(contactId) {
     const { apiKey, baseUrl, model } = preset;
 
     const contact = await db.contacts.get(contactId);
-   // 【新增】概率判断
-    let shouldPostMoment = false;
+ 
     if (contact.autoPostMoments) {
         const randomNum = Math.random() * 100;
         const probability = contact.momentPostProbability || 50;
@@ -10091,12 +10173,18 @@ messageContainer.addEventListener('click', (e) => {
     // 只有在多选模式下才响应
     if (!isBatchDeleteMode) return;
     
+    // 【关键修复】阻止事件冒泡
+    e.stopPropagation();
+    
     // 找到被点击的消息气泡
     const bubble = e.target.closest('.message-bubble');
     if (!bubble) return;
     
     const messageId = parseInt(bubble.dataset.messageId);
     if (!messageId) return;
+    
+    // 【关键修复】阻止默认行为（防止长按编辑）
+    e.preventDefault();
     
     // 切换选中状态
     if (selectedMessageIds.has(messageId)) {
@@ -10115,7 +10203,8 @@ messageContainer.addEventListener('click', (e) => {
     } else {
         batchDeleteBtn.textContent = '删除';
     }
-});
+}, true); // 【关键修复】使用捕获阶段
+
 
 // 3. 点击删除按钮
 
