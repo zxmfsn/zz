@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
-    <title>AI小手机</title>
+ <title>昭昭chat</title>
     
     <style>
         /* 先做一些准备工作，让页面表现更统一 */
@@ -1679,8 +1679,9 @@ body {
     flex-grow: 1;
     overflow-y: auto;
     padding: 10px;
-    padding-bottom: 70px; /* 留出底部标签栏的空间 */
+    padding-bottom: 70px;
     -webkit-overflow-scrolling: touch;
+    background-color: #f5f5f5; /* 添加背景色 */
 }
 
 /* 5. 调整联系人列表的底部间距（避免被标签栏遮挡） */
@@ -1694,17 +1695,18 @@ body {
 /* ============================================= */
 
 /* 1. 单个朋友圈卡片 */
-..moment-card {
+.moment-card {
     background-color: #ffffff;
     border-radius: 12px;
     padding: 15px;
     margin-bottom: 12px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     transition: box-shadow 0.2s;
     user-select: none;
     -webkit-user-select: none;
     -webkit-touch-callout: none;
 }
+
 
 .moment-card:hover {
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
@@ -3076,7 +3078,7 @@ body {
         <main class="app-grid">
          <div class="widget widget-3x2">
                 <div class="widget-bg" id="widget-bg-image">
-                    <img src="./assets/default-avatar.png" alt="Avatar" class="widget-avatar" id="widget-avatar-image">
+                    <img src="https://img.heliar.top/file/1763345515902_IMG_8744.png" alt="Avatar" class="widget-avatar" id="widget-avatar-image">
                 </div>
                 <p class="widget-text" id="widget-bottom-text">大胆，朕是皇帝！</p>
             </div>
@@ -3213,7 +3215,7 @@ body {
                 <h3>添加新联系人</h3>
                 
                 <div class="avatar-preview-container">
-                    <img id="contact-avatar-preview" src="./assets/default-avatar.png" alt="头像预览">
+                    <img id="contact-avatar-preview" src="https://img.heliar.top/file/1763345515902_IMG_8744.png" alt="头像预览">
                 </div>
                 
                 <label for="contact-avatar-file-input" class="file-label" style="background-color: rgba(0, 122, 255, 0.8);">
@@ -3340,7 +3342,7 @@ body {
         <div class="accordion-item">
             <div class="accordion-content expanded" style="padding-top: 15px;">
                 <div class="setting-item" style="text-align: center;">
-                    <img id="contact-settings-avatar" src="./assets/default-avatar.png" style="width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 3px solid #eee;">
+                    <img id="contact-settings-avatar" src="https://img.heliar.top/file/1763345515902_IMG_8744.png" style="width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 3px solid #eee;">
                     <label for="contact-settings-avatar-input" class="file-label" style="background-color: rgba(0, 122, 255, 0.8); width: 150px; margin: 10px auto 0 auto; padding: 8px 0;">
                         修改头像
                     </label>
@@ -3554,7 +3556,7 @@ body {
         <div class="setting-item">
             <label>我的头像</label>
             <div class="avatar-preview-container">
-                <img id="couple-user-avatar-preview" src="./assets/default-avatar.png" alt="我的头像" style="width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 3px solid #007aff;">
+                <img id="couple-user-avatar-preview" src="https://img.heliar.top/file/1763345515902_IMG_8744.png" alt="我的头像" style="width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 3px solid #007aff;">
             </div>
             <label for="couple-user-avatar-input" class="file-label" style="background-color: rgba(0, 122, 255, 0.8);">
                 上传我的头像
@@ -3566,7 +3568,7 @@ body {
         <div class="setting-item">
             <label>对方头像</label>
             <div class="avatar-preview-container">
-                <img id="couple-bot-avatar-preview" src="./assets/default-avatar.png" alt="对方头像" style="width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 3px solid #ff3b30;">
+                <img id="couple-bot-avatar-preview" src="https://img.heliar.top/file/1763345515902_IMG_8744.png" alt="对方头像" style="width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 3px solid #ff3b30;">
             </div>
             <label for="couple-bot-avatar-input" class="file-label" style="background-color: rgba(255, 59, 48, 0.8);">
                 上传对方头像
@@ -3594,7 +3596,7 @@ body {
         <h3 id="persona-editor-title">编辑人设</h3>
         
         <div class="avatar-preview-container">
-            <img id="persona-avatar-preview" src="./assets/default-avatar.png" alt="头像预览" style="width: 100px; height: 100px; border-radius: 50%; object-fit: cover;">
+            <img id="persona-avatar-preview" src="https://img.heliar.top/file/1763345515902_IMG_8744.png" alt="头像预览" style="width: 100px; height: 100px; border-radius: 50%; object-fit: cover;">
         </div>
         
         <label for="persona-avatar-input" class="file-label" style="background-color: rgba(0, 122, 255, 0.8);">
@@ -4240,7 +4242,7 @@ async function renderMomentsList() {
     
     for (const moment of moments) {
         // 判断是"我"发的还是"角色"发的
-        let avatarUrl = './assets/default-avatar.png';
+        let avatarUrl = 'https://img.heliar.top/file/1763345515902_IMG_8744.png';
         let nickname = '我';
         
         if (moment.contactId === 0) {
@@ -4297,13 +4299,15 @@ if (moment.images && moment.images.length > 0) {
 }
 
 // 2. 再渲染文字描述（角色发的）
-if (moment.imageDescriptions && moment.imageDescriptions.length > 0) {
+if (moment.imageDescriptions && Array.isArray(moment.imageDescriptions) && moment.imageDescriptions.length > 0) {
     imagesHtml += '<div style="margin-top: 10px; padding: 10px; background-color: #f9f9f9; border-radius: 8px; border-left: 3px solid #007aff;">';
-    moment.imageDescriptions.forEach((desc, index) => {
+    for (let i = 0; i < moment.imageDescriptions.length; i++) {
+        const desc = moment.imageDescriptions[i];
         imagesHtml += `<p style="margin: 5px 0; font-size: 13px; color: #555;">📷 ${desc}</p>`;
-    });
+    }
     imagesHtml += '</div>';
 }
+
 
 // 然后在 card.innerHTML 中使用 ${imagesHtml}
 card.innerHTML = `
@@ -4354,7 +4358,7 @@ card.innerHTML = `
    <div class="comments-list">
         ${moment.comments && moment.comments.length > 0 ? moment.comments.map(comment => `
             <div class="comment-item">
-                <img src="${comment.avatarKey ? 'URL.createObjectURL(await db.files.get(comment.avatarKey).file)' : './assets/default-avatar.png'}" class="comment-avatar">
+                <img src="${comment.avatarKey ? 'URL.createObjectURL(await db.files.get(comment.avatarKey).file)' : 'https://img.heliar.top/file/1763345515902_IMG_8744.png'}" class="comment-avatar">
                 <div class="comment-content">
                     <p class="comment-user">${comment.userName}</p>
                     <p class="comment-text">${comment.text}</p>
@@ -4416,28 +4420,42 @@ if (commentBtn) {
 }
 // 长按删除 - 必须在所有子元素事件之后绑定
 let longPressTimer = null;
-
+// 桌面端（鼠标）
 card.addEventListener('mousedown', (e) => {
-    console.log('✅ 按下');
     longPressTimer = setTimeout(() => {
-        console.log('✅ 长按触发！');
         if (navigator.vibrate) navigator.vibrate(50);
-        if (confirm('确定删除？')) {
+        if (confirm('确定删除这条动态吗？')) {
             db.moments.delete(moment.id);
             card.remove();
         }
     }, 800);
 });
-
 card.addEventListener('mousemove', () => {
     clearTimeout(longPressTimer);
 });
-
 card.addEventListener('mouseup', () => {
     clearTimeout(longPressTimer);
 });
-
 card.addEventListener('mouseleave', () => {
+    clearTimeout(longPressTimer);
+});
+// 移动端（触摸）- 关键修复！
+card.addEventListener('touchstart', (e) => {
+    longPressTimer = setTimeout(() => {
+        if (navigator.vibrate) navigator.vibrate(50);
+        if (confirm('确定删除这条动态吗？')) {
+            db.moments.delete(moment.id);
+            card.remove();
+        }
+    }, 800);
+}, { passive: true });
+card.addEventListener('touchmove', () => {
+    clearTimeout(longPressTimer);
+}, { passive: true });
+card.addEventListener('touchend', () => {
+    clearTimeout(longPressTimer);
+}, { passive: true });
+card.addEventListener('touchcancel', () => {
     clearTimeout(longPressTimer);
 });
 
@@ -4921,7 +4939,7 @@ if (sender === 'user') {
             avatarEl.src = URL.createObjectURL(coupleFile.file);
         } else {
             // 找不到情侣头像，使用默认
-            avatarEl.src = './assets/default-avatar.png';
+            avatarEl.src = 'https://img.heliar.top/file/1763345515902_IMG_8744.png';
         }
     }
     // 【优先级2】否则从"我的人设"读取
@@ -4933,15 +4951,15 @@ if (sender === 'user') {
             if (avatarFile) {
                 avatarEl.src = URL.createObjectURL(avatarFile.file);
             } else {
-                avatarEl.src = './assets/default-avatar.png';
+                avatarEl.src = 'https://img.heliar.top/file/1763345515902_IMG_8744.png';
             }
         } else {
-            avatarEl.src = './assets/default-avatar.png';
+            avatarEl.src = 'https://img.heliar.top/file/1763345515902_IMG_8744.png';
         }
     }
     // 【优先级3】都没有就用默认
     else {
-        avatarEl.src = './assets/default-avatar.png';
+        avatarEl.src = 'https://img.heliar.top/file/1763345515902_IMG_8744.png';
     }
 } else {
     // AI的头像
@@ -4951,7 +4969,7 @@ if (sender === 'user') {
         if (coupleFile) {
             avatarEl.src = URL.createObjectURL(coupleFile.file);
         } else {
-            avatarEl.src = './assets/default-avatar.png';
+            avatarEl.src = 'https://img.heliar.top/file/1763345515902_IMG_8744.png';
         }
     }
     // 【优先级2】否则用联系人自己的头像
@@ -4960,12 +4978,12 @@ if (sender === 'user') {
         if (avatarFile) {
             avatarEl.src = URL.createObjectURL(avatarFile.file);
         } else {
-            avatarEl.src = './assets/default-avatar.png';
+            avatarEl.src = 'https://img.heliar.top/file/1763345515902_IMG_8744.png';
         }
     }
     // 【优先级3】都没有就用默认
     else {
-        avatarEl.src = './assets/default-avatar.png';
+        avatarEl.src = 'https://img.heliar.top/file/1763345515902_IMG_8744.png';
     }
 
 
@@ -4976,10 +4994,10 @@ if (sender === 'user') {
                     if (avatarFile) {
                         avatarEl.src = URL.createObjectURL(avatarFile.file);
                     } else {
-                        avatarEl.src = './assets/default-avatar.png';
+                        avatarEl.src = 'https://img.heliar.top/file/1763345515902_IMG_8744.png';
                     }
                 } else {
-                    avatarEl.src = './assets/default-avatar.png';
+                    avatarEl.src = 'https://img.heliar.top/file/1763345515902_IMG_8744.png';
                 }
             }
             
@@ -5899,7 +5917,7 @@ async function openPersonaEditor(personaId) {
         document.querySelector('#persona-editor-title').textContent = '添加新人设';
         document.querySelector('#persona-name-input').value = '';
         document.querySelector('#persona-desc-input').value = '';
-        document.querySelector('#persona-avatar-preview').src = './assets/default-avatar.png';
+        document.querySelector('#persona-avatar-preview').src = 'https://img.heliar.top/file/1763345515902_IMG_8744.png';
         document.querySelector('#persona-avatar-input').value = '';
     } else {
         // 编辑模式
@@ -5915,7 +5933,7 @@ async function openPersonaEditor(personaId) {
         document.querySelector('#persona-editor-title').textContent = '编辑人设';
         document.querySelector('#persona-name-input').value = persona.name;
         document.querySelector('#persona-desc-input').value = persona.description || '';
-        document.querySelector('#persona-avatar-preview').src = './assets/default-avatar.png';
+        document.querySelector('#persona-avatar-preview').src = 'https://img.heliar.top/file/1763345515902_IMG_8744.png';
         
         if (persona.avatarFileKey) {
             const avatarFile = await db.files.get(persona.avatarFileKey);
@@ -6090,7 +6108,7 @@ function closePersonaEditor() {
             largeWidget.querySelector('.widget-text').textContent = ''; 
             largeWidget.querySelector('.widget-text').style.display = 'none'; 
             largeWidget.querySelector('.widget-text').style.color = ''; 
-            widgetAvatarImage.src = './assets/default-avatar.png'; 
+            widgetAvatarImage.src = 'https://img.heliar.top/file/1763345515902_IMG_8744.png'; 
             await db.files.delete('largeWidget_bg');
             await db.files.delete('largeWidget_avatar');
             await db.settings.delete('largeWidget_text');
@@ -6120,7 +6138,7 @@ function closePersonaEditor() {
         addContactPopup.classList.remove('hidden'); 
         contactNameInput.value = '';
         contactPersonaInput.value = '';
-        contactAvatarPreview.src = './assets/default-avatar.png'; 
+        contactAvatarPreview.src = 'https://img.heliar.top/file/1763345515902_IMG_8744.png'; 
         contactAvatarFileInput.value = ''; 
     });
 
@@ -7383,7 +7401,7 @@ apiSummaryPresetSelector.addEventListener('change', async () => {
         contactSettingsNameInput.value = contact.name;
         contactSettingsRemarkInput.value = contact.remark || ''; 
         contactSettingsPersonaInput.value = contact.persona;
-        contactSettingsAvatar.src = './assets/default-avatar.png'; 
+        contactSettingsAvatar.src = 'https://img.heliar.top/file/1763345515902_IMG_8744.png'; 
         if (contact.avatarFileKey) {
             const avatarFile = await db.files.get(contact.avatarFileKey);
             if (avatarFile) contactSettingsAvatar.src = URL.createObjectURL(avatarFile.file);
@@ -7604,7 +7622,7 @@ momentCooldown: parseInt(cooldownValue.value) || 10
         }
         listContentContainer.innerHTML = '';
         for (const contact of contacts) {
-            let avatarUrl = './assets/default-avatar.png'; 
+            let avatarUrl = 'https://img.heliar.top/file/1763345515902_IMG_8744.png'; 
             if (contact.avatarFileKey) { 
                 const avatarFile = await db.files.get(contact.avatarFileKey);
                 if (avatarFile) avatarUrl = URL.createObjectURL(avatarFile.file);
@@ -8073,7 +8091,7 @@ async function loadMyPersonaPresets() {
     
     listContainer.innerHTML = '';
     for (const preset of presets) {
-        let avatarUrl = './assets/default-avatar.png';
+        let avatarUrl = 'https://img.heliar.top/file/1763345515902_IMG_8744.png';
         if (preset.avatarFileKey) {
             const avatarFile = await db.files.get(preset.avatarFileKey);
             if (avatarFile) avatarUrl = URL.createObjectURL(avatarFile.file);
@@ -8347,7 +8365,7 @@ async function renderCharacterSelectorList(query = '') {
 
         // 4. 循环创建列表项 (我们复用 "联系人" App 的样式)
         for (const contact of contacts) {
-            let avatarUrl = './assets/default-avatar.png'; 
+            let avatarUrl = 'https://img.heliar.top/file/1763345515902_IMG_8744.png'; 
             if (contact.avatarFileKey) { 
                 const avatarFile = await db.files.get(contact.avatarFileKey);
                 if (avatarFile) avatarUrl = URL.createObjectURL(avatarFile.file);
@@ -9673,8 +9691,8 @@ async function openCoupleAvatarPopup() {
     }
     
     // 加载已保存的头像（如果有）
-    coupleUserAvatarPreview.src = './assets/default-avatar.png';
-    coupleBotAvatarPreview.src = './assets/default-avatar.png';
+    coupleUserAvatarPreview.src = 'https://img.heliar.top/file/1763345515902_IMG_8744.png';
+    coupleBotAvatarPreview.src = 'https://img.heliar.top/file/1763345515902_IMG_8744.png';
     
     if (contact.coupleUserAvatarFileKey) {
         const userFile = await db.files.get(contact.coupleUserAvatarFileKey);
@@ -10460,7 +10478,7 @@ async function renderProfileMomentsGrid() {
         
         card.innerHTML = `
             <div class="moment-header">
-                <img src="./assets/default-avatar.png" alt="头像" class="moment-avatar">
+                <img src="https://img.heliar.top/file/1763345515902_IMG_8744.png" alt="头像" class="moment-avatar">
                 <div class="moment-user-info">
                     <p class="moment-username">我</p>
                     <p class="moment-time">${timeStr}</p>
@@ -10964,7 +10982,7 @@ setInterval(async () => {
     <div class="profile-header">
         <div class="profile-cover"></div>
         <div class="profile-avatar-section">
-            <img id="profile-avatar-img" src="./assets/default-avatar.png" alt="头像" class="profile-avatar">
+            <img id="profile-avatar-img" src="https://img.heliar.top/file/1763345515902_IMG_8744.png" alt="头像" class="profile-avatar">
             <p class="profile-nickname">我</p>
           <p class="profile-signature"></p>
 
@@ -10999,7 +11017,7 @@ setInterval(async () => {
     <div class="theme-content">
         <!-- 头像设置 -->
         <div class="setting-item" style="text-align: center; padding: 20px 0;">
-            <img id="profile-settings-avatar-preview" src="./assets/default-avatar.png" style="width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 3px solid #eee;">
+            <img id="profile-settings-avatar-preview" src="https://img.heliar.top/file/1763345515902_IMG_8744.png" style="width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 3px solid #eee;">
             <label for="profile-settings-avatar-input" class="file-label" style="background-color: rgba(0, 122, 255, 0.8); width: 150px; margin: 10px auto 0 auto; padding: 8px 0;">
                 修改头像
             </label>
