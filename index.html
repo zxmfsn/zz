@@ -2930,8 +2930,19 @@ body {
             </label>
             <input type="file" id="restore-data-input" accept=".json" style="display: none;">
         </div>
-        
+        <!-- 4. 重置数据 -->
+<div class="editor-section">
+    <h4>🗑️ 重置数据</h4>
+    <p style="font-size: 12px; color: #ff3b30; margin-bottom: 10px;">
+        ⚠️ 危险操作：清除所有数据并重置为初始状态！
+    </p>
+    <button id="reset-all-data-btn" class="btn-clear" style="width: 100%; background-color: #ff3b30; color: white; padding: 12px; font-weight: bold;">
+        🗑️ 清除所有数据
+    </button>
+</div>
+
     </div>
+  
 </div>
 
                 </div>         
@@ -3950,32 +3961,30 @@ if (window.visualViewport) {
     window.visualViewport.addEventListener('resize', setRealViewportHeight);
 }
 
-    // ======================================================
-    // 数据库定义
-    // ======================================================
-    const db = new Dexie('MyPhoneDatabase');
-    db.version(1).stores({
-        settings: '&key', 
-        files: '&key',
-        contacts: '++id, name',
-        chatMessages: '++id, contactId',
-        apiPresets: '++id, name',
-        worldbook_categories: '++id, name',
-        worldbook_entries: '++id, categoryId, name'
-    });
+  // ======================================================
+// 数据库定义
+// ======================================================
+const db = new Dexie('MyPhoneDatabase');
+
+// 【修复】只保留最新的版本定义
 db.version(6).stores({
-    contacts: '++id, name, remark, summarySettings, aiSummaryText, myPersonaSupplement, contextRounds',
+    settings: '&key',
+    files: '&key',
+    contacts: '++id, name, remark',
+    chatMessages: '++id, contactId',
+    apiPresets: '++id, name',
+    worldbook_categories: '++id, name',
+    worldbook_entries: '++id, categoryId, name',
     contact_worldbook_links: '[contactId+worldbookEntryId], contactId',
     my_persona_presets: '++id, name',
     sticker_libraries: '++id, name',
     stickers: '++id, libraryId, text, url',
     user_sticker_selection: 'key, libraryIds',
     role_sticker_selection: 'key, libraryIds',
-    
-    // 【新增】朋友圈相关的表
-    moments: '++id, contactId, timestamp',           // 朋友圈动态
-    moment_comments: '++id, momentId, contactId, timestamp'  // 评论
+    moments: '++id, contactId, timestamp',
+    moment_comments: '++id, momentId, contactId, timestamp'
 });
+
     
     // ======================================================
     // 全局变量
@@ -4321,40 +4330,41 @@ async function renderMomentsList() {
         }
 
         // 然后在 card.innerHTML 中使用 ${imagesHtml}
-        card.innerHTML = `
-            <div class="moment-header">
-                <img src="${avatarUrl}" alt="头像" class="moment-avatar" style="cursor: pointer;">
-                <div class="moment-user-info">
-                    <p class="moment-username">${nickname}</p>
-                    <p class="moment-time">${timeStr}</p>
-                </div>
-            </div>
-            
-            <div class="moment-content-text">${contentHtml}</div>
-            
-            ${moment.location ? `
-                <div class="moment-location">
-                    <span class="moment-location-icon">📍</span>
-                    <span>${moment.location}</span>
-                </div>
-            ` : ''}
-            
-            ${imagesHtml}
-            
-            <div class="moment-actions">
-                <button class="moment-action-btn">
-                    <span class="moment-action-icon">❤️</span>
-                    <span>${moment.likeCount || 0}</span>
-                </button>
-                <button class="moment-action-btn">
-                    <span class="moment-action-icon">💬</span>
-                    <span>${moment.commentCount || 0}</span>
-                </button>
-                <button class="moment-action-btn">
-                    <span class="moment-action-icon">📤</span>
-                    <span>分享</span>
-                </button>
-            </div>
+       card.innerHTML = `
+    <div class="moment-header">
+        <img src="${avatarUrl}" alt="头像" class="moment-avatar" style="cursor: pointer;">
+        <div class="moment-user-info">
+            <p class="moment-username">${nickname}</p>
+            <p class="moment-time">${timeStr}</p>
+        </div>
+    </div>
+    
+    <div class="moment-content-text">${contentHtml}</div>
+    
+    ${moment.location ? `
+        <div class="moment-location">
+            <span class="moment-location-icon">📍</span>
+            <span>${moment.location}</span>
+        </div>
+    ` : ''}
+    
+    ${imagesHtml}
+    
+    <div class="moment-actions">
+        <button class="moment-action-btn">
+            <span class="moment-action-icon">❤️</span>
+            <span>${moment.likeCount || 0}</span>
+        </button>
+        <button class="moment-action-btn">
+            <span class="moment-action-icon">💬</span>
+            <span>${moment.commentCount || 0}</span>
+        </button>
+        <button class="moment-action-btn">
+            <span class="moment-action-icon">📤</span>
+            <span>分享</span>
+        </button>
+    </div>
+
             ${moment.likes && moment.likes.length > 0 ? `
                 <div class="moment-likes-list">
                     <span class="likes-icon">❤️</span>
@@ -4400,6 +4410,42 @@ async function renderMomentsList() {
                 await toggleMyLike(momentId, likeBtn);
             });
         }
+// 【修复1】确保评论区HTML存在（即使没有点赞）
+if (moment.comments && moment.comments.length > 0) {
+    const commentsHtml = `
+        <div class="moment-comments-section hidden" data-moment-id="${moment.id}">
+            <div class="comments-header">
+                <span class="generate-comments-link">生成评论</span>
+            </div>
+            <div class="comments-list">
+                ${moment.comments.map(comment => `
+                    <div class="comment-item">
+                        <img src="${comment.avatarKey ? 'URL.createObjectURL(await db.files.get(comment.avatarKey).file)' : 'https://img.heliar.top/file/1763345515902_IMG_8744.png'}" class="comment-avatar">
+                        <div class="comment-content">
+                            <p class="comment-user">${comment.userName}</p>
+                            <p class="comment-text">${comment.text}</p>
+                            <p class="comment-time">${formatCommentTime(comment.timestamp)}</p>
+                        </div>
+                    </div>
+                `).join('')}
+            </div>
+        </div>
+    `;
+    // 把评论区插入到点赞列表后面
+    card.insertAdjacentHTML('beforeend', commentsHtml);
+} else {
+    // 【关键】即使没有评论，也要创建评论区框架
+    const commentsHtml = `
+        <div class="moment-likes-list hidden"></div>
+        <div class="moment-comments-section hidden" data-moment-id="${moment.id}">
+            <div class="comments-header">
+                <span class="generate-comments-link">生成评论</span>
+            </div>
+            <div class="comments-list"></div>
+        </div>
+    `;
+    card.insertAdjacentHTML('beforeend', commentsHtml);
+}
 
         // 【核心修复】评论按钮 - 完全独立的事件处理
         const commentBtn = card.querySelectorAll('.moment-action-btn')[1];
@@ -5851,7 +5897,10 @@ ${conversationText || "（你最近没和人聊天）"}
 3. **保持人设**
 4. **偶尔跑题**：不是每条都要和聊天有关，随便发点日常，观点，生活小事之内的也行。
 5. **别暴露身份**：不要说"我是AI"、"根据对话"之类的
-
+**重要提醒：**
+- 你的回复必须是纯JSON格式
+- 不要添加任何解释性文字
+- 直接返回JSON对象
 ---
 
 现在，发一条朋友圈吧！记住：你是 ${contact.name}，不是程序。`;
@@ -5882,21 +5931,40 @@ ${conversationText || "（你最近没和人聊天）"}
         const data = await response.json();
         const aiResponse = data.choices[0].message.content.trim();
         
-        // 6. 解析JSON
-        let momentData;
-        try {
-            // 尝试直接解析
-            momentData = JSON.parse(aiResponse);
-        } catch (e) {
-            // 如果失败，尝试提取JSON部分
-            const jsonMatch = aiResponse.match(/```json\s*([\s\S]*?)\s*```/) || 
-                            aiResponse.match(/\{[\s\S]*\}/);
-            if (jsonMatch) {
-                momentData = JSON.parse(jsonMatch[1] || jsonMatch[0]);
-            } else {
-                throw new Error('AI返回的内容无法解析为JSON');
-            }
-        }
+     // 6. 解析JSON
+let momentData;
+try {
+    // 先清理可能的markdown代码块标记
+    let cleanedResponse = aiResponse.trim();
+    
+    // 移除可能的 ```json 和 ``` 标记
+    cleanedResponse = cleanedResponse.replace(/```json\s*/g, '');
+    cleanedResponse = cleanedResponse.replace(/```\s*/g, '');
+    
+    // 提取JSON部分（找到第一个 { 到最后一个 }）
+    const jsonStart = cleanedResponse.indexOf('{');
+    const jsonEnd = cleanedResponse.lastIndexOf('}');
+    
+    if (jsonStart === -1 || jsonEnd === -1) {
+        throw new Error('AI返回的内容中没有找到JSON对象');
+    }
+    
+    const jsonString = cleanedResponse.substring(jsonStart, jsonEnd + 1);
+    momentData = JSON.parse(jsonString);
+    
+    // 【新增】验证必要字段并提供默认值
+    if (!momentData.content) momentData.content = '';
+    if (!Array.isArray(momentData.hashtags)) momentData.hashtags = [];
+    if (!momentData.location) momentData.location = null;
+    if (!Array.isArray(momentData.imageDescriptions)) momentData.imageDescriptions = [];
+    
+    console.log('✅ 成功解析朋友圈数据:', momentData);
+    
+} catch (parseError) {
+    console.error('❌ JSON解析失败:', parseError);
+    console.error('原始AI返回:', aiResponse);
+    throw new Error('AI返回的内容无法解析为JSON: ' + parseError.message);
+}
         
         // 7. 验证数据格式
         if (!momentData.content) {
@@ -7163,7 +7231,7 @@ async function checkAndPostMoment(contactId) {
         await db.moments.add({
             contactId: contact.id,
             contactName: contact.name,
-            contactAvatarKey: contact.avatarFileKey,
+          contactAvatarKey: contact.avatarFileKey, 
             content: momentData.content || '',
             hashtags: momentData.hashtags || [],
             location: momentData.location || null,
@@ -10052,7 +10120,6 @@ document.querySelector('#refresh-stats-btn').addEventListener('click', refreshDa
 // 4. 备份数据
 document.querySelector('#backup-data-btn').addEventListener('click', async () => {
     try {
-        // 确认备份
         if (!confirm('确定要备份所有数据吗？\n备份文件将保存到您的下载文件夹。')) {
             return;
         }
@@ -10061,13 +10128,35 @@ document.querySelector('#backup-data-btn').addEventListener('click', async () =>
         backupBtn.disabled = true;
         backupBtn.textContent = '正在备份...';
         
-        // 导出所有表的数据
+        // 【修复】处理 files 表的特殊序列化
+        const filesData = await db.files.toArray();
+        const serializedFiles = [];
+        
+        for (const fileItem of filesData) {
+            if (fileItem.file instanceof File || fileItem.file instanceof Blob) {
+                // 将 File/Blob 转换为 Base64
+                const reader = new FileReader();
+                const base64 = await new Promise((resolve, reject) => {
+                    reader.onload = () => resolve(reader.result);
+                    reader.onerror = reject;
+                    reader.readAsDataURL(fileItem.file);
+                });
+                
+                serializedFiles.push({
+                    key: fileItem.key,
+                    base64: base64,
+                    fileName: fileItem.file.name || 'unknown',
+                    fileType: fileItem.file.type || 'application/octet-stream'
+                });
+            }
+        }
+        
         const backupData = {
-            version: '1.0',
+            version: '1.1', // 版本号升级
             timestamp: new Date().toISOString(),
             data: {
                 settings: await db.settings.toArray(),
-                files: await db.files.toArray(),
+                files: serializedFiles, // 使用序列化后的文件
                 contacts: await db.contacts.toArray(),
                 chatMessages: await db.chatMessages.toArray(),
                 apiPresets: await db.apiPresets.toArray(),
@@ -10078,14 +10167,13 @@ document.querySelector('#backup-data-btn').addEventListener('click', async () =>
                 sticker_libraries: await db.sticker_libraries.toArray(),
                 stickers: await db.stickers.toArray(),
                 user_sticker_selection: await db.user_sticker_selection.toArray(),
-                role_sticker_selection: await db.role_sticker_selection.toArray()
+                role_sticker_selection: await db.role_sticker_selection.toArray(),
+                moments: await db.moments.toArray(),
+                moment_comments: await db.moment_comments.toArray()
             }
         };
         
-        // 转换为 JSON
         const jsonString = JSON.stringify(backupData, null, 2);
-        
-        // 创建下载链接
         const blob = new Blob([jsonString], { type: 'application/json' });
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
@@ -10108,12 +10196,11 @@ document.querySelector('#backup-data-btn').addEventListener('click', async () =>
     }
 });
 
-// 5. 恢复数据
+
 document.querySelector('#restore-data-input').addEventListener('change', async (e) => {
     const file = e.target.files[0];
     if (!file) return;
     
-    // 严格确认
     if (!confirm('⚠️ 警告！恢复数据会完全覆盖当前所有数据！\n\n确定要继续吗？')) {
         e.target.value = '';
         return;
@@ -10130,10 +10217,11 @@ document.querySelector('#restore-data-input').addEventListener('change', async (
             try {
                 const backupData = JSON.parse(ev.target.result);
                 
-                // 验证备份文件
                 if (!backupData.version || !backupData.data) {
                     throw new Error('无效的备份文件格式');
                 }
+                
+                console.log('📦 开始恢复数据...');
                 
                 // 清空所有表
                 await db.settings.clear();
@@ -10149,39 +10237,88 @@ document.querySelector('#restore-data-input').addEventListener('change', async (
                 await db.stickers.clear();
                 await db.user_sticker_selection.clear();
                 await db.role_sticker_selection.clear();
+                await db.moments.clear();
+                await db.moment_comments.clear();
                 
-                // 恢复数据
-                if (backupData.data.settings) await db.settings.bulkAdd(backupData.data.settings);
-                if (backupData.data.files) await db.files.bulkAdd(backupData.data.files);
-                if (backupData.data.contacts) await db.contacts.bulkAdd(backupData.data.contacts);
-                if (backupData.data.chatMessages) await db.chatMessages.bulkAdd(backupData.data.chatMessages);
-                if (backupData.data.apiPresets) await db.apiPresets.bulkAdd(backupData.data.apiPresets);
-                if (backupData.data.worldbook_categories) await db.worldbook_categories.bulkAdd(backupData.data.worldbook_categories);
-                if (backupData.data.worldbook_entries) await db.worldbook_entries.bulkAdd(backupData.data.worldbook_entries);
-                if (backupData.data.contact_worldbook_links) await db.contact_worldbook_links.bulkAdd(backupData.data.contact_worldbook_links);
-                if (backupData.data.my_persona_presets) await db.my_persona_presets.bulkAdd(backupData.data.my_persona_presets);
-                if (backupData.data.sticker_libraries) await db.sticker_libraries.bulkAdd(backupData.data.sticker_libraries);
-                if (backupData.data.stickers) await db.stickers.bulkAdd(backupData.data.stickers);
-                if (backupData.data.user_sticker_selection) await db.user_sticker_selection.bulkAdd(backupData.data.user_sticker_selection);
-                if (backupData.data.role_sticker_selection) await db.role_sticker_selection.bulkAdd(backupData.data.role_sticker_selection);
+                console.log('✅ 所有表已清空');
                 
-                alert('数据恢复成功！\n页面将自动刷新以加载新数据。');
+                // 【关键修复】处理 files 表的反序列化
+                if (backupData.data.files && Array.isArray(backupData.data.files)) {
+                    console.log(`📥 正在恢复 files... (${backupData.data.files.length} 个文件)`);
+                    
+                    for (const fileItem of backupData.data.files) {
+                        try {
+                            if (fileItem.base64) {
+                                // 新格式：Base64 转 Blob
+                                const response = await fetch(fileItem.base64);
+                                const blob = await response.blob();
+                                const file = new File([blob], fileItem.fileName || 'unknown', { 
+                                    type: fileItem.fileType || 'application/octet-stream' 
+                                });
+                                
+                                await db.files.add({ key: fileItem.key, file: file });
+                            } else if (fileItem.file) {
+                                // 旧格式：尝试跳过（已损坏）
+                                console.warn(`⚠️ 跳过损坏的文件: ${fileItem.key}`);
+                            }
+                        } catch (error) {
+                            console.warn(`⚠️ 恢复文件失败: ${fileItem.key}`, error);
+                        }
+                    }
+                    console.log('✅ files 恢复完成');
+                }
+                
+                // 恢复其他表
+                const otherTables = [
+                    { name: 'settings', table: db.settings },
+                    { name: 'contacts', table: db.contacts },
+                    { name: 'chatMessages', table: db.chatMessages },
+                    { name: 'apiPresets', table: db.apiPresets },
+                    { name: 'worldbook_categories', table: db.worldbook_categories },
+                    { name: 'worldbook_entries', table: db.worldbook_entries },
+                    { name: 'contact_worldbook_links', table: db.contact_worldbook_links },
+                    { name: 'my_persona_presets', table: db.my_persona_presets },
+                    { name: 'sticker_libraries', table: db.sticker_libraries },
+                    { name: 'stickers', table: db.stickers },
+                    { name: 'user_sticker_selection', table: db.user_sticker_selection },
+                    { name: 'role_sticker_selection', table: db.role_sticker_selection },
+                    { name: 'moments', table: db.moments },
+                    { name: 'moment_comments', table: db.moment_comments }
+                ];
+                
+                for (const { name, table } of otherTables) {
+                    if (backupData.data[name] && Array.isArray(backupData.data[name]) && backupData.data[name].length > 0) {
+                        try {
+                            console.log(`📥 正在恢复 ${name}... (${backupData.data[name].length} 条)`);
+                            await table.bulkAdd(backupData.data[name]);
+                            console.log(`✅ ${name} 恢复成功`);
+                        } catch (error) {
+                            console.error(`❌ ${name} 恢复失败:`, error);
+                        }
+                    }
+                }
+                
+                console.log('✅ 数据恢复完成！');
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                
+                alert('数据恢复成功！\n⚠️ 注意：旧备份中的图片文件可能已损坏，建议重新上传。\n\n页面将自动刷新。');
                 location.reload();
                 
             } catch (error) {
-                console.error('恢复失败:', error);
+                console.error('❌ 恢复失败:', error);
                 alert('恢复失败：' + error.message);
             }
         };
         reader.readAsText(file);
         
     } catch (error) {
-        console.error('读取文件失败:', error);
+        console.error('❌ 读取文件失败:', error);
         alert('读取文件失败：' + error.message);
     } finally {
         e.target.value = '';
     }
 });
+
 
 // ======================================================
 // 【新功能】多选删除消息模式
@@ -10489,6 +10626,7 @@ if (tabContacts && tabContacts2 && tabMoments && tabMoments2 && momentsScreen) {
     contactName: null,
     contactAvatarKey: null,
     content: content,
+             
     hashtags: hashtags,
     location: location || null,
     images: images,
@@ -10501,6 +10639,10 @@ if (tabContacts && tabContacts2 && tabMoments && tabMoments2 && momentsScreen) {
 });
 
 await renderMomentsList();
+          // 【关键修复】重新绑定所有事件监听器
+setTimeout(() => {
+    renderMomentsList();
+}, 100);
 publishOverlay.classList.add('hidden');
 alert('发布成功!');
 
@@ -11111,6 +11253,55 @@ setInterval(async () => {
         }
     }
 }, 60000); // 每60秒检查一次
+
+// 6. 重置所有数据（简化版 - 只确认一次）
+document.querySelector('#reset-all-data-btn').addEventListener('click', async () => {
+    // 只确认一次
+    if (!confirm('⚠️ 警告：这将永久删除所有数据！\n\n包括：所有联系人、聊天记录、API配置、世界书、人设、表情包、朋友圈等。\n\n确定要清除吗？')) {
+        return;
+    }
+    
+    try {
+        const resetBtn = document.querySelector('#reset-all-data-btn');
+        resetBtn.disabled = true;
+        resetBtn.textContent = '正在清除...';
+        
+        console.log('🗑️ 开始清除所有数据...');
+        
+        // 清空所有表
+        await db.settings.clear();
+        await db.files.clear();
+        await db.contacts.clear();
+        await db.chatMessages.clear();
+        await db.apiPresets.clear();
+        await db.worldbook_categories.clear();
+        await db.worldbook_entries.clear();
+        await db.contact_worldbook_links.clear();
+        await db.my_persona_presets.clear();
+        await db.sticker_libraries.clear();
+        await db.stickers.clear();
+        await db.user_sticker_selection.clear();
+        await db.role_sticker_selection.clear();
+        await db.moments.clear();
+        await db.moment_comments.clear();
+        
+        console.log('✅ 所有数据已清除');
+        
+        alert('所有数据已清除！页面将自动刷新。');
+        
+        // 等待1秒后刷新页面
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        location.reload();
+        
+    } catch (error) {
+        console.error('❌ 重置失败:', error);
+        alert('重置失败：' + error.message);
+        
+        const resetBtn = document.querySelector('#reset-all-data-btn');
+        resetBtn.disabled = false;
+        resetBtn.textContent = '🗑️ 清除所有数据';
+    }
+});
 
 
  
