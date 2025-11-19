@@ -403,7 +403,7 @@ body {
 <!-- ======================================================= -->
 <div class="moments-screen hidden">
     <nav class="theme-nav">
-     
+        <button id="moments-back-btn" class="back-btn">&lt;</button>
         <h2>朋友圈</h2>
         <button id="moments-add-btn" class="nav-action-btn">+</button>
     </nav>
@@ -2972,7 +2972,7 @@ body {
 <!-- 【新增】朋友圈页面 -->
 <div class="moments-screen hidden">
     <nav class="theme-nav">
-     
+        <button id="moments-back-btn" class="back-btn">&lt;</button>
         <h2>朋友圈</h2>
         <button id="moments-add-btn" class="nav-action-btn">+</button>
     </nav>
@@ -5934,7 +5934,7 @@ ${conversationText || "（你最近没和人聊天）"}
 let momentData;
 try {
     let cleanedResponse = aiResponse.trim();
-    
+  
     // 移除 markdown 标记
     cleanedResponse = cleanedResponse.replace(/```json\s*/gi, '').replace(/```\s*/g, '');
     
@@ -5942,18 +5942,27 @@ try {
     const jsonStart = cleanedResponse.indexOf('{');
     const jsonEnd = cleanedResponse.lastIndexOf('}');
     
-    if (jsonStart === -1 || jsonEnd === -1) {
-        console.error('AI 原始返回:', aiResponse);
-        throw new Error('未找到有效 JSON');
+    if (jsonStart !== -1 && jsonEnd !== -1 && jsonEnd > jsonStart) {
+        jsonString = cleanedResponse.substring(jsonStart, jsonEnd + 1);
+    } else {
+        // 方式2：如果找不到，尝试用正则提取
+        const jsonMatch = cleanedResponse.match(/\{[\s\S]*\}/);
+        if (jsonMatch) {
+            jsonString = jsonMatch[0];
+        } else {
+            throw new Error('未找到有效JSON结构');
+        }
     }
     
     const jsonString = cleanedResponse.substring(jsonStart, jsonEnd + 1);
     
     // 修复常见 JSON 错误
-    const fixedJson = jsonString
-        .replace(/,\s*}/g, '}')  // 移除尾部逗号
+     const fixedJson = jsonString
+        .replace(/,\s*}/g, '}')      // 移除尾部逗号
         .replace(/,\s*]/g, ']')
-        .replace(/\n/g, ' ');    // 移除换行
+        .replace(/\n/g, ' ')          // 移除换行
+        .replace(/\r/g, '')           // 移除回车
+        .replace(/\t/g, ' ');         // 移除制表符
     
     momentData = JSON.parse(fixedJson);
     
@@ -11307,7 +11316,15 @@ document.querySelector('#reset-all-data-btn').addEventListener('click', async ()
         resetBtn.textContent = '🗑️ 清除所有数据';
     }
 });
-
+// 朋友圈返回按钮
+const momentsBackBtn = document.querySelector('#moments-back-btn');
+if (momentsBackBtn) {
+    momentsBackBtn.addEventListener('click', () => {
+        momentsScreen.classList.add('hidden');
+        appGrid.classList.remove('home-screen-hidden');
+        dock.classList.remove('home-screen-hidden');
+    });
+}
 
  
 //这是事件监听末尾//  
