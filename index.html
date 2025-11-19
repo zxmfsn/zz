@@ -5689,31 +5689,27 @@ ${contact.autoPostMoments ? `
 2. 如果要发朋友圈，在**所有聊天消息之后**，另起一行写：
 
 <MOMENT>
-{
-    "content": "朋友圈文字（1-3句话）",
-    "hashtags": ["话题1"],["话题2"],
-    "location": "地点",
-    "配图：详细描述图片内容（20-50字，要有画面感和细节）"
-}
+文字内容：朋友圈文字（1-3句话，可以有换行和emoji）
+话题：话题1,话题2,话题3
+定位：地点名称
+配图1：详细描述（20-50字）
+配图2：详细描述（20-50字）
+配图3：详细描述（20-50字）
 </MOMENT>
 
-**注意：**
-- <MOMENT> 标记和 JSON 之间不要有 |||
-- JSON 必须是标准格式，不能有多余符号
-- 朋友圈内容要符合你的人设
-- 话题2-3个
-- 朋友圈文字可以有换行
-
-**示例：**
-哈哈你也在啊|||刚才去吃饭了|||诶对了|||上次你说的那个事儿|||我想了想|||可能这样比较好|||要不明天试试？|||你觉得呢
+**示例**：
+哈哈你也在啊|||刚才去吃饭了|||诶对了|||要不明天试试？|||你觉得呢
 <MOMENT>
-{
-    "content": "今天天气真好，适合出门走走",
-    "hashtags": ["日常", "好心情"],
-    "location": "市中心公园",
-    "imageDescriptions": ["配图：公园里的阳光,多么多么好……"]
-}
+文字内容：今天天气真好，适合出门走走
+话题：日常,好心情
+定位：市中心公园
+配图1：公园里的阳光透过树叶洒下斑驳的光影，地面上形成金色的光斑
 </MOMENT>
+
+**注意**：
+- 每行以关键词开头（文字内容、话题、定位、配图）
+- 话题用逗号分隔
+- 配图可以只写1-2个，不强制3个
 ` : ''} 
 
 ---
@@ -5763,20 +5759,50 @@ if (data.choices && data.choices[0] && data.choices[0].message) {
     let fullReply = data.choices[0].message.content.trim();
     
     // 【修复】检查是否包含朋友圈标记
-    if (fullReply.includes('<MOMENT>')) {
-        // 分离聊天内容和朋友圈数据
-        const parts = fullReply.split('<MOMENT>');
-        const chatPart = parts[0].trim();
-        
-        // 处理聊天部分
-        let processedChat = fixStickerFormat(chatPart);
-        if (!processedChat.includes('|||')) {
-            processedChat = smartSplitMessage(processedChat);
-        }
-        
-        // 返回完整内容（保留 <MOMENT> 标记）
-        return processedChat + '|||<MOMENT>' + parts[1];
+if (fullReply.includes('<MOMENT>')) {
+    const parts = fullReply.split('<MOMENT>');
+    const chatPart = parts[0].trim();
+    const momentPart = parts[1].replace('</MOMENT>', '').trim();
+    
+    // 处理聊天部分
+    let processedChat = fixStickerFormat(chatPart);
+    if (!processedChat.includes('|||')) {
+        processedChat = smartSplitMessage(processedChat);
     }
+    
+    // 【新】解析简单文本格式的朋友圈数据
+    const momentData = {
+        content: '',
+        hashtags: [],
+        location: null,
+        imageDescriptions: []
+    };
+    
+    // 逐行解析
+    const lines = momentPart.split('\n');
+    for (const line of lines) {
+        const trimmed = line.trim();
+        
+        if (trimmed.startsWith('文字内容：') || trimmed.startsWith('文字内容:')) {
+            momentData.content = trimmed.replace(/^文字内容[：:]/, '').trim();
+        } else if (trimmed.startsWith('话题：') || trimmed.startsWith('话题:')) {
+            const hashtagsText = trimmed.replace(/^话题[：:]/, '').trim();
+            momentData.hashtags = hashtagsText.split(/[,，]/).map(t => t.trim()).filter(t => t);
+        } else if (trimmed.startsWith('定位：') || trimmed.startsWith('定位:')) {
+            momentData.location = trimmed.replace(/^定位[：:]/, '').trim();
+        } else if (trimmed.startsWith('配图') && trimmed.includes('：') || trimmed.includes(':')) {
+            const desc = trimmed.replace(/^配图\d*[：:]/, '').trim();
+            if (desc) momentData.imageDescriptions.push(desc);
+        }
+    }
+    
+    // 返回聊天内容 + 解析好的数据
+    return {
+        chat: processedChat,
+        moment: momentData
+    };
+}
+
     
     // 没有朋友圈，正常处理
     fullReply = fixStickerFormat(fullReply);
@@ -7121,25 +7147,24 @@ async function processAiReply(contactId, processingId) {
     try {
         const aiResponseText = await getAiReply(contactId);
       
-        
-        // 检查是否包含朋友圈标记
-        let messages = [];
-        let momentData = null;
-        
-        if (aiResponseText.includes('<MOMENT>')) {
-            const parts = aiResponseText.split('|||<MOMENT>');
-            messages = parts[0].split('|||').map(m => m.trim()).filter(m => m);
-            
-            try {
-                const momentJson = parts[1].split('</MOMENT>')[0].trim();
-                momentData = JSON.parse(momentJson);
-            } catch (e) {
-                console.error('解析朋友圈数据失败:', e);
-            }
-        } else {
-            messages = aiResponseText.split('|||').map(m => m.trim()).filter(m => m);
-        }
-        
+      // 检查是否包含朋友圈标记
+let messages = [];
+let momentData = null;
+
+if (typeof aiResponseText === 'object' && aiResponseText.chat && aiResponseText.moment) {
+    // 新格式：已经解析好了
+    messages = aiResponseText.chat.split('|||').map(m => m.trim()).filter(m => m);
+    momentData = aiResponseText.moment;
+} else if (typeof aiResponseText === 'string' && aiResponseText.includes('<MOMENT>')) {
+    // 旧格式（兼容）
+    const parts = aiResponseText.split('|||<MOMENT>');
+    messages = parts[0].split('|||').map(m => m.trim()).filter(m => m);
+    console.warn('警告：使用了旧的JSON格式，建议更新提示词');
+} else {
+    // 没有朋友圈
+    messages = (typeof aiResponseText === 'string' ? aiResponseText : '').split('|||').map(m => m.trim()).filter(m => m);
+}
+
         // 移除"正在思考"
         const typingBubble = messageContainer.querySelector('.message-bubble:last-child');
         if (typingBubble && typingBubble.textContent === '...') {
