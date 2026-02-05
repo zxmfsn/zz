@@ -1,18 +1,20 @@
 {
-  "name": "昭昭chat",
-  "short_name": "昭昭chat",
-  "start_url": "./index.html",
+  "name": "帽子小猫cat",
+  "short_name": "cat chat",
+  "description": "聊天对话网页by帽子小猫",
+  "start_url": ".",
   "display": "standalone",
-  "background_color": "#000000",
-  "theme_color": "#007aff",
+  "background_color": "#ffffff",
+  "theme_color": "#000000",
   "icons": [
-    {
-      "src": "./icon.png",
+     {
+      "src": "https://free-img.400040.xyz/4/2026/01/31/697d3083596df.png", 
       "sizes": "192x192",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
     },
     {
-      "src": "./icon.png",
+      "src": "https://www.pwabuilder.com/assets/icons/icon_512.png",
       "sizes": "512x512",
       "type": "image/png"
     }
