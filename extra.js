@@ -209,6 +209,7 @@ const cardRuleText = `
 【卡片输出协议（仅在允许时生效）】
 1) 如果允许输出卡片：HTML 卡片必须“独立占用一条气泡”，并且这一条气泡内容只能包含卡片本体，禁止混入任何普通文字。
 -  正确示例：气泡A（文字）|||[[CARD_HTML]]...[[/CARD_HTML]]|||气泡C（文字）
+- 如果系统检测到重复的 [[CARD_HTML]]/[[/CARD_HTML]]，请忽略多余的，只保留第一对并把 HTML 放在它们之间；不要在后续气泡中再补一个尾标签。
 
 2) HTML卡片模块必须使用以下边界标记包裹（必须一字不差）：
 [[CARD_HTML]]
@@ -4749,9 +4750,12 @@ ${momentsContext || "（近期无动态）"}
 【HTML 卡片输出规则（强制）】
 - 如果你要输出包含 <style> 或 <div> 的 HTML 内容，必须用 [[CARD_HTML]] 和 [[/CARD_HTML]] 包裹。
 - 格式：[[CARD_HTML]]你的HTML内容[[/CARD_HTML]]
+- **警告：一次生成只能出现一份 {{[[CARD_HTML]]...[[/CARD_HTML]]}}，禁止重复开头或尾部，也禁止把标签拆成多条消息。**
 - 禁止裸露输出任何 HTML 标签到普通文本气泡里。
 - 正确示范：嗯，稀客啊。|||[[CARD_HTML]]<style>...</style><div>...</div>[[/CARD_HTML]]
 - 禁止在视频通话里面使用
+- 如果系统检测到重复的 [[CARD_HTML]]/[[/CARD_HTML]] 请忽略多余的，只保留第一对并把 HTML 放在它们之间；不要在后续气泡中再补一个尾标签。
+
 **言语规范法则，十分重要！！！绝对要遵守**
 
 【去油腻/反霸总强制协议】
@@ -4879,13 +4883,6 @@ ${statusMonitorEnabled ? `
 - 严禁混用中英文括号（例如【内容】正确，[内容】错误）
 - HTML 卡片必须用 [[CARD_HTML]]...[[/CARD_HTML]]
 
-【错误示例（严禁出现）】
-❌ 今天天气不错，我准备出去逛街，你要一起吗？（多个意群挤在一条气泡）
-❌ 我在想你|||因为|||（半句结尾）
-❌ 【搜表情:开心】好呀我也想去（表情包未独立）
-❌ [心声更新]心情:开心\n心情值:80...（状态更新块内有换行）
-❌ $$EMOJI:123$$（使用了禁止的 $$ 格式）
-❌ 【图片：画面描述（这里有括号内的补充说明）（动作描写未删除）
 
 【正确示例】
 ✅ 今天天气不错|||我准备出去逛街|||你要一起吗？
@@ -4902,7 +4899,14 @@ ${statusMonitorEnabled ? `
 ⚠️ 记住：格式错误 = 回复失败 = 必须重来 ⚠️
 ---
 
-现在，请完全忘记你是一个AI。你是【${chat.name}】，看着手机屏幕，根据时间和语境，遵循格式要求，回复对方：
+【🔴 最后检查 - 发送前必读 🔴】
+你即将生成的回复，必须 100% 符合以下格式
+✅ 正确示例：
+今天天气不错|||我准备出去逛街|||你要一起吗？|||几点出发？|||我想去那家新开的店|||听说很不错|||【搜表情:期待】|||你觉得呢？|||[心声更新]心情:很期待，想和你一起出去玩|心情值:85|心跳:82|穿着风格:休闲舒适的日常风格，米色针织衫配牛仔裤，简约自然|穿着单品:米色针织开衫,白色T恤,浅蓝牛仔裤,小白鞋,帆布包|行为:正在房间里翻衣柜挑衣服，偶尔看手机等你回复|想法:好想快点见到你，不知道你会不会同意，有点紧张但更多是期待，希望今天能玩得开心[/心声更新]
+是否使用了 ||| 分隔每条气泡？
+
+现在，请完全忘记你是一个AI。你是【${chat.name}】，看着手机屏幕，根据时间和语境，遵循格式要求，回复对方。
+
 `;
 
 
@@ -5473,6 +5477,35 @@ if (cardBlocks.length > 0) {
 // 12. 分割消息（增强版：先验证格式）
 let messageList = [];
 
+// ===== 👇 在 if/else 之前先修复被打散的指令 =====
+// 修复语音指令
+messageContent = messageContent.replace(
+    /([【\[]\s*发送语音\s*[:：][^】\]]*?)\|\|\|([^】\]]*?[】\]])/g,
+    '$1$2'
+);
+// 修复引用指令
+messageContent = messageContent.replace(
+    /([【\[]\s*引用\s*[:：][^】\]]*?)\|\|\|([^】\]]*?[】\]])/g,
+    '$1$2'
+);
+// 修复图片指令
+messageContent = messageContent.replace(
+    /([【\[]\s*图片\s*[:：][^】\]]*?)\|\|\|([^】\]]*?[】\]])/g,
+    '$1$2'
+);
+// 修复搜表情指令
+messageContent = messageContent.replace(
+    /([【\[]\s*搜表情\s*[:：][^】\]]*?)\|\|\|([^】\]]*?[】\]])/g,
+    '$1$2'
+);
+// 修复转账指令
+messageContent = messageContent.replace(
+    /([【\[]\s*转账\s*[:：][^】\]]*?)\|\|\|([^】\]]*?[】\]])/g,
+    '$1$2'
+);
+// ===== 修复结束 =====
+
+
 // 先检查是否包含分隔符
 if (messageContent.includes('|||')) {
     messageList = messageContent
@@ -5482,40 +5515,68 @@ if (messageContent.includes('|||')) {
     
     console.log(`✅ 成功分割成 ${messageList.length} 条气泡`);
 } else {
-    // 如果没有分隔符，说明 AI 没按格式回复
-    console.warn('⚠️ AI 回复中没有 ||| 分隔符，尝试智能分割');
-
-    // ===== 新增：先保护 CARD_HTML 块，避免智能分割把卡片切碎 =====
+    console.warn('⚠️ AI 回复中没有 ||| 分隔符，按标点符号切分');
+    // ===== 第一步：保护 HTML 卡片（你的原逻辑） =====
     const protectedRes = protectCardBlocks(messageContent);
     let smartBase = protectedRes.out;
-
-    // 智能分割：按句号、问号、感叹号切分（保留你原逻辑）
-    let smartContent = smartBase.replace(/([。！？!?\n\r]+)/g, "$1|||");
-
-    // ===== 新增：让卡片占位符前后强制断开成独立气泡 =====
+    // ===== 新增：保护其他特殊指令 =====
+    const otherBlocks = [];
+    
+    // 保护表情包指令
+    smartBase = smartBase.replace(/[【\[]\s*搜表情\s*[:：][^】\]]+[】\]]/g, (match) => {
+        const key = `__EMOJI_${otherBlocks.length}__`;
+        otherBlocks.push({ key, content: match });
+        return key;
+    });
+    
+    // 保护语音指令
+    smartBase = smartBase.replace(/[【\[]\s*发送语音\s*[:：][^】\]]+[】\]]/g, (match) => {
+        const key = `__VOICE_${otherBlocks.length}__`;
+        otherBlocks.push({ key, content: match });
+        return key;
+    });
+    
+    // 保护图片指令
+    smartBase = smartBase.replace(/[【\[]\s*图片\s*[:：][^】\]]+[】\]]/g, (match) => {
+        const key = `__IMAGE_${otherBlocks.length}__`;
+        otherBlocks.push({ key, content: match });
+        return key;
+    });
+    
+    // 保护转账指令
+    smartBase = smartBase.replace(/[【\[]\s*转账\s*[:：][^】\]]+[】\]]/g, (match) => {
+        const key = `__TRANSFER_${otherBlocks.length}__`;
+        otherBlocks.push({ key, content: match });
+        return key;
+    });
+    // ===== 第二步：纯粹按标点符号切分（句号、问号、感叹号） =====
+    let smartContent = smartBase
+        // 在句号、问号、感叹号后面加分隔符（中英文都支持）
+        .replace(/([。！？!?]+)/g, "$1|||")
+        // 换行也算一条
+        .replace(/[\n\r]+/g, "|||");
+    // HTML 卡片和特殊指令占位符前后强制断开
     smartContent = smartContent
         .replace(/(__CARD_BLOCK_\d+__)/g, '|||$1|||')
-        .replace(/\|\|\|{2,}/g, '|||')
-        .replace(/^\|\|\|/, '')
-        .replace(/\|\|\|$/, '');
-
+        .replace(/(__(?:EMOJI|VOICE|IMAGE|TRANSFER)_\d+__)/g, '|||$1|||')
+        .replace(/\|\|\|{2,}/g, '|||')  // 清理多余分隔符
+        .replace(/^\|\|\|/, '')           // 去掉开头的 |||
+        .replace(/\|\|\|$/, '');          // 去掉结尾的 |||
+    // 分割
     messageList = smartContent.split('|||').map(m => m.trim()).filter(m => m.length > 0);
-
-    // ===== 新增：还原 CARD_HTML 块 =====
+    // 还原 HTML 卡片（你的原逻辑）
     messageList = messageList.map(m => restoreCardBlocks(m, protectedRes.blocks));
-
-    // 如果智能分割后还是只有 1 条且超过 100 字，强制截断（保留你原逻辑）
-    if (messageList.length === 1 && messageList[0].length > 100) {
-        const text = messageList[0];
-        messageList = [];
-        for (let i = 0; i < text.length; i += 50) {
-            messageList.push(text.substring(i, i + 50));
-        }
-    }
+    
+    // 还原其他指令
+    messageList = messageList.map(text => {
+        let restored = text;
+        otherBlocks.forEach(block => {
+            restored = restored.replace(block.key, block.content);
+        });
+        return restored;
+    });
+    console.log(`🤖 按标点切分完成，生成 ${messageList.length} 条气泡`);
 }
-
-
-console.log('📝 最终气泡列表:', messageList.map(m => m.substring(0, 30) + '...'));
 
        
 
@@ -5969,33 +6030,24 @@ function setCharacterStatusForChat(chatId, statusText) {
     });
 }
 
-function splitHtmlCardFromText(text) {
-    const s = String(text || '');
-    const startTag = '[[CARD_HTML]]';
-    const endTag = '[[/CARD_HTML]]';
-
-    const start = s.indexOf(startTag);
-    const end = s.indexOf(endTag);
-
-    if (start === -1 || end === -1 || end < start) {
-        return { text: s, cardHtml: null };
+function splitHtmlCardFromText(rawText = '') {
+    const normalized = String(rawText || '')
+        .replace(/\[\[CARD_HTML\]\]\s*\[\[CARD_HTML\]\]/g, '[[CARD_HTML]]')
+        .replace(/\[\[\/CARD_HTML\]\]\s*\[\[\/CARD_HTML\]\]/g, '[[/CARD_HTML]]');
+    const cardMatch = normalized.match(/\[\[CARD_HTML\]\]([\s\S]*?)\[\[\/CARD_HTML\]\]/i);
+    if (!cardMatch) {
+        return { text: normalized.trim(), cardHtml: '' };
     }
 
-    const before = s.slice(0, start);
-    const inside = s.slice(start + startTag.length, end);
-    let after = s.slice(end + endTag.length);
+    const before = normalized.slice(0, cardMatch.index);
+    const after = normalized.slice(cardMatch.index + cardMatch[0].length);
+    const mergedText = [before, after].filter(Boolean).join('\n\n').trim();
 
-    // ★★★ 核心修复：清理 after 里泄露的 HTML 闭合标签 ★★★
-    after = after.replace(/^\s*(<\/[^>]+>)+\s*/g, ''); // 去掉开头的所有 </xxx> 标签
-    after = after.replace(/\s*(<\/[^>]+>)+\s*$/g, ''); // 去掉结尾的所有 </xxx> 标签
-
-    const cleanText = (before + after).trim();
-    const cardHtml = inside.trim();
-
-
-    return { text: cleanText, cardHtml: cardHtml || null };
+    return {
+        text: mergedText,
+        cardHtml: cardMatch[1].trim()
+    };
 }
-
 
 function sanitizeHtmlCard(dirtyHtml) {
     let html = String(dirtyHtml || '');
@@ -6254,7 +6306,7 @@ async function renderMessages() {
             else if (isSent) actionText = '等待领取';
             else actionText = '领取红包';
             const clickEvent = (!isSent && data.status === 'pending') ? `onclick="receiveTransfer(${msg.id})"` : '';
-            const giftIconSvg = `<svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M20 6h-2.18c.11-.31.18-.65.18-1 0-1.66-1.34-3-3-3-1.05 0-1.96.54-2.5 1.35l-.5.67-.5-.68C10.96 2.54 10.05 2 9 2 7.34 2 6 3.34 6 5c0 .35.07.69.18 1H4c-1.11 0-1.99.89-1.99 2L2 19c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V8c0-1.11-.89-2-2-2zm-5-2c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 1-1zm11 15H4v-2h16v2zm0-5H4V8h5.08L7 10.83 8.62 12 11 8.76l1-1.36 1 1.36L15.38 12 17 10.83 14.92 8H20v6z"/></svg>`;
+          const giftIconSvg = `<svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M20 6h-2.18c.11-.31.18-.65.18-1a3 3 0 0 0-3-3c-1.05 0-1.96.54-2.5 1.35l-.5.67-.5-.68A2.99 2.99 0 0 0 9 2a3 3 0 0 0-3 3c0 .35.07.69.18 1H4c-1.11 0-1.99.89-1.99 2L2 19a2 2 0 0 0 2 2h16c1.11 0 2-.89 2-2V8a2 2 0 0 0-2-2zm-5-2c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zM9 4c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zm11 15H4v-2h16v2zm0-5H4V8h5.08L7 10.83 8.62 12 11 8.76l1-1.36 1 1.36L15.38 12 17 10.83 14.92 8H20v6z"/></svg>`;
             const heartIconSvg = `<svg viewBox="0 0 24 24" width="12" height="12" fill="currentColor" style="margin-left:4px;"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>`;
 
             return `
@@ -6383,13 +6435,25 @@ if (msg.type === 'image') {
 }else {
     // 普通文本（支持附加 HTML 卡片协议）
     const rawText = String(msg.content || '');
-    
-    // ★★★ 增加调试日志 ★★★
-    if (rawText.includes('[[CARD_HTML]]')) {
-     
-    }
-    
+    const trimmedText = rawText.trim();
+const hasOpenTag = trimmedText.includes('[[CARD_HTML]]');
+const hasCloseTag = trimmedText.includes('[[/CARD_HTML]]');
+
+// 如果只有尾标签、只有开头、或者只剩空文本，直接跳过（不渲染）
+if ((!hasOpenTag && hasCloseTag) || (hasOpenTag && !hasCloseTag) || trimmedText === '[[/CARD_HTML]]' || !trimmedText) {
+    return '';
+}
+    if (rawText.trim() === '[[/CARD_HTML]]') {
+    return '';
+}
+ console.log('raw card payload', msg.id, rawText);
+    if (rawText === '[[/CARD_HTML]]') {
+    // 这种是补上来的尾标签流，忽略掉，不生成气泡
+    return '';
+}
+
     const parts = splitHtmlCardFromText(rawText);
+    console.log('card payload', msg.id, htmlCardAllowed, parts.cardHtml);
     const cleanText = parts.text || '';
     const cardHtml = parts.cardHtml;
     
@@ -8045,20 +8109,32 @@ async function executeAutoSummary(chat, messages, charInfo) {
     const dateRange = getDateRange(firstMsg.time, lastMsg.time);
     
     // 构建Prompt
-    const prompt = `请以【第三人称旁白】的视角，客观概括以下聊天记录的主要内容。
+const prompt = `你是一个记忆整理师，需要将聊天记录浓缩成一条"时光记录"。
 
-【要求】
-1. 记录发生的时间
-2. **视角严格限制**：必须使用第三人称！请用"${chat.name}"和"用户"来描述互动。
-3. **严禁**使用"我"、"我们"、"你"这种第一/第二人称代词。
-4. 内容概括：聊了什么话题、发生了什么事、有什么重要约定，承诺
-5. 用户主动说过的个人喜好（喜欢的或者厌恶的）、经历过的过去，未曾到的未来，理想，工作事业，生活习惯等。
-6. 对话中表现情绪的变化，如因为什么事情难过或者伤心，要记住不要做雷点的事情等
-
+【角色】${chat.name}
+【时间范围】${dateRange}
 【聊天记录】
 ${chatHistory.substring(0, 4000)}
 
-现在请你开始总结`;
+【输出要求】
+1. **必须用第三人称**（"${chat.name}"和"用户"），严禁用"我/你/我们"
+2. **字数：80-120字**（不要太短也不要太长）
+3. **必须包含以下要素**（至少3个）：
+   - 🎯 聊了什么核心话题（具体到细节，不要只说"聊天"）
+   - 💭 ${chat.name}的情绪变化（从什么到什么）
+   - 💬 用户透露的重要信息（喜好/经历/想法）
+   - 🎁 发生的具体事件（约定/承诺/冲突/和解）
+   - ⚠️ 需要注意的雷区（用户反感的话题）
+
+【输出格式示例】
+${chat.name}和用户聊了关于工作压力的话题，用户提到最近加班很累，不喜欢被催促。${chat.name}一开始开玩笑，后来察觉到用户情绪低落，转而安慰。用户说周末想去爬山放松，${chat.name}答应陪同。
+
+【禁止事项】
+❌ 不要写"进行了交流"、"展开了对话"这种废话
+❌ 不要只列举话题，要写出情感和细节
+❌ 不要超过150字
+
+现在开始总结（直接输出内容，不要前缀）：`;
 
 
     try {
@@ -8090,10 +8166,10 @@ ${chatHistory.substring(0, 4000)}
         // 清理可能的引号
         summary = summary.replace(/^["「『]|["」』]$/g, '');
         
-        // 限制长度
-        if (summary.length > 150) {
-            summary = summary.substring(0, 147) + '...';
-        }
+     // 限制长度（放宽到120字）
+if (summary.length > 120) {
+    summary = summary.substring(0, 117) + '...';
+}
         
         // 保存到时光相册
         await saveAutoSummaryToTimeline(chat.id, summary, dateRange);
